@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "studio": "dotenv -e .env.local -- npx prisma studio",
+    "migrate": "dotenv -e .env.local npx prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/client": "^4.15.0",
     "@types/node": "20.2.5",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
@@ -16,6 +19,7 @@
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
     "next": "13.4.4",
+    "next-auth": "^4.22.1",
     "postcss": "8.4.24",
     "prettier": "2.8.8",
     "react": "18.2.0",
@@ -26,6 +30,7 @@
   "devDependencies": {
     "eslint-config-prettier": "8.8.0",
     "eslint-webpack-plugin": "4.0.1",
+    "prisma": "^4.15.0",
     "sass": "1.62.1"
   }
 }
