@@ -1,5 +1,10 @@
+"use client";
+
 import "./globals.scss";
 import { Inter } from "next/font/google";
+import Providers from "@/components/Providers";
+import { useEffect } from "react";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,9 +18,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    import("preline");
+  }, []);
+
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} dark:bg-slate-900 min-h-[75rem]`}>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }
