@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import Providers from "@/components/Providers";
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +23,14 @@ export default function RootLayout({
     import("preline");
   }, []);
 
+  const pathname = usePathname();
+  const showNavbar = pathname !== "/auth/signin";
+
   return (
-    <html lang="en">
-      <body className={`${inter.className} dark:bg-slate-900 min-h-[75rem]`}>
+    <html lang="en" className="h-full">
+      <body className={`${inter.className} dark:bg-slate-900 ${!showNavbar && 'bg-gray-100 flex h-full items-center py-16'}`}>
         <Providers>
-          <Navbar />
+          {showNavbar && <Navbar />}
           {children}
         </Providers>
       </body>
