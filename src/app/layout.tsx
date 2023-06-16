@@ -24,7 +24,7 @@ export default function RootLayout({
   }, []);
 
   const pathname = usePathname();
-  const showNavbar = pathname !== "/auth/signin";
+  const showNavbar = pathname !== "/auth/signin" && pathname !== "/auth/verify-request" && pathname !== "/auth/new-user";
 
   return (
     <html lang="en" className="h-full">

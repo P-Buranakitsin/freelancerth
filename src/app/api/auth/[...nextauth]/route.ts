@@ -1,5 +1,7 @@
 import NextAuth from "next-auth/next";
+import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { Adapter } from "next-auth/adapters";
@@ -7,14 +9,34 @@ import { Adapter } from "next-auth/adapters";
 const handler = NextAuth({
     adapter: PrismaAdapter(prisma) as Adapter,
     session: {
-        strategy: 'database'
+        strategy: 'jwt'
     },
     providers: [
+        EmailProvider({
+            server: {
+                host: process.env.EMAIL_SERVER_HOST,
+                port: process.env.EMAIL_SERVER_PORT,
+                auth: {
+                    user: process.env.EMAIL_SERVER_USER,
+                    pass: process.env.EMAIL_SERVER_PASSWORD
+                }
+            },
+            from: process.env.EMAIL_FROM
+        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         }),
+        FacebookProvider({
+            clientId: process.env.FACEBOOK_CLIENT_ID!,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET!
+        })
     ],
+    pages: {
+        signIn: '/auth/signin',
+        verifyRequest: '/auth/verify-request', // (used for check email message)
+        newUser: '/auth/new-user'
+    },
     secret: process.env.NEXTAUTH_SECRET
 });
 
