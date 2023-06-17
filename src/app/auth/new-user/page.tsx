@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { BsPersonCircle } from "react-icons/bs";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ImBin, ImUpload3 } from "react-icons/im";
 import { useUploadThing } from "@/utils/uploadthing";
@@ -21,10 +21,10 @@ interface FileWithPreview extends FileWithPath {
 
 export default function VerifyRequest() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { register, handleSubmit, reset } = useForm<FormData>();
-
   const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
     if (session?.user) {
       setFiles([{ preview: session.user.image } as FileWithPreview]);
@@ -34,8 +34,6 @@ export default function VerifyRequest() {
       });
     }
   }, [session?.user]);
-
-  console.log(files);
 
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
@@ -93,29 +91,52 @@ export default function VerifyRequest() {
       ))
   );
 
-  const onSubmit = handleSubmit(async (data) => {
-    await updateUser({...data })
-    if (files[0].preview === session?.user?.image) {
-      console.log("same");
-    } else {
-      startUpload(files);
+  const onSubmit = handleSubmit(async (data: FormData) => {
+    setIsLoading(true);
+    try {
+      let uploadedFiles:
+        | {
+            fileUrl: string;
+            fileKey: string;
+          }[]
+        | undefined = undefined;
+      if (files[0].preview !== session?.user?.image) {
+        uploadedFiles = await startUpload(files);
+      }
+      await updateUser({
+        ...data,
+        ...(uploadedFiles &&
+          uploadedFiles.length > 0 && { fileUrl: uploadedFiles[0].fileUrl }),
+      });
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
     }
   });
 
-  const updateUser = async (data: FormData) => {
+  const updateUser = async (data: FormData & { fileUrl?: string }) => {
+    const updatedName = data.firstName + " " + data.lastName;
     const res = await fetch("/api/user/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: data.firstName + " " + data.lastName,
-    })
+        name: updatedName,
+        ...(data.fileUrl && { fileUrl: data.fileUrl }),
+      }),
     });
     // Recommendation: handle errors
     if (!res.ok) {
       // This will activate the closest `error.js` Error Boundary
       throw new Error("Failed to update user");
+    } else {
+      // Update the session
+      update({
+        name: updatedName,
+        ...(data.fileUrl && { fileUrl: data.fileUrl }),
+      });
     }
   };
 
@@ -260,7 +281,7 @@ export default function VerifyRequest() {
                   >
                     <span
                       className={`${
-                        isUploading ? "" : "hidden"
+                        isLoading ? "" : "hidden"
                       } animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full`}
                       role="status"
                       aria-label="loading"

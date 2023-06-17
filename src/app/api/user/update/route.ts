@@ -22,11 +22,12 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
                     email: session.user.email
                 },
                 data: {
-                    name: json.name
+                    name: json.name,
+                    ...(json.fileUrl && { image: json.fileUrl })
                 }
             })
             let json_response = {
-                status: "success",
+                message: "success",
                 data: {
                     user,
                 },
@@ -35,8 +36,18 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
                 status: 200,
             });
         }
-        return NextResponse.json({})
+        return NextResponse.json({
+            message: "email not found",
+            data: {}
+        }, {
+            status: 400
+        })
     } catch (error) {
-        return NextResponse.json({})
+        return NextResponse.json({
+            message: "internal server error",
+            error
+        }, {
+            status: 500
+        })
     }
 }
