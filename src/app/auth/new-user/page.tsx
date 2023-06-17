@@ -93,14 +93,31 @@ export default function VerifyRequest() {
       ))
   );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const onSubmit = handleSubmit(async (data) => {
+    await updateUser({...data })
     if (files[0].preview === session?.user?.image) {
       console.log("same");
     } else {
       startUpload(files);
     }
   });
+
+  const updateUser = async (data: FormData) => {
+    const res = await fetch("/api/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: data.firstName + " " + data.lastName,
+    })
+    });
+    // Recommendation: handle errors
+    if (!res.ok) {
+      // This will activate the closest `error.js` Error Boundary
+      throw new Error("Failed to update user");
+    }
+  };
 
   return (
     <main className="w-full max-w-lg mx-auto p-6">
@@ -113,7 +130,7 @@ export default function VerifyRequest() {
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               Please fill in your information{" "}
             </p>
-            {files.length === 1 ? (
+            {files.length === 1 && files[0].preview ? (
               <Image
                 className="inline-block h-[5rem] w-[5rem] rounded-full ring-2 ring-white dark:ring-gray-800 mt-5"
                 src={files[0].preview || ""}

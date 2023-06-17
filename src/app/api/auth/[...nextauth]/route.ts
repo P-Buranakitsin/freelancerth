@@ -5,8 +5,10 @@ import FacebookProvider from "next-auth/providers/facebook";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { Adapter } from "next-auth/adapters";
+import { NextAuthOptions } from "next-auth";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions =
+{
     adapter: PrismaAdapter(prisma) as Adapter,
     session: {
         strategy: 'jwt'
@@ -38,7 +40,10 @@ const handler = NextAuth({
         newUser: '/auth/new-user'
     },
     secret: process.env.NEXTAUTH_SECRET
-});
+}
+
+
+const handler = NextAuth(authOptions);
 
 
 export { handler as GET, handler as POST }
