@@ -1,52 +1,106 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { BsPersonCircle } from "react-icons/bs";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { ImBin } from "react-icons/im";
+import { ImBin, ImUpload3 } from "react-icons/im";
+import { useUploadThing } from "@/utils/uploadthing";
+import { FileError, FileWithPath, useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+
+type FormData = {
+  firstName: string;
+  lastName: string;
+};
+
+interface FileWithPreview extends FileWithPath {
+  preview?: string;
+}
 
 export default function VerifyRequest() {
   const router = useRouter();
-  const [image, setImage] = useState<File | string | null>(null);
-  const { data: session, status } = useSession();
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
+  const { register, handleSubmit, reset } = useForm<FormData>();
+
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
   useEffect(() => {
-    console.log('ffgdg')
-    if (session?.user?.image) {
-      setImage(session.user.image);
+    if (session?.user) {
+      setFiles([{ preview: session.user.image } as FileWithPreview]);
+      reset({
+        firstName: session.user.name?.split(" ")[0] || "",
+        lastName: session.user.name?.split(" ")[1] || "",
+      });
     }
-  }, [session?.user?.image]);
+  }, [session?.user]);
+
+  console.log(files);
+
+  useEffect(() => {
+    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview!));
+  }, []);
 
   const skip = () => {
     router.push("/");
   };
 
-  const selectImage = (event: FormEvent<HTMLInputElement>) => {
-    if (
-      event.currentTarget.files &&
-      event.currentTarget.files.length > 0 &&
-      event.currentTarget.files[0].type.includes("image")
-    ) {
-      setImage(event.currentTarget.files[0]);
-    } else if (session?.user?.image) {
-      setImage(session.user.image);
+  const { fileRejections, getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "image/*": [],
+    },
+    onDrop: (acceptedFiles) => {
+      setFiles(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    },
+    onDropRejected() {
+      if (session?.user?.image) {
+        setFiles([{ preview: session.user.image } as FileWithPreview]);
+      }
+    },
+  });
+
+  const { startUpload, isUploading } = useUploadThing({
+    endpoint: "imageUploader",
+    onClientUploadComplete: () => {
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+  });
+
+  const removeImage = () => {
+    if (session?.user?.image) {
+      setFiles([{ preview: session.user.image } as FileWithPreview]);
     } else {
-      setImage(null);
+      setFiles([]);
     }
   };
 
-  const removeImage = (event: FormEvent<HTMLButtonElement>) => {
-    if (session?.user?.image) {
-      setImage(session.user.image);
+  const fileRejectionItems = fileRejections.map(
+    ({ errors }: { file: FileWithPath; errors: FileError[] }) =>
+      errors.map((e) => (
+        <p key={e.code} className="text-xs text-red-600 mt-2">
+          {e.message}
+        </p>
+      ))
+  );
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(data);
+    if (files[0].preview === session?.user?.image) {
+      console.log("same");
     } else {
-      setImage(null);
+      startUpload(files);
     }
-    if (imageInputRef.current) {
-      imageInputRef.current.value = "";
-    }
-  };
+  });
 
   return (
     <main className="w-full max-w-lg mx-auto p-6">
@@ -59,13 +113,14 @@ export default function VerifyRequest() {
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               Please fill in your information{" "}
             </p>
-            {image ? (
-              <img
+            {files.length === 1 ? (
+              <Image
                 className="inline-block h-[5rem] w-[5rem] rounded-full ring-2 ring-white dark:ring-gray-800 mt-5"
-                src={
-                  typeof image === "string" ? image : URL.createObjectURL(image)
-                }
+                src={files[0].preview || ""}
                 alt="Profile pic"
+                width={200}
+                height={200}
+                priority
               />
             ) : (
               <BsPersonCircle
@@ -77,51 +132,42 @@ export default function VerifyRequest() {
 
           <div className="mt-5">
             {/* Form */}
-            <form>
+            <form onSubmit={onSubmit}>
               <div className="grid gap-y-4">
                 <div className="">
                   <div className="block text-sm mb-2 dark:text-white">
                     Profile picture
                   </div>
-                  <div className="flex">
-                    <label htmlFor="image" className="sr-only">
-                      Choose file
-                    </label>
-                    <input
-                      type="file"
-                      name="image"
-                      ref={imageInputRef}
-                      accept="image/*"
-                      id="image"
-                      onChange={selectImage}
-                      className="block w-full border border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400
-    file:bg-transparent file:border-0
-    file:bg-gray-100 file:mr-4
-    file:py-3 file:px-4
-    dark:file:bg-gray-700 dark:file:text-gray-400"
-                    />
+                  <div className="grid sm:grid-cols-2 grid-cols-1 gap-4 mt-4">
+                    <div {...getRootProps({ className: "dropzone" })}>
+                      <input {...getInputProps()} />
+                      <button
+                        type="button"
+                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+                      >
+                        <ImUpload3 size={18} />
+                        Upload
+                      </button>
+                    </div>
                     <button
                       type="button"
                       onClick={removeImage}
-                      className="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-r-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-sm"
+                      className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
-                      <ImBin width={16} height={16} />
+                      <ImBin size={18} />
+                      Delete
                     </button>
                   </div>
+                  {fileRejectionItems}
                 </div>
                 <div>
-                  <label
-                    htmlFor="first_name"
-                    className="block text-sm mb-2 dark:text-white"
-                  >
+                  <label className="block text-sm mb-2 dark:text-white">
                     First name
                   </label>
                   <div className="relative">
                     <input
                       type="text"
-                      defaultValue={session?.user?.name?.split(" ")[0] || ""}
-                      id="first_name"
-                      name="first_name"
+                      {...register("firstName")}
                       className="border py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
                       required
                       aria-describedby="first_name-error"
@@ -150,19 +196,14 @@ export default function VerifyRequest() {
                 {/* Form Group */}
                 <div>
                   <div className="flex justify-between items-center">
-                    <label
-                      htmlFor="last_name"
-                      className="block text-sm mb-2 dark:text-white"
-                    >
+                    <label className="block text-sm mb-2 dark:text-white">
                       Last name
                     </label>
                   </div>
                   <div className="relative">
                     <input
                       type="text"
-                      id="last_name"
-                      name="last_name"
-                      defaultValue={session?.user?.name?.split(" ")[1] || ""}
+                      {...register("lastName")}
                       className="border py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
                       required
                       aria-describedby="last_name-error"
@@ -200,6 +241,13 @@ export default function VerifyRequest() {
                     type="submit"
                     className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                   >
+                    <span
+                      className={`${
+                        isUploading ? "" : "hidden"
+                      } animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full`}
+                      role="status"
+                      aria-label="loading"
+                    />
                     Submit
                   </button>
                 </div>
