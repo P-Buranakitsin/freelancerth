@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextApiRequest, NextApiResponse } from "next";
+import { UpdatedUserSession } from "@/app/auth/new-user/page";
 
 export const PUT = async (req: NextRequest, res: NextResponse) => {
     const session = await getServerSession(
@@ -15,7 +16,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         authOptions
     );
     try {
-        const json = await req.json();
+        const json: UpdatedUserSession = await req.json();
         if (session?.user?.email) {
             const user = await prisma.user.update({
                 where: {

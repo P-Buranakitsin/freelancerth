@@ -10,10 +10,15 @@ import { FileError, FileWithPath, useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 
-type FormData = {
+interface FormData {
   firstName: string;
   lastName: string;
-};
+}
+
+export interface UpdatedUserSession {
+  name: string;
+  fileUrl?: string;
+}
 
 interface FileWithPreview extends FileWithPath {
   preview?: string;
@@ -41,7 +46,7 @@ export default function VerifyRequest() {
   }, []);
 
   const skip = () => {
-    router.push("/");
+    router.replace("/");
   };
 
   const { fileRejections, getRootProps, getInputProps } = useDropzone({
@@ -64,7 +69,7 @@ export default function VerifyRequest() {
     },
   });
 
-  const { startUpload, isUploading } = useUploadThing({
+  const { startUpload } = useUploadThing({
     endpoint: "imageUploader",
     onClientUploadComplete: () => {
       alert("uploaded successfully!");

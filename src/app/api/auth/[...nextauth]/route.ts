@@ -6,6 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { Adapter } from "next-auth/adapters";
 import { NextAuthOptions } from "next-auth";
+import { UpdatedUserSession } from "@/app/auth/new-user/page";
 
 export const authOptions: NextAuthOptions =
 {
@@ -37,11 +38,12 @@ export const authOptions: NextAuthOptions =
     callbacks: {
         // Using the `...rest` parameter to be able to narrow down the type based on `trigger`
         jwt({ token, trigger, session }) {
+            const sessionTyped: UpdatedUserSession = session
             if (trigger === "update" && session?.name) {
                 // Note, that `session` can be any arbitrary object, remember to validate it!
-                token.name = session.name
+                token.name = sessionTyped.name
                 if (session?.fileUrl) {
-                    token.picture = session.fileUrl
+                    token.picture = sessionTyped.fileUrl
                 }
             }
             return token
