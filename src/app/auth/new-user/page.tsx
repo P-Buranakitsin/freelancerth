@@ -9,11 +9,10 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { FileError, FileWithPath, useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-
-interface FormData {
-  firstName: string;
-  lastName: string;
-}
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { NewUser, NewUserSchema } from "@/models/NewUser";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { BiErrorCircle } from "react-icons/bi";
 
 export interface UpdatedUserSession {
   name: string;
@@ -27,7 +26,14 @@ interface FileWithPreview extends FileWithPath {
 export default function VerifyRequest() {
   const router = useRouter();
   const { data: session, update } = useSession();
-  const { register, handleSubmit, reset } = useForm<FormData>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<NewUser>({
+    resolver: zodResolver(NewUserSchema),
+  });
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
@@ -96,7 +102,7 @@ export default function VerifyRequest() {
       ))
   );
 
-  const onSubmit = handleSubmit(async (data: FormData) => {
+  const onSubmit = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
       let uploadedFiles:
@@ -113,6 +119,7 @@ export default function VerifyRequest() {
         ...(uploadedFiles &&
           uploadedFiles.length > 0 && { fileUrl: uploadedFiles[0].fileUrl }),
       });
+      router.replace("/")
     } catch (error) {
       alert(error);
     } finally {
@@ -120,7 +127,7 @@ export default function VerifyRequest() {
     }
   });
 
-  const updateUser = async (data: FormData & { fileUrl?: string }) => {
+  const updateUser = async (data: NewUser & { fileUrl?: string }) => {
     const updatedName = data.firstName + " " + data.lastName;
     const res = await fetch("/api/user/update", {
       method: "PUT",
@@ -209,31 +216,20 @@ export default function VerifyRequest() {
                   </label>
                   <div className="relative">
                     <input
-                      type="text"
                       {...register("firstName")}
                       className="border py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
-                      required
-                      aria-describedby="first_name-error"
                     />
-                    <div className="hidden absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
-                      <svg
-                        className="h-5 w-5 text-red-500"
-                        width={16}
-                        height={16}
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                        aria-hidden="true"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                      </svg>
-                    </div>
+                    {errors.firstName?.message && (
+                      <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
+                        <BiErrorCircle className="text-red-500" size={24} />
+                      </div>
+                    )}
                   </div>
-                  <p
-                    className="hidden text-xs text-red-600 mt-2"
-                    id="first_name-error"
-                  >
-                    Please include a valid first name
-                  </p>
+                  {errors.firstName?.message && (
+                    <p className="text-xs text-red-600 mt-2">
+                      {errors.firstName.message}
+                    </p>
+                  )}
                 </div>
                 {/* End Form Group */}
                 {/* Form Group */}
@@ -245,31 +241,20 @@ export default function VerifyRequest() {
                   </div>
                   <div className="relative">
                     <input
-                      type="text"
                       {...register("lastName")}
                       className="border py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
-                      required
-                      aria-describedby="last_name-error"
                     />
-                    <div className="hidden absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
-                      <svg
-                        className="h-5 w-5 text-red-500"
-                        width={16}
-                        height={16}
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                        aria-hidden="true"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                      </svg>
-                    </div>
+                    {errors.lastName?.message && (
+                      <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
+                        <BiErrorCircle className="text-red-500" size={24} />
+                      </div>
+                    )}
                   </div>
-                  <p
-                    className="hidden text-xs text-red-600 mt-2"
-                    id="last_name-error"
-                  >
-                    Please include a valid last name
-                  </p>
+                  {errors.lastName?.message && (
+                    <p className="text-xs text-red-600 mt-2">
+                      {errors.lastName.message}
+                    </p>
+                  )}
                 </div>
                 {/* End Form Group */}
                 <div className="grid sm:grid-cols-2 grid-cols-1 gap-4 mt-4">
@@ -286,7 +271,7 @@ export default function VerifyRequest() {
                   >
                     <span
                       className={`${
-                        isLoading ? "" : "hidden"
+                        isLoading ? "hidden" : "hidden"
                       } animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full`}
                       role="status"
                       aria-label="loading"
@@ -300,6 +285,7 @@ export default function VerifyRequest() {
           </div>
         </div>
       </div>
+      {isLoading && <LoadingSpinner />}
     </main>
   );
 }
