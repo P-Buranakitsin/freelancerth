@@ -15,6 +15,15 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         } as unknown as NextApiResponse,
         authOptions
     );
+    // Not Signed in
+    if (!session) {
+        return NextResponse.json({
+            message: 'unauthorized access',
+            data: {}
+        }, {
+            status: 403
+        })
+    }
     try {
         const json: UpdatedUserSession = await req.json();
         if (session?.user?.email) {
