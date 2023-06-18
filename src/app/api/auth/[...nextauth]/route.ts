@@ -6,7 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { Adapter } from "next-auth/adapters";
 import { NextAuthOptions } from "next-auth";
-import { UpdatedUserSession } from "@/app/auth/new-user/page";
+import { utapi } from "uploadthing/server";
 
 export const authOptions: NextAuthOptions =
 {
@@ -37,17 +37,29 @@ export const authOptions: NextAuthOptions =
     ],
     callbacks: {
         // Using the `...rest` parameter to be able to narrow down the type based on `trigger`
-        jwt({ token, trigger, session }) {
-            const sessionTyped: UpdatedUserSession = session
+        async jwt({ token, trigger, session }) {
             if (trigger === "update" && session?.name) {
                 // Note, that `session` can be any arbitrary object, remember to validate it!
-                token.name = sessionTyped.name
-                if (session?.fileUrl) {
-                    token.picture = sessionTyped.fileUrl
+                token.name = session.name
+            }
+            if (trigger === "update" && session?.fileUrl) {
+                token.picture = session.fileUrl
+            }
+            if (trigger === "update" && session?.fileKey) {
+                if (token.fileKey) {
+                    await utapi.deleteFiles(token.fileKey);
                 }
+                token.fileKey = session.fileKey
             }
             return token
+        },
+        async session({ session, token }) {
+            // Send properties to the client, like an access_token and user id from a provider.
+            session.user.fileKey = token.fileKey
+
+            return session
         }
+
     },
     pages: {
         signIn: '/auth/signin',

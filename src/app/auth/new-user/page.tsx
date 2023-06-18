@@ -13,10 +13,13 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { NewUser, NewUserSchema } from "@/models/NewUser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BiErrorCircle } from "react-icons/bi";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface UpdatedUserSession {
   name: string;
   fileUrl?: string;
+  fileKey?: string;
 }
 
 interface FileWithPreview extends FileWithPath {
@@ -59,6 +62,7 @@ export default function VerifyRequest() {
     accept: {
       "image/*": [],
     },
+    maxFiles: 1,
     onDrop: (acceptedFiles) => {
       setFiles(
         acceptedFiles.map((file) =>
@@ -78,10 +82,19 @@ export default function VerifyRequest() {
   const { startUpload } = useUploadThing({
     endpoint: "imageUploader",
     onClientUploadComplete: () => {
-      alert("uploaded successfully!");
+      toast.success("uploaded successfully", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     },
-    onUploadError: () => {
-      alert("error occurred while uploading");
+    onUploadError: (e) => {
+      throw new Error(e.message);
     },
   });
 
@@ -117,17 +130,34 @@ export default function VerifyRequest() {
       await updateUser({
         ...data,
         ...(uploadedFiles &&
-          uploadedFiles.length > 0 && { fileUrl: uploadedFiles[0].fileUrl }),
+          uploadedFiles.length > 0 && {
+            fileUrl: uploadedFiles[0].fileUrl,
+            fileKey: uploadedFiles[0].fileKey,
+          }),
       });
-      router.replace("/")
-    } catch (error) {
-      alert(error);
+      router.replace("/");
+    } catch (error: any) {
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } finally {
       setIsLoading(false);
     }
   });
 
-  const updateUser = async (data: NewUser & { fileUrl?: string }) => {
+  const updateUser = async (
+    data: NewUser & {
+      fileUrl?: string;
+      fileKey?: string;
+    }
+  ) => {
     const updatedName = data.firstName + " " + data.lastName;
     const res = await fetch("/api/user/update", {
       method: "PUT",
@@ -137,6 +167,7 @@ export default function VerifyRequest() {
       body: JSON.stringify({
         name: updatedName,
         ...(data.fileUrl && { fileUrl: data.fileUrl }),
+        ...(data.fileKey && { fileKey: data.fileKey }),
       }),
     });
     // Recommendation: handle errors
@@ -148,6 +179,7 @@ export default function VerifyRequest() {
       update({
         name: updatedName,
         ...(data.fileUrl && { fileUrl: data.fileUrl }),
+        ...(data.fileKey && { fileKey: data.fileKey }),
       });
     }
   };
@@ -286,6 +318,18 @@ export default function VerifyRequest() {
         </div>
       </div>
       {isLoading && <LoadingSpinner />}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </main>
   );
 }

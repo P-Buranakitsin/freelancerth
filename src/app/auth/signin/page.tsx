@@ -21,12 +21,16 @@ export default function SignIn() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const signInWithGoogle = () => {
-    signIn("google", { callbackUrl: "/" });
+  const signInWithGoogle = async () => {
+    setIsLoading(true);
+    await signIn("google", { callbackUrl: "/" });
+    setIsLoading(false);
   };
 
-  const signInWithFacebook = () => {
-    signIn("facebook", { callbackUrl: "/" });
+  const signInWithFacebook = async () => {
+    setIsLoading(true);
+    await signIn("facebook", { callbackUrl: "/" });
+    setIsLoading(false);
   };
 
   const onSubmit = handleSubmit(async (data) => {
