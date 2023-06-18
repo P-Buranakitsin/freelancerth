@@ -1,10 +1,20 @@
 "use client";
 
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import { BiLogOut } from "react-icons/bi";
+import { BsPersonCircle } from "react-icons/bs";
+import { ImProfile } from "react-icons/im";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
-  console.log(session?.user)
+  const handleSigninOnClick = () => {
+    signIn();
+  };
+
+  const handleSignoutOnClick = () => {
+    signOut();
+  };
 
   return (
     <header className="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700">
@@ -168,30 +178,82 @@ export default function Navbar() {
                 </a>
               </div>
             </div>
-            <button
-              className="flex items-center gap-x-2 font-medium text-gray-500 hover:text-blue-600 sm:border-l sm:border-gray-300 sm:my-6 sm:pl-6 dark:border-gray-700 dark:text-gray-400 dark:hover:text-blue-500"
-              onClick={
-                status === "authenticated"
-                  ? () => {
-                      signOut();
-                    }
-                  : () => {
-                      signIn();
-                    }
-              }
-            >
-              <svg
-                className="w-4 h-4"
-                xmlns="http://www.w3.org/2000/svg"
-                width={16}
-                height={16}
-                fill="currentColor"
-                viewBox="0 0 16 16"
+            {status !== "authenticated" ? (
+              <button
+                className="flex items-center gap-x-2 font-medium text-gray-500 hover:text-blue-600 sm:border-l sm:border-gray-300 sm:my-6 sm:pl-6 dark:border-gray-700 dark:text-gray-400 dark:hover:text-blue-500"
+                onClick={handleSigninOnClick}
               >
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-              </svg>
-              {status === "authenticated" ? "Log out" : "Log in"}
-            </button>
+                <svg
+                  className="w-4 h-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={16}
+                  height={16}
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                </svg>
+                <div>Log in</div>
+              </button>
+            ) : (
+              <div
+                className="hs-dropdown relative inline-flex sm:border-l sm:border-t-0 border-t sm:px-6 px-2 sm:py-0 py-4 sm:border-gray-300 items-center cursor-pointer"
+                data-hs-dropdown-placement="bottom-right"
+              >
+                <button
+                  id="hs-dropdown-with-header"
+                  type="button"
+                  className="inline-flex flex-shrink-0 justify-center items-center gap-2 h-[2.375rem] w-[2.375rem] rounded-full font-medium hover:bg-white/[.2] text-white align-middle focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all text-xs"
+                >
+                  {session.user.image ? (
+                    <Image
+                      className="inline-block h-[2.375rem] w-[2.375rem] rounded-full"
+                      src={session.user.image || ""}
+                      width={200}
+                      alt="pic"
+                      height={200}
+                    />
+                  ) : (
+                    <BsPersonCircle
+                      className="inline-block h-[2.375rem] w-[2.375rem] rounded-full"
+                      color="white"
+                    />
+                  )}
+                </button>
+                <div className="sm:hidden font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-gray-400 dark:hover:text-gray-500 ml-2">
+                  Profile
+                </div>
+                <div
+                  className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[15rem] z-10 bg-white shadow-md rounded-lg p-2 dark:bg-gray-800 dark:border dark:border-gray-700"
+                  aria-labelledby="hs-dropdown-with-header"
+                >
+                  <div className="py-3 px-5 -m-2 bg-gray-100 rounded-t-lg dark:bg-gray-700">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Signed in as
+                    </p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-300">
+                      {session.user.email}
+                    </p>
+                  </div>
+                  <div className="mt-2 py-2 first:pt-0 last:pb-0">
+                    <a
+                      className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                      href="#"
+                    >
+                      <ImProfile size={16} className="flex-none" />
+                      <div>My Profile</div>
+                    </a>
+                    <a
+                      className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                      onClick={handleSignoutOnClick}
+                    >
+                      <BiLogOut size={16} className="flex-none" />
+                      <div>Log Out</div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>

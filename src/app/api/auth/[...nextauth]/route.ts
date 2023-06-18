@@ -37,19 +37,23 @@ export const authOptions: NextAuthOptions =
     ],
     callbacks: {
         // Using the `...rest` parameter to be able to narrow down the type based on `trigger`
+        // Variable session is sent from client side
         async jwt({ token, trigger, session }) {
-            if (trigger === "update" && session?.name) {
+            if (trigger === "update") {
                 // Note, that `session` can be any arbitrary object, remember to validate it!
-                token.name = session.name
-            }
-            if (trigger === "update" && session?.fileUrl) {
-                token.picture = session.fileUrl
-            }
-            if (trigger === "update" && session?.fileKey) {
-                if (token.fileKey) {
-                    await utapi.deleteFiles(token.fileKey);
+                if (session?.name) {
+                    token.name = session.name
                 }
-                token.fileKey = session.fileKey
+                if (session?.fileUrl) {
+                    token.picture = session.fileUrl
+                }
+                if (session?.fileKey) {
+                    if (token.fileKey) {
+                        await utapi.deleteFiles(token.fileKey);
+                    }
+                    token.fileKey = session.fileKey
+                }
+                token.name = session.name
             }
             return token
         },
@@ -64,7 +68,8 @@ export const authOptions: NextAuthOptions =
     pages: {
         signIn: '/auth/signin',
         verifyRequest: '/auth/verify-request', // (used for check email message)
-        newUser: '/auth/new-user'
+        newUser: '/auth/new-user',
+        error: '/auth/error', // Error code passed in query string as ?error=
     },
     secret: process.env.NEXTAUTH_SECRET
 }
