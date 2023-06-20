@@ -19,7 +19,7 @@ export default function Navbar() {
   return (
     <header
       className="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700"
-      data-test-id={status}
+      data-session-status={status}
     >
       <nav
         className="relative max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8"
@@ -202,6 +202,7 @@ export default function Navbar() {
               <div
                 className="hs-dropdown relative inline-flex sm:border-l sm:border-t-0 border-t sm:px-6 px-2 sm:py-0 py-4 sm:border-gray-300 items-center cursor-pointer"
                 data-hs-dropdown-placement="bottom-right"
+                id="open-profile"
               >
                 <button
                   id="hs-dropdown-with-header"
@@ -249,6 +250,7 @@ export default function Navbar() {
                     <a
                       className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                       onClick={handleSignoutOnClick}
+                      id="signout"
                     >
                       <BiLogOut size={16} className="flex-none" />
                       <div>Log Out</div>
