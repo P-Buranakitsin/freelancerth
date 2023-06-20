@@ -20,6 +20,7 @@ export interface UpdatedUserSession {
   name: string;
   fileUrl?: string;
   fileKey?: string;
+  email?: string;
 }
 
 interface FileWithPreview extends FileWithPath {
@@ -166,6 +167,7 @@ export default function VerifyRequest() {
       },
       body: JSON.stringify({
         name: updatedName,
+        ...(session?.user.email && {email: session.user.email}),
         ...(data.fileUrl && { fileUrl: data.fileUrl }),
         ...(data.fileKey && { fileKey: data.fileKey }),
       }),
