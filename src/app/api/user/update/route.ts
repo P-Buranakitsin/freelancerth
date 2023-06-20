@@ -26,32 +26,46 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
     }
     try {
         const json: UpdatedUserSession = await req.json();
-        if (session?.user?.email) {
-            const user = await prisma.user.update({
-                where: {
-                    email: session.user.email
-                },
-                data: {
-                    name: json.name,
-                    ...(json.fileUrl && { image: json.fileUrl })
-                }
+        if (!json.name || !json.email) {
+            return NextResponse.json({
+                message: 'invalid input',
+                data: {}
+            }, {
+                status: 422
             })
-            let json_response = {
-                message: "success",
-                data: {
-                    user,
-                },
-            };
-            return NextResponse.json((json_response), {
-                status: 200,
-            });
         }
-        return NextResponse.json({
-            message: "email not found",
-            data: {}
-        }, {
-            status: 400
+
+        const existingUser = await prisma.user.findUnique({
+            where: { email: json.email },
+        });
+
+        if (!existingUser) {
+            return NextResponse.json({
+                message: "email not found",
+                data: {}
+            }, {
+                status: 400
+            })
+        }
+        const user = await prisma.user.update({
+            where: {
+                email: json.email
+            },
+            data: {
+                name: json.name,
+                ...(json.fileUrl && { image: json.fileUrl })
+            }
         })
+        let json_response = {
+            message: "success",
+            data: {
+                user,
+            },
+        };
+        return NextResponse.json((json_response), {
+            status: 200,
+        });
+
     } catch (error) {
         return NextResponse.json({
             message: "internal server error",

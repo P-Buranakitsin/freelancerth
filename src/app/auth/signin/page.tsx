@@ -7,8 +7,11 @@ import { FaFacebook } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Signin, SigninSchema } from "@/models/Signin";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useSearchParams } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SignIn() {
   const {
@@ -20,24 +23,39 @@ export default function SignIn() {
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const error = useSearchParams().get("error");
 
-  const signInWithGoogle = async () => {
+  const signInWithProvider = async (provider: string, email?: string) => {
     setIsLoading(true);
-    await signIn("google", { callbackUrl: "/" });
+    await signIn(provider, { callbackUrl: "/", email });
     setIsLoading(false);
   };
 
-  const signInWithFacebook = async () => {
-    setIsLoading(true);
-    await signIn("facebook", { callbackUrl: "/" });
-    setIsLoading(false);
-  };
+  const signInWithGoogle = () => signInWithProvider("google");
+  const signInWithFacebook = () => signInWithProvider("facebook");
 
   const onSubmit = handleSubmit(async (data) => {
-    setIsLoading(true);
-    await signIn("email", { email: data.email, callbackUrl: "/" });
-    setIsLoading(false);
+    try {
+      await signInWithProvider("email", data.email);
+    } catch (e) {
+      alert(e);
+    }
   });
+
+  useEffect(() => {
+    if (error) {
+      toast.error("email login failed", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  }, [error]);
 
   return (
     <main className="w-full max-w-md mx-auto p-6">
@@ -93,7 +111,7 @@ export default function SignIn() {
                 type="button"
                 className="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-gray-800 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
                 onClick={signInWithGoogle}
-                id='sign-in-google'
+                id="sign-in-google"
               >
                 <FcGoogle size={20} />
                 Google
@@ -112,6 +130,18 @@ export default function SignIn() {
         </div>
       </div>
       {isLoading && <LoadingSpinner />}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </main>
   );
 }
