@@ -24,6 +24,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
             status: 403
         })
     }
+    
     try {
         const json: UpdatedUserSession = await req.json();
         if (!json.name || !json.email) {

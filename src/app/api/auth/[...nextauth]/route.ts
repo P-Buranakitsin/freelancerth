@@ -53,7 +53,6 @@ export const authOptions: NextAuthOptions =
                     }
                     token.fileKey = session.fileKey
                 }
-                token.name = session.name
             }
             return token
         },

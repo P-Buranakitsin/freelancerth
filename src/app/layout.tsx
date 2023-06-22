@@ -6,6 +6,7 @@ import Providers from "@/components/Providers";
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { usePathname } from "next/navigation";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,17 +29,19 @@ export default function RootLayout({
     pathname !== "/auth/signin" &&
     pathname !== "/auth/verify-request" &&
     pathname !== "/auth/new-user";
+  const showFooter = showNavbar;
 
   return (
     <html lang="en" className={`h-full ${inter.className}`}>
       <body
-        className={` dark:bg-slate-900 ${
+        className={` dark:bg-slate-900 flex flex-col h-full ${
           !showNavbar && "bg-gray-100 flex h-full items-center py-16"
         }`}
       >
         <Providers>
           {showNavbar && <Navbar />}
           {children}
+          {showFooter && <Footer />}
         </Providers>
       </body>
     </html>
