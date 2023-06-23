@@ -4,16 +4,17 @@ export default function HeroSection() {
   return (
     <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-4">
       <div>
-        <h1 className="pb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-50 text-6xl md:text-7xl font-bold break-words">
+        <h1 className="pb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-300 text-6xl md:text-7xl font-bold break-words">
           Freelancing
         </h1>
         <h1 className="text-5xl md:text-7xl font-bold text-white break-words">
           made easy.
         </h1>
         <p className="mt-10 text-lg text-gray-400">
-          With our website, we will make your experience hiring and becoming a
-          freelancer seamless and stress-free. Say goodbye to the hassle of
-          freelancing and hello to a world of possibilities.
+          Freelancerth are tailored to your software development needs. With our
+          website, hiring and becoming a freelancer never becomes easier. Say
+          goodbye to the hassle of freelancing and hello to a world of
+          possibilities.
         </p>
         <button
           type="button"

@@ -34,8 +34,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`h-full ${inter.className}`}>
       <body
-        className={` dark:bg-slate-900 flex flex-col h-full ${
-          !showNavbar && "bg-gray-100 flex h-full items-center py-16"
+        className={` dark:bg-slate-900 flex flex-col min-h-full ${
+          !showNavbar && "bg-gray-100 justify-center items-center py-16"
         }`}
       >
         <Providers>

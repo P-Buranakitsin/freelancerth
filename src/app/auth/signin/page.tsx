@@ -44,7 +44,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (error) {
-      toast.error("email login failed", {
+      toast.error("login failed", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
