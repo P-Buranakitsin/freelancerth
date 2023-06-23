@@ -1,5 +1,6 @@
 import FeatureSection from "@/components/home/FeatureSection";
 import HeroSection from "@/components/home/HeroSection";
+import ReviewSection from "@/components/home/ReviewSection";
 import ServiceSection from "@/components/home/ServiceSection";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
         <HeroSection />
         <FeatureSection />
         <ServiceSection />
+        <ReviewSection />
       </div>
     </main>
   );
