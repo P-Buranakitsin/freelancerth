@@ -5,6 +5,8 @@ import Image from "next/image";
 import { BiLogOut } from "react-icons/bi";
 import { BsPersonCircle } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -16,6 +18,13 @@ export default function Navbar() {
     signOut();
   };
 
+  const linkToProfile = `/profile/${encodeURIComponent("ewqe")}`;
+  const active = "text-blue-600 dark:text-blue-500";
+  const inactive = `dark:text-white dark:hover:text-gray-300`;
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/";
+  const isProfilePage = pathname.includes("/profile/");
+
   return (
     <header className="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700">
       <nav
@@ -23,13 +32,13 @@ export default function Navbar() {
         aria-label="Global"
       >
         <div className="flex items-center justify-between">
-          <a
+          <Link
             className="flex-none text-xl font-semibold dark:text-white"
-            href="#"
+            href="/"
             aria-label="Brand"
           >
-            Brand
-          </a>
+            Freelancerth
+          </Link>
           <div className="sm:hidden">
             <button
               type="button"
@@ -67,31 +76,31 @@ export default function Navbar() {
           className="pl-2 hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block"
         >
           <div className="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
-            <a
-              className="font-medium text-blue-600 sm:py-6 dark:text-blue-500"
+            <Link
+              className={`font-medium ${isLandingPage ? active : inactive}`}
               href="#"
               aria-current="page"
             >
               Landing
-            </a>
-            <a
+            </Link>
+            <Link
               className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
               href="#"
             >
               Account
-            </a>
-            <a
+            </Link>
+            <Link
               className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
               href="#"
             >
               Work
-            </a>
-            <a
+            </Link>
+            <Link
               className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
               href="#"
             >
               Blog
-            </a>
+            </Link>
 
             <div
               className={`flex items-center gap-x-2 sm:ml-auto pr-2 ${
@@ -101,11 +110,11 @@ export default function Navbar() {
               } `}
             >
               {status !== "authenticated" ? (
-                <button className="p-2 border-white border-2 cursor-pointer rounded-md hover:bg-gray-600 transition ease-in-out duration-500">
-                  <div
-                    className="flex items-center gap-x-2 font-medium text-gray-500  dark:text-white "
-                    onClick={handleSigninOnClick}
-                  >
+                <button
+                  className="p-2 border-white border-2 cursor-pointer rounded-md hover:bg-gray-600 transition ease-in-out duration-500"
+                  onClick={handleSigninOnClick}
+                >
+                  <div className="flex items-center gap-x-2 font-medium text-gray-500  dark:text-white ">
                     <svg
                       className="w-4 h-4 text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -167,21 +176,23 @@ export default function Navbar() {
                       </p>
                     </div>
                     <div className="mt-2 py-2 first:pt-0 last:pb-0">
-                      <a
-                        className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                        href="#"
+                      <Link
+                        className={`${
+                          isProfilePage ? active : inactive
+                        } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                        href={linkToProfile}
                       >
                         <ImProfile size={16} className="flex-none" />
                         <div>My Profile</div>
-                      </a>
-                      <a
-                        className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                      </Link>
+                      <button
+                        className={`${inactive} w-full flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300`}
                         onClick={handleSignoutOnClick}
                         id="signout"
                       >
                         <BiLogOut size={16} className="flex-none" />
-                        <div>Log Out</div>
-                      </a>
+                        Sign out
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -189,14 +200,19 @@ export default function Navbar() {
             </div>
             {status === "authenticated" && (
               <>
-                <a
-                  className="sm:hidden font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
-                  href="#"
+                <Link
+                  className={`${
+                    isProfilePage ? active : inactive
+                  } sm:hidden font-medium text-gray-500 hover:text-gray-400 sm:py-6 hs-collapse-toggle `}
+                  href={linkToProfile}
+                  data-hs-collapse="#navbar-collapse-with-animation"
+                  aria-controls="navbar-collapse-with-animation"
+                  aria-label="Toggle navigation"
                 >
                   My Profile
-                </a>
+                </Link>
                 <button
-                  className="sm:hidden mb-2 flex font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
+                  className={`sm:hidden mb-2 flex font-medium text-gray-500 hover:text-gray-400 sm:py-6 ${inactive}`}
                   onClick={handleSignoutOnClick}
                 >
                   Sign out
