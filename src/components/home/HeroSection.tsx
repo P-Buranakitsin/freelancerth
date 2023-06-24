@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function HeroSection() {
   return (
-    <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-4">
+    <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-4  bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-600 via-slate-900 to-slate-900">
       <div>
         <h1 className="pb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-300 text-6xl md:text-7xl font-bold break-words">
           Freelancing

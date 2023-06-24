@@ -1,3 +1,4 @@
+import ActionSection from "@/components/home/ActionSection";
 import FeatureSection from "@/components/home/FeatureSection";
 import HeroSection from "@/components/home/HeroSection";
 import ReviewSection from "@/components/home/ReviewSection";
@@ -11,6 +12,7 @@ export default function Home() {
         <FeatureSection />
         <ServiceSection />
         <ReviewSection />
+        <ActionSection />
       </div>
     </main>
   );
