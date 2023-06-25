@@ -28,7 +28,7 @@ export default function Navbar() {
   const isProfilePage = pathname.includes("/profile/");
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
-    if (window.innerWidth <= 640) {
+    if (window.innerWidth <= 640 && document.querySelector("#navbar-collapse-with-animation")?.className.includes('open')) {
       (window as any).HSCollapse.hide(
         document.querySelector("#navbar-collapse-with-animation")
       );
