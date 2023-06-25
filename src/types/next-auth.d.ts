@@ -17,6 +17,7 @@ declare module "next-auth" {
         user: {
             /** The user's postal address. */
             fileKey?: string
+            sub?: string
         } & DefaultSession["user"]
     }
 }
