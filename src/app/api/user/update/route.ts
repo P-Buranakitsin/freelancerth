@@ -24,10 +24,10 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
             status: 403
         })
     }
-    
+
     try {
         const json: UpdatedUserSession = await req.json();
-        if (!json.name || !json.email) {
+        if (!json.email) {
             return NextResponse.json({
                 message: 'invalid input',
                 data: {}
@@ -53,7 +53,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
                 email: json.email
             },
             data: {
-                name: json.name,
+                ...(json.name && { name: json.name }),
                 ...(json.fileUrl && { image: json.fileUrl })
             }
         })

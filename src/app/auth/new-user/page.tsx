@@ -17,7 +17,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export interface UpdatedUserSession {
-  name: string;
+  name?: string;
   fileUrl?: string;
   fileKey?: string;
   email?: string;
@@ -64,7 +64,7 @@ export default function VerifyRequest() {
       "image/*": [],
     },
     maxFiles: 1,
-    onDrop: (acceptedFiles) => {
+    onDropAccepted: (acceptedFiles) => {
       setFiles(
         acceptedFiles.map((file) =>
           Object.assign(file, {
