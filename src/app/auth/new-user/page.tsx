@@ -13,9 +13,9 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { NewUser, NewUserSchema } from "@/models/NewUser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BiErrorCircle } from "react-icons/bi";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserRole } from "@prisma/client";
+import { toast } from "react-toastify";
 
 export interface UpdatedUserSession {
   name?: string;
@@ -141,6 +141,7 @@ export default function VerifyRequest() {
       router.replace("/");
     } catch (error: any) {
       toast.error(error.message, {
+        toastId: "newUser",
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -322,18 +323,7 @@ export default function VerifyRequest() {
         </div>
       </div>
       {isLoading && <LoadingSpinner />}
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+      
     </main>
   );
 }

@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DescriptionSchema, Description } from "@/models/Description";
 import { zodResolver } from "@hookform/resolvers/zod";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 export default function DescriptionSection() {
   const {
@@ -11,21 +13,70 @@ export default function DescriptionSection() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<Description>({ resolver: zodResolver(DescriptionSchema) });
-  const onSubmit = handleSubmit((data) => {
+  } = useForm<Description>({ resolver: zodResolver(DescriptionSchema), defaultValues: {
+    description: 'erer'
+  } });
+
+  const onSubmit = handleSubmit(async (data) => {
     if (isEditable) {
       console.log(data);
-      setIsEditable(false);
+      try {
+        setIsLoading(true);
+        const res = await fetch("/api/profile/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...(data.description && { description: data.description }),
+          }),
+        });
+        if (!res.ok) {
+          console.log(res);
+          reset({ description: "" });
+          throw new Error(res.statusText);
+        } else {
+          toast.success("Description Updated", {
+            toastId: "descriptionSection",
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        }
+      } catch (error: any) {
+        toast.error(error.message, {
+          toastId: "descriptionSection",
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } finally {
+        setIsLoading(false);
+        setIsEditable(false);
+      }
     } else {
       setIsEditable(true);
     }
   });
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditable, setIsEditable] = useState<boolean>(false);
 
   const cancelOnClick = () => {
     setIsEditable(false);
-    reset();
+    reset({
+      description: "",
+    });
   };
 
   return (

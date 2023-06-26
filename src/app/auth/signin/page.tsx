@@ -10,8 +10,8 @@ import { Signin, SigninSchema } from "@/models/Signin";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 export default function SignIn() {
   const {
@@ -45,6 +45,7 @@ export default function SignIn() {
   useEffect(() => {
     if (error) {
       toast.error("login failed", {
+        toastId: "signin",
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -130,18 +131,6 @@ export default function SignIn() {
         </div>
       </div>
       {isLoading && <LoadingSpinner />}
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
     </main>
   );
 }

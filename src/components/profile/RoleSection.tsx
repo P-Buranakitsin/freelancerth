@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import Select, { Options } from "react-select";
 import Link from "next/link";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface OptionProps {
@@ -58,6 +58,7 @@ export default function RoleSection() {
         }
       } catch (error: any) {
         toast.error(error.message, {
+          toastId: "roleSection",
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -77,6 +78,11 @@ export default function RoleSection() {
   };
   const cancelOnClick = () => {
     setIsEditable(false);
+    if (session?.user.role) {
+      setSelectedOption(
+        options.find((option) => option.value === session.user.role) || null
+      );
+    }
   };
 
   return (
@@ -126,18 +132,6 @@ export default function RoleSection() {
           </button>
         )}
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
     </div>
   );
 }

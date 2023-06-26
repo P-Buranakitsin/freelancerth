@@ -55,6 +55,15 @@ model User {
 
   accounts Account[]
   sessions Session[]
+
+  profile Profile?
+}
+
+model Profile {
+  id          String @id @default(cuid())
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String @unique
+  description String @default("")
 }
 
 model VerificationToken {

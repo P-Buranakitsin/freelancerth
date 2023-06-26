@@ -6,7 +6,7 @@ import { BsPersonCircle } from "react-icons/bs";
 import { ImUpload3 } from "react-icons/im";
 import { FileError, FileWithPath, useDropzone } from "react-dropzone";
 import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
 
@@ -58,6 +58,7 @@ export default function UserImageSection() {
         });
       } catch (error: any) {
         toast.error(error.message, {
+          toastId: "userImageSection",
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -72,8 +73,8 @@ export default function UserImageSection() {
       }
     },
     onDropRejected(fileRejections) {
-        console.log('rejected ')
-        console.log(fileRejections)
+      console.log("rejected ");
+      console.log(fileRejections);
     },
   });
 
@@ -90,7 +91,7 @@ export default function UserImageSection() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...(session?.user.email && {email: session.user.email}),
+        ...(session?.user.email && { email: session.user.email }),
         ...(fileUrl && { fileUrl }),
         ...(fileKey && { fileKey }),
       }),
@@ -160,18 +161,6 @@ export default function UserImageSection() {
           </button>
         </div>
         {fileRejectionItems}
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
       </div>
     </div>
   );

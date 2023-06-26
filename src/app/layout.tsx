@@ -7,8 +7,13 @@ import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
+import { ToastContainer } from "react-toastify";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const inter = Inter({ subsets: ["latin"] });
+// Create a client
+const queryClient = new QueryClient();
 
 export const metadata = {
   title: "Create Next App",
@@ -39,9 +44,24 @@ export default function RootLayout({
         }`}
       >
         <Providers>
-          {showNavbar && <Navbar />}
-          {children}
-          {showFooter && <Footer />}
+          <QueryClientProvider client={queryClient}>
+            {showNavbar && <Navbar />}
+            {children}
+            {showFooter && <Footer />}
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
         </Providers>
       </body>
     </html>
