@@ -54,7 +54,8 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
             },
             data: {
                 ...(json.name && { name: json.name }),
-                ...(json.fileUrl && { image: json.fileUrl })
+                ...(json.fileUrl && { image: json.fileUrl }),
+                ...(json.role && { role: json.role })
             }
         })
         let json_response = {

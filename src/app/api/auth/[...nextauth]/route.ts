@@ -38,7 +38,10 @@ export const authOptions: NextAuthOptions =
     callbacks: {
         // Using the `...rest` parameter to be able to narrow down the type based on `trigger`
         // Variable session is sent from client side
-        async jwt({ token, trigger, session }) {
+        async jwt({ token, user, trigger, session }) {
+            if (trigger === "signIn") {
+                token.role = user.role
+            }
             if (trigger === "update") {
                 // Note, that `session` can be any arbitrary object, remember to validate it!
                 if (session?.name) {
@@ -53,6 +56,8 @@ export const authOptions: NextAuthOptions =
                     }
                     token.fileKey = session.fileKey
                 }
+
+                token.role = session.role
             }
             return token
         },
@@ -60,6 +65,7 @@ export const authOptions: NextAuthOptions =
             // Send properties to the client, like an access_token and user id from a provider.
             session.user.fileKey = token.fileKey
             session.user.sub = token.sub
+            session.user.role = token.role
 
             return session
         }

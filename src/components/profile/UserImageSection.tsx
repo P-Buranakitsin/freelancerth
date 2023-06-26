@@ -5,7 +5,7 @@ import Image from "next/image";
 import { BsPersonCircle } from "react-icons/bs";
 import { ImUpload3 } from "react-icons/im";
 import { FileError, FileWithPath, useDropzone } from "react-dropzone";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
@@ -115,7 +115,7 @@ export default function UserImageSection() {
   );
 
   return (
-    <div className="flex flex-row p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 col-span-2 space-x-8 items-center">
+    <div className="flex flex-row p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 space-x-3 sm:space-x-8 items-center">
       <div className="min-w-fit">
         {session?.user.image ? (
           <Image

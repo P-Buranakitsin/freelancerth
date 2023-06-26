@@ -15,12 +15,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { BiErrorCircle } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserRole } from "@prisma/client";
 
 export interface UpdatedUserSession {
   name?: string;
   fileUrl?: string;
   fileKey?: string;
   email?: string;
+  role?: UserRole;
 }
 
 interface FileWithPreview extends FileWithPath {
