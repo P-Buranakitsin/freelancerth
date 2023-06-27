@@ -4,8 +4,15 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextApiRequest, NextApiResponse } from "next";
 import { UpdatedUserSession } from "@/app/auth/new-user/page";
+import { User } from "@prisma/client";
 
-export const PUT = async (req: NextRequest, res: NextResponse) => {
+export interface IResponseUserUpdateAPI {
+    data?: { user: User } | null
+    message: string
+    error?: unknown
+}
+
+export const PUT = async (req: NextRequest, res: NextResponse): Promise<NextResponse<IResponseUserUpdateAPI>> => {
     const session = await getServerSession(
         req as unknown as NextApiRequest,
         {
@@ -19,7 +26,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
     if (!session) {
         return NextResponse.json({
             message: 'unauthorized access',
-            data: {}
+            data: null
         }, {
             status: 403
         })
@@ -30,7 +37,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         if (!json.email) {
             return NextResponse.json({
                 message: 'invalid input',
-                data: {}
+                data: null
             }, {
                 status: 422
             })
@@ -43,7 +50,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         if (!existingUser) {
             return NextResponse.json({
                 message: "email not found",
-                data: {}
+                data: null
             }, {
                 status: 400
             })

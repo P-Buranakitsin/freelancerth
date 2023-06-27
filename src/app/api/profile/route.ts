@@ -5,14 +5,13 @@ import { getServerSession } from "next-auth";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Profile } from "@prisma/client";
 
-export interface IResponseProfileUpdateAPI {
+export interface IResponseProfileAPI {
     data?: { profile: Profile } | null
     message: string
     error?: unknown
 }
 
-
-export const PUT = async (req: NextRequest, res: NextResponse): Promise<NextResponse<IResponseProfileUpdateAPI>> => {
+export const GET = async (req: NextRequest, res: NextResponse): Promise<NextResponse<IResponseProfileAPI>> => {
     const session = await getServerSession(
         req as unknown as NextApiRequest,
         {
@@ -31,22 +30,20 @@ export const PUT = async (req: NextRequest, res: NextResponse): Promise<NextResp
             status: 403
         })
     }
-
     try {
-        const json = await req.json();
-        // Create or update profile
-        const profile = await prisma.profile.upsert({
+        const profile = await prisma.profile.findFirst({
             where: {
                 userId: session.user.sub
-            },
-            update: {
-                description: json.description
-            },
-            create: {
-                ...(session.user.sub && { userId: session.user.sub }),
-                ...(json.description && { description: json.description })
             }
         })
+        if (!profile) {
+            return NextResponse.json({
+                message: "profile not found",
+                data: null
+            }, {
+                status: 400
+            })
+        }
         return NextResponse.json({
             message: "success",
             data: {
@@ -63,5 +60,4 @@ export const PUT = async (req: NextRequest, res: NextResponse): Promise<NextResp
             status: 500
         })
     }
-
 }
