@@ -56,8 +56,10 @@ export const authOptions: NextAuthOptions =
                     }
                     token.fileKey = session.fileKey
                 }
+                if (session?.role) {
+                    token.role = session.role
+                }
 
-                token.role = session.role
             }
             return token
         },

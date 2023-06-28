@@ -1,5 +1,6 @@
 import BasicInfoSection from "@/components/profile/BasicInfoSection";
 import DescriptionSection from "@/components/profile/DescriptionSection";
+import MoreInfoSection from "@/components/profile/MoreInfoSection";
 import RoleSection from "@/components/profile/RoleSection";
 import UserImageSection from "@/components/profile/UserImageSection";
 
@@ -16,6 +17,7 @@ export default function Profile({ params }: { params: { id: string } }) {
           </div>
           <div className="lg:col-span-3 space-y-6">
             <BasicInfoSection />
+            <MoreInfoSection />
           </div>
         </div>
       </div>

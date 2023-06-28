@@ -113,7 +113,7 @@ export default function DescriptionSection() {
       <form onSubmit={onSubmit}>
         <textarea
           {...register("description", { disabled: !isEditable })}
-          className={`disabled:bg-gray-800 placeholder-gray-500 border-[1px] mt-3 py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400`}
+          className={`disabled:bg-gray-800 placeholder-gray-500 border-[1px] mt-3 py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white`}
           rows={4}
           placeholder="Write your description here."
         />
@@ -159,7 +159,7 @@ export default function DescriptionSection() {
       <p className="text-gray-400 mt-2">
         Write anything that you would like other users to know.
       </p>
-      {data && <DescriptionForm initData={data.data.profile?.description || ''} />}
+      {data && <DescriptionForm initData={data.data?.profile?.description || ''} />}
     </div>
   );
 }

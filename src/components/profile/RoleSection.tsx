@@ -26,7 +26,6 @@ export default function RoleSection() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const { data: session, update } = useSession();
-
   useEffect(() => {
     if (session?.user.role) {
       setSelectedOption(
@@ -34,6 +33,7 @@ export default function RoleSection() {
       );
     }
   }, [session?.user.role]);
+  console.log(session?.user);
 
   const editOnClick = async () => {
     if (isEditable) {
@@ -94,6 +94,25 @@ export default function RoleSection() {
       </p>
       <Select
         className="mt-8"
+        styles={{
+          container: (baseStyles) => ({
+            ...baseStyles,
+            height: 46,
+          }),
+          control: (baseStyles) => ({
+            ...baseStyles,
+            height: "100%",
+            backgroundColor: isEditable ? "#0F172A" : "#1F2937",
+            borderColor: "#374151",
+          }),
+          singleValue: (baseStyles) => ({
+            ...baseStyles,
+            color: "#FFFFFF",
+          }),
+        }}
+        components={{
+          IndicatorSeparator: () => null,
+        }}
         value={selectedOption}
         onChange={setSelectedOption}
         options={options}

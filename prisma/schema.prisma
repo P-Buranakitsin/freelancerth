@@ -44,6 +44,10 @@ enum UserRole {
   SELLER
 }
 
+enum Country {
+  UK
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -60,10 +64,16 @@ model User {
 }
 
 model Profile {
-  id          String @id @default(cuid())
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String @unique
-  description String @default("")
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String    @unique
+  description String    @default("")
+  address     String    @default("")
+  country     Country   @default(UK)
+  city        String    @default("")
+  phoneNumber String    @default("")
+  dob         DateTime?
+  zip         String    @default("")
 }
 
 model VerificationToken {
