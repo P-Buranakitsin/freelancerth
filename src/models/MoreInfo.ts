@@ -7,7 +7,7 @@ export const MoreInfoSchema = z.object({
     country: z.string().trim().max(25).optional(),
     city: z.string().trim().max(25).optional(),
     phoneNumber: z.string().trim().max(15).optional(),
-    dob: z.coerce.date().refine((data) => data < new Date(), { message: "Birthday must not be in the future" }).optional(),
+    dob: z.union([z.null(), z.coerce.date().refine((data) => data < new Date(), { message: "Birthday must not be in the future" })]).optional(),
     zip: z.string().trim().max(10).optional(),
 })
 

@@ -53,6 +53,7 @@ export default function MoreInfoSection() {
       register,
       handleSubmit,
       control,
+      getValues,
       formState: { errors },
     } = useForm<MoreInfo>({
       resolver: zodResolver(MoreInfoSchema),
@@ -81,7 +82,7 @@ export default function MoreInfoSection() {
             country: data.country || "",
             city: data.city || "",
             phoneNumber: data.phoneNumber || "",
-            dob: data.dob || undefined,
+            dob: data.dob || null,
             zip: data.zip || "",
           }),
         });
@@ -147,7 +148,7 @@ export default function MoreInfoSection() {
               {...register("address", { disabled: !isEditable })}
               type="text"
               className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
-              placeholder="you@site.com"
+              placeholder="Argyle St."
             />
             {errors.address?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">

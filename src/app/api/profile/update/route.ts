@@ -43,7 +43,6 @@ export const PUT = async (req: NextRequest, res: NextResponse): Promise<NextResp
 
     try {
         const json: IRequestProfileUpdateAPI = await req.json();
-        console.log(json)
         // Create or update profile
         const profile = await prisma.profile.upsert({
             where: {
