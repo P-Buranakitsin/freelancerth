@@ -26,6 +26,15 @@ export const responses = (responseData?: any) => ({
         status: {
             status: 500
         }
+    },
+    notFoundError: {
+        body: {
+            message: `${responseData} not found`,
+            data: null
+        },
+        status: {
+            status: 404
+        }
     }
 
 })

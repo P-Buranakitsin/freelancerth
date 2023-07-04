@@ -54,7 +54,7 @@ export default function MoreInfoSection() {
     const mutation = useMutation<any, Error, MoreInfo>({
       mutationFn: async (data) => {
         const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },

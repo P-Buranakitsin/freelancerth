@@ -5,10 +5,13 @@ import { responses } from "@/constants/responses";
 
 export const PATCH = async (req: NextRequest, { params }: { params: { id: string } }) => {
     const token = await getToken({ req })
-    // Not Signed in
-    if (!token || token.sub !== params.id) {
-        const unauthorizedResponse = responses().unauthorized
-        return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
+    // Not Signed in or not an admin trying to patch another user
+    if (!token || (token.role !== "ADMIN" && token.sub !== params.id)) {
+        const unauthorizedResponse = responses().unauthorized;
+        return NextResponse.json(
+            unauthorizedResponse.body,
+            unauthorizedResponse.status
+        );
     }
 
     try {
@@ -19,9 +22,9 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
                 id: params.id
             },
             data: {
-                ...(json.name && { name: json.name }),
-                ...(json.fileUrl && { image: json.fileUrl }),
-                ...(json.role && { role: json.role })
+                name: json.name,
+                image: json.fileUrl,
+                role: json.role
             }
         })
         const successResponse = responses(user).success

@@ -5,9 +5,13 @@ import { responses } from "@/constants/responses";
 
 export const GET = async (req: NextRequest, { params }: { params: { userId: string } }) => {
     const token = await getToken({ req })
-    // Not Signed in
-    if (!token || token.sub !== params.userId) {
-        return NextResponse.json(responses().unauthorized.body, responses().unauthorized.status)
+    // Not Signed in or not an admin trying to get another profile
+    if (!token || (token.role !== "ADMIN" && token.sub !== params.userId)) {
+        const unauthorizedResponse = responses().unauthorized;
+        return NextResponse.json(
+            unauthorizedResponse.body,
+            unauthorizedResponse.status
+        );
     }
 
     try {
@@ -25,17 +29,31 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
 
 }
 
-export const PATCH = async (req: NextRequest, { params }: { params: { userId: string } }) => {
+export const PUT = async (req: NextRequest, { params }: { params: { userId: string } }) => {
     const token = await getToken({ req })
-    // Not Signed in
-    if (!token || token.sub !== params.userId) {
-        const unauthorizedResponse = responses().unauthorized
-        return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
+    // Not Signed in or not an admin trying to put another user
+    if (!token || (token.role !== "ADMIN" && token.sub !== params.userId)) {
+        const unauthorizedResponse = responses().unauthorized;
+        return NextResponse.json(
+            unauthorizedResponse.body,
+            unauthorizedResponse.status
+        );
     }
 
     try {
 
         const json = await req.json();
+        // Find user with id equals to params.userId
+        const user = await prisma.user.findUnique({
+            where: {
+                id: params.userId
+            }
+        })
+        // If user not found, return an error
+        if (!user) {
+            const notfoundResponse = responses('user').notFoundError
+            return NextResponse.json(notfoundResponse.body, notfoundResponse.status)
+        }
         // Create or update profile
         const profile = await prisma.profile.upsert({
             where: {
@@ -51,14 +69,14 @@ export const PATCH = async (req: NextRequest, { params }: { params: { userId: st
                 zip: json.zip,
             },
             create: {
-                ...(token.sub && { userId: token.sub }),
-                ...(json.description && { description: json.description }),
-                ...(json.address && { address: json.address }),
-                ...(json.country && { country: json.country }),
-                ...(json.city && { city: json.city }),
-                ...(json.phoneNumber && { phoneNumber: json.phoneNumber }),
-                ...(json.dob && { dob: json.dob }),
-                ...(json.zip && { zip: json.zip }),
+                userId: params.userId,
+                description: json.description,
+                address: json.address,
+                country: json.country,
+                city: json.city,
+                phoneNumber: json.phoneNumber,
+                dob: json.dob,
+                zip: json.zip,
             }
         })
         const successResponse = responses(profile).success

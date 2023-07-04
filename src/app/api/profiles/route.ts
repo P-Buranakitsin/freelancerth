@@ -5,8 +5,8 @@ import { responses } from "@/constants/responses";
 
 export const GET = async (req: NextRequest) => {
     const token = await getToken({ req })
-    // Not Signed in
-    if (!token) {
+    // Not Signed in or not an admin
+    if (!token || token.role !== "ADMIN") {
         const unauthorizedResponse = responses().unauthorized
         return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
     }

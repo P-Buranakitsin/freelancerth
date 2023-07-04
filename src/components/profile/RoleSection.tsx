@@ -18,6 +18,7 @@ interface OptionProps {
 const options: Options<OptionProps> = [
   { value: "EMPLOYER", label: "EMPLOYER", isDisabled: false },
   { value: "FREELANCER", label: "FREELANCER", isDisabled: true },
+  { value: 'ADMIN' , label: "ADMIN" , isDisabled: true},
 ];
 
 export default function RoleSection() {
@@ -34,7 +35,6 @@ export default function RoleSection() {
       );
     }
   }, [session?.user.role]);
-  console.log(session?.user);
 
   const editOnClick = async () => {
     if (isEditable) {
@@ -46,7 +46,6 @@ export default function RoleSection() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            ...(session?.user.email && { email: session.user.email }),
             ...(selectedOption && { role: selectedOption.value }),
           }),
         });

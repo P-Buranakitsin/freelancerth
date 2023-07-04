@@ -47,7 +47,7 @@ export default function DescriptionSection() {
     const mutation = useMutation<any, Error, Description>({
       mutationFn: async (data) => {
         const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },

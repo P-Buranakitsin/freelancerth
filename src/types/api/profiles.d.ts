@@ -11,5 +11,5 @@ declare interface IResponseDataGETProfileByUserId {
         phoneNumber: string,
         dob: null | Date,
         zip: string
-    }
+    } | null
 }
