@@ -7,6 +7,7 @@ import Select, { Options } from "react-select";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { endpoints } from "@/constants/endpoints";
 
 interface OptionProps {
   value: UserRole;
@@ -15,8 +16,8 @@ interface OptionProps {
 }
 
 const options: Options<OptionProps> = [
-  { value: "BUYER", label: "BUYER", isDisabled: false },
-  { value: "SELLER", label: "SELLER", isDisabled: true },
+  { value: "EMPLOYER", label: "EMPLOYER", isDisabled: false },
+  { value: "FREELANCER", label: "FREELANCER", isDisabled: true },
 ];
 
 export default function RoleSection() {
@@ -39,8 +40,8 @@ export default function RoleSection() {
     if (isEditable) {
       try {
         setIsLoading(true);
-        const res = await fetch("/api/user/update", {
-          method: "PUT",
+        const res = await fetch(endpoints.userById(session?.user.sub || ''), {
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -54,6 +55,16 @@ export default function RoleSection() {
         } else {
           await update({
             ...(selectedOption && { role: selectedOption.value }),
+          });
+          toast.success("Role updated successfully", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
           });
         }
       } catch (error: any) {
@@ -89,8 +100,8 @@ export default function RoleSection() {
     <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <p className="text-white font-bold text-xl">Role</p>
       <p className="text-gray-400 mt-2">
-        To become a seller, you need to be approved by one of our admins first.
-        Once you are approved, you can switch between buyer and seller freely.
+        To become a freelancer, you need to be approved by one of our admins first.
+        Once you are approved, you can switch between buyer and freelancer freely.
       </p>
       <Select
         className="mt-8"
@@ -119,7 +130,7 @@ export default function RoleSection() {
         isDisabled={!isEditable}
       />
       <p className="text-gray-400 mt-3">
-        Want to become a seller?&nbsp;&nbsp;
+        Want to become a freelancer?&nbsp;&nbsp;
         <Link href={"/"} className="text-blue-600 font-semibold">
           Click here
         </Link>

@@ -1,7 +1,7 @@
-describe("PUT /api/user/update", () => {
+describe("PATCH /api/user/update", () => {
   it("user not logged in", () => {
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         name: 'Jane'
@@ -16,7 +16,7 @@ describe("PUT /api/user/update", () => {
   it("user logged in but no body sent", () => {
     cy.login()
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       failOnStatusCode: false,
     }).then((response) => {
@@ -28,7 +28,7 @@ describe("PUT /api/user/update", () => {
   it("user logged in and body only has email but email does not exist in the database", () => {
     cy.login()
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         email: 'example@email.com'
@@ -43,7 +43,7 @@ describe("PUT /api/user/update", () => {
   it("user logged in and body only has email but email exists in the database", () => {
     cy.login()
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         email: 'mediqueuea@gmail.com'
@@ -57,7 +57,7 @@ describe("PUT /api/user/update", () => {
   it("user logged in and body both has email and fileUrl; email exists in the database", () => {
     cy.login()
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         email: 'mediqueuea@gmail.com',
@@ -74,7 +74,7 @@ describe("PUT /api/user/update", () => {
   it("user logged in and body has email and unknown input; email exists in the database", () => {
     cy.login()
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         email: 'mediqueuea@gmail.com',
@@ -91,7 +91,7 @@ describe("PUT /api/user/update", () => {
     cy.login()
 
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         name: 'Jane'
@@ -108,7 +108,7 @@ describe("PUT /api/user/update", () => {
     cy.login()
 
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         name: 'Jane',
@@ -125,7 +125,7 @@ describe("PUT /api/user/update", () => {
     cy.login()
 
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         name: 'James Bond',
@@ -146,7 +146,7 @@ describe("PUT /api/user/update", () => {
     cy.login()
 
     cy.request({
-      method: 'PUT',
+      method: 'PATCH',
       url: '/api/user/update', // baseUrl is prepend to URL
       body: {
         name: 'James Bond',

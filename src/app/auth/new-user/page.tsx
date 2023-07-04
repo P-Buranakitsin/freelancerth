@@ -16,6 +16,7 @@ import { BiErrorCircle } from "react-icons/bi";
 import "react-toastify/dist/ReactToastify.css";
 import { UserRole } from "@prisma/client";
 import { toast } from "react-toastify";
+import { endpoints } from "@/constants/endpoints";
 
 export interface UpdatedUserSession {
   name?: string;
@@ -163,8 +164,8 @@ export default function VerifyRequest() {
     }
   ) => {
     const updatedName = data.firstName + " " + data.lastName;
-    const res = await fetch("/api/user/update", {
-      method: "PUT",
+    const res = await fetch(endpoints.userById(session?.user.sub || ''), {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },

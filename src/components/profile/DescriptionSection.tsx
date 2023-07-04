@@ -7,28 +7,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Profile } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import { endpoints } from "@/constants/endpoints";
 
 export default function DescriptionSection() {
-  async function getProfile() {
-    const res = await fetch("/api/profile", {
+  const { data: session } = useSession();
+  async function getProfileByUserId() {
+    const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     });
-    const profile = (await res.json()) as {
-      message: string;
-      data: {
-        profile: Profile;
-      };
-    };
-    return profile;
+    const profiles = (await res.json()) as IResponseDataGETProfileByUserId;
+    return profiles;
   }
-
   const { data } = useQuery({
     queryKey: ["profile"],
-    queryFn: () => getProfile(),
+    queryFn: () => getProfileByUserId(),
+    enabled: !!session,
   });
 
   const [isEditable, setIsEditable] = useState<boolean>(false);
@@ -49,8 +46,8 @@ export default function DescriptionSection() {
 
     const mutation = useMutation<any, Error, Description>({
       mutationFn: async (data) => {
-        const res = await fetch("/api/profile/update", {
-          method: "PUT",
+        const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -59,8 +56,8 @@ export default function DescriptionSection() {
           }),
         });
         if (!res.ok) {
-          const error = await res.json()
-          throw new Error(error.message)
+          const error = await res.json();
+          throw new Error(error.message);
         }
         return res.json();
       },
@@ -152,14 +149,15 @@ export default function DescriptionSection() {
       </form>
     );
   };
-
   return (
     <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <p className="text-white font-bold text-xl">Description</p>
       <p className="text-gray-400 mt-2">
         Write anything that you would like other users to know.
       </p>
-      {data && <DescriptionForm initData={data.data?.profile?.description || ''} />}
+      {data && (
+        <DescriptionForm initData={data.data?.description || ""} />
+      )}
     </div>
   );
 }

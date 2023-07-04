@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
+import { endpoints } from "@/constants/endpoints";
 
 export default function UserImageSection() {
   const { data: session, update } = useSession();
@@ -85,8 +86,8 @@ export default function UserImageSection() {
     fileUrl?: string;
     fileKey?: string;
   }) => {
-    const res = await fetch("/api/user/update", {
-      method: "PUT",
+    const res = await fetch(endpoints.userById(session?.user.sub || ''), {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },

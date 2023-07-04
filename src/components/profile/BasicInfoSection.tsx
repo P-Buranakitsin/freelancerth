@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { BasicInfo, BasicInfoSchema } from "@/models/BasicInfo";
 import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
-import { IResponseUserUpdateAPI } from "@/app/api/user/update/route";
+import { endpoints } from "@/constants/endpoints";
 
 export default function BasicInfoSection() {
   const { data: session, update } = useSession();
@@ -27,11 +27,11 @@ export default function BasicInfoSection() {
       },
     });
 
-    const mutation = useMutation<IResponseUserUpdateAPI, Error, BasicInfo>({
+    const mutation = useMutation<any, Error, BasicInfo>({
       mutationFn: async (data) => {
         const updatedName = data.firstName + " " + data.lastName;
-        const res = await fetch("/api/user/update", {
-          method: "PUT",
+        const res = await fetch(endpoints.userById(session?.user.sub || ''), {
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },

@@ -6,12 +6,11 @@ import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Profile } from "@prisma/client";
 import Select, { Options } from "react-select";
 import DatePicker from "react-multi-date-picker";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import { IResponseProfileUpdateAPI } from "@/app/api/profile/update/route";
+import { endpoints } from "@/constants/endpoints";
 
 interface CountryOptionProps {
   value: "UK" | "US";
@@ -27,25 +26,9 @@ export default function MoreInfoSection() {
   const { data: session } = useSession();
   const [isEditable, setIsEditable] = useState<boolean>(false);
 
-  async function getProfile() {
-    const res = await fetch("/api/profile", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const profile = (await res.json()) as {
-      message: string;
-      data: {
-        profile: Profile;
-      };
-    };
-    return profile;
-  }
-
-  const { data } = useQuery({
+  const { data }: { data: IResponseDataGETProfileByUserId | undefined } = useQuery({
     queryKey: ["profile"],
-    queryFn: () => getProfile(),
+    enabled: !!session,
   });
 
   const MoreInfoForm = () => {
@@ -53,26 +36,25 @@ export default function MoreInfoSection() {
       register,
       handleSubmit,
       control,
-      getValues,
       formState: { errors },
     } = useForm<MoreInfo>({
       resolver: zodResolver(MoreInfoSchema),
       defaultValues: {
-        address: data?.data?.profile?.address || "",
-        city: data?.data?.profile?.city || "",
-        dob: data?.data?.profile?.dob || undefined,
-        phoneNumber: data?.data?.profile?.phoneNumber || "",
-        zip: data?.data?.profile?.zip || "",
+        address: data?.data?.address || "",
+        city: data?.data?.city || "",
+        dob: data?.data?.dob || undefined,
+        phoneNumber: data?.data?.phoneNumber || "",
+        zip: data?.data?.zip || "",
         country: countryOptions[0].value,
       },
     });
 
     const client = useQueryClient();
 
-    const mutation = useMutation<IResponseProfileUpdateAPI, Error, MoreInfo>({
+    const mutation = useMutation<any, Error, MoreInfo>({
       mutationFn: async (data) => {
-        const res = await fetch("/api/profile/update", {
-          method: "PUT",
+        const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
