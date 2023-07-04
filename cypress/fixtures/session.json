@@ -1,9 +1,0 @@
-{
-    "user": {
-      "name": "Morty Smith",
-      "email": "test@example.com",
-      "image": "https://uploadthing.com/f/f5571da1-18c0-4fe8-9069-e5dcc10dd52e_person-fill.svg"
-    },
-    "expires": "3000-01-01T00:00:00.000Z",
-    "accessToken": "abcdefghijklmnopqrst"
-  }
