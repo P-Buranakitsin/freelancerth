@@ -48,6 +48,58 @@ enum Country {
   UK
 }
 
+enum FreelancerType {
+  DEVELOPERS
+  DESIGNERS
+  TESTERS
+  PROJECT_MANAGERS
+  DEVOPS_ENGINEERS
+  BUSINESS_ANALYSTS
+}
+
+enum Currency {
+  GBP
+}
+
+enum GigType {
+  INDIVIDUAL
+  TEAM
+}
+
+enum DeveloperSkill {
+  JAVASCRIPT
+  JAVA
+  PYTHON
+  GOLANG
+}
+
+enum DesignerSkill {
+  PHOTOSHOP
+  ILLUSTRATOR
+  FIGMA
+}
+
+enum TesterSkill {
+  POSTMAN
+  CYPRESS
+  JEST
+}
+
+enum ProjectManagerSkill {
+  AGILE_METHODOLOGY
+  PROJECT_PLANNING
+}
+
+enum DevOpsEngineerSkill {
+  DOCKER
+  KUBERNETES
+}
+
+enum BusinessAnalystSkill {
+  REQUIREMENTS_ANALYSIS
+  DATA_ANALYSIS
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -82,4 +134,23 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Gig {
+  id    String @id @default(cuid())
+  title String @default("")
+}
+
+// To be removed
+model Temporary {
+  id             String               @id @default(cuid())
+  freelancerType FreelancerType
+  a              DeveloperSkill
+  b              DesignerSkill
+  c              DevOpsEngineerSkill
+  d              ProjectManagerSkill
+  e              Currency
+  f              GigType
+  g              TesterSkill
+  h              BusinessAnalystSkill
 }

@@ -11,10 +11,11 @@ import DatePicker from "react-multi-date-picker";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { endpoints } from "@/constants/endpoints";
+import { Country } from "@prisma/client";
 
 interface CountryOptionProps {
-  value: "UK" | "US";
-  label: "UK" | "US";
+  value: Country;
+  label: Country;
   isDisabled: boolean;
 }
 

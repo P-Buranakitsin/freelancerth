@@ -1,8 +1,9 @@
 import { SiJavascript, SiAzuredevops } from "react-icons/si";
 import { FaPenNib } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
+import { BiTestTube } from "react-icons/bi";
+import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import { IoBarChartOutline } from "react-icons/io5";
-import { AiOutlineFundProjectionScreen, AiOutlineDatabase } from "react-icons/ai";
 interface ServiceProps {
   title: string;
   description: string;
@@ -56,10 +57,10 @@ export default function ServiceSection() {
         "Whether you look for UX/UI, logo designers or animators, all are available here.",
     },
     {
-      title: "Finance Experts",
-      Icon: IoBarChartOutline,
+      title: "Testers",
+      Icon: BiTestTube,
       description:
-        "Worry about your finance? Look no further, our finance experts are here to help you.",
+        "Never worry about bugs on production again.",
     },
     {
       title: "Project Managers",
@@ -74,10 +75,10 @@ export default function ServiceSection() {
         "Our DevOps engineers can help your IT's infrastructure run smooth.",
     },
     {
-      title: "Database Engineers",
-      Icon: AiOutlineDatabase,
+      title: "Business Analysts",
+      Icon: IoBarChartOutline,
       description:
-        "No idea how to design a database schema? No worries, our database engineers can help you.",
+        "Our business analysts are here to help identifying your requirements",
     },
   ];
   return (
