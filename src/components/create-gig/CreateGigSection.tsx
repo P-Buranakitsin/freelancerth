@@ -2,19 +2,11 @@
 
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  BusinessAnalystSkill,
-  DesignerSkill,
-  DevOpsEngineerSkill,
-  DeveloperSkill,
-  FreelancerType,
-  GigType,
-  ProjectManagerSkill,
-  TesterSkill,
-} from "@prisma/client";
+import { FreelancerType, GigType } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import {useEffect } from "react";
+import { useEffect } from "react";
 import Dropzone from "react-dropzone";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
@@ -32,21 +24,21 @@ interface GigTypeOptionProps {
 }
 
 type SkillOptions = {
-  [FreelancerType.DEVELOPERS]: DeveloperSkill[];
-  [FreelancerType.DESIGNERS]: DesignerSkill[];
-  [FreelancerType.TESTERS]: TesterSkill[];
-  [FreelancerType.PROJECT_MANAGERS]: ProjectManagerSkill[];
-  [FreelancerType.DEVOPS_ENGINEERS]: DevOpsEngineerSkill[];
-  [FreelancerType.BUSINESS_ANALYSTS]: BusinessAnalystSkill[];
+  [FreelancerType.DEVELOPERS]: string[];
+  [FreelancerType.DESIGNERS]: string[];
+  [FreelancerType.TESTERS]: string[];
+  [FreelancerType.PROJECT_MANAGERS]: string[];
+  [FreelancerType.DEVOPS_ENGINEERS]: string[];
+  [FreelancerType.BUSINESS_ANALYSTS]: string[];
 };
 
 const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
-  { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: false },
-  { value: "DESIGNERS", label: "DESIGNERS", isDisabled: false },
-  { value: "TESTERS", label: "TESTERS", isDisabled: false },
-  { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: false },
-  { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: false },
-  { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: false },
+  { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
+  { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
+  { value: "TESTERS", label: "TESTERS", isDisabled: true },
+  { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: true },
+  { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: true },
+  { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: true },
 ];
 
 const gigTypeOptions: Options<GigTypeOptionProps> = [
@@ -65,6 +57,16 @@ const skillOptions: SkillOptions = {
 
 export default function CreateGigSection() {
   const { data: session, update } = useSession();
+
+  async function getFreelancerProfileByUserId() {
+
+  }
+
+  const { data } = useQuery({
+    queryKey: ["freelancerProfile"],
+    queryFn: () => getFreelancerProfileByUserId(),
+    enabled: !!session,
+  });
 
   const CreateGigForm = () => {
     const {
@@ -86,6 +88,8 @@ export default function CreateGigSection() {
         gigPhoto: [],
       },
     });
+
+
     const onSubmit = handleSubmit(async (data) => {
       console.log(data);
     });
@@ -112,7 +116,7 @@ export default function CreateGigSection() {
         );
       });
     };
-  
+
     const Thumbs = gigPhoto.map((file) => {
       return (
         <div

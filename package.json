@@ -10,6 +10,7 @@
     "prisma:push": "dotenv -e .env.local -- npx prisma db push",
     "prisma:studio": "dotenv -e .env.local -- npx prisma studio",
     "prisma:migrate": "dotenv -e .env.local npx prisma migrate dev",
+    "prisma:reset": "dotenv -e .env.local npx prisma migrate reset",
     "pscale": "pscale connect freelancerth main --port 3309",
     "test": "jest --watchAll --silent=false",
     "coverage": "jest --coverage --collectCoverageFrom='src/**/*.{ts,jxs}'"
@@ -50,10 +51,8 @@
     "zod": "3.21.4"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "3.10.7",
     "@jest/globals": "^29.5.0",
     "@tailwindcss/forms": "0.5.3",
-    "@testing-library/cypress": "9.0.0",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "14.0.0",
     "@types/bcrypt": "5.0.0",
@@ -64,6 +63,7 @@
     "jest-mock-extended": "3.0.4",
     "node-mocks-http": "1.12.2",
     "prisma": "4.16.1",
+    "prisma-dbml-generator": "0.10.0",
     "sass": "1.62.1",
     "ts-jest": "29.1.1"
   }

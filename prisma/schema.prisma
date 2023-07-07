@@ -5,10 +5,57 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
+}
+
+enum UserRole {
+  ADMIN
+  FREELANCER
+  EMPLOYER
+}
+
+enum Country {
+  UK
+}
+
+enum FreelancerType {
+  DEVELOPERS
+  DESIGNERS
+  TESTERS
+  PROJECT_MANAGERS
+  DEVOPS_ENGINEERS
+  BUSINESS_ANALYSTS
+}
+
+enum GigType {
+  INDIVIDUAL
+  TEAM
+}
+
+enum SkillName {
+  JAVASCRIPT
+  JAVA
+  PYTHON
+  GOLANG
+  PHOTOSHOP
+  ILLUSTRATOR
+  FIGMA
+  POSTMAN
+  CYPRESS
+  JEST
+  AGILE_METHODOLOGY
+  PROJECT_PLANNING
+  DOCKER
+  KUBERNETES
+  REQUIREMENTS_ANALYSIS
+  DATA_ANALYSIS
 }
 
 model Account {
@@ -38,68 +85,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum UserRole {
-  ADMIN
-  FREELANCER
-  EMPLOYER
-}
-
-enum Country {
-  UK
-}
-
-enum FreelancerType {
-  DEVELOPERS
-  DESIGNERS
-  TESTERS
-  PROJECT_MANAGERS
-  DEVOPS_ENGINEERS
-  BUSINESS_ANALYSTS
-}
-
-enum Currency {
-  GBP
-}
-
-enum GigType {
-  INDIVIDUAL
-  TEAM
-}
-
-enum DeveloperSkill {
-  JAVASCRIPT
-  JAVA
-  PYTHON
-  GOLANG
-}
-
-enum DesignerSkill {
-  PHOTOSHOP
-  ILLUSTRATOR
-  FIGMA
-}
-
-enum TesterSkill {
-  POSTMAN
-  CYPRESS
-  JEST
-}
-
-enum ProjectManagerSkill {
-  AGILE_METHODOLOGY
-  PROJECT_PLANNING
-}
-
-enum DevOpsEngineerSkill {
-  DOCKER
-  KUBERNETES
-}
-
-enum BusinessAnalystSkill {
-  REQUIREMENTS_ANALYSIS
-  DATA_ANALYSIS
-}
-
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -112,7 +97,8 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  profile Profile?
+  profile           Profile?
+  FreelancerProfile FreelancerProfile?
 }
 
 model Profile {
@@ -136,21 +122,47 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Gig {
-  id    String @id @default(cuid())
-  title String @default("")
+model FreelancerProfile {
+  id       String                       @id @default(cuid())
+  user     User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String                       @unique
+  type     FreelancerType
+  gigs     Gig[]
+  verified Boolean
+  skills   SkillsOnFreelancerProfiles[]
 }
 
-// To be removed
-model Temporary {
-  id             String               @id @default(cuid())
-  freelancerType FreelancerType
-  a              DeveloperSkill
-  b              DesignerSkill
-  c              DevOpsEngineerSkill
-  d              ProjectManagerSkill
-  e              Currency
-  f              GigType
-  g              TesterSkill
-  h              BusinessAnalystSkill
+model Gig {
+  id                  String            @id @default(cuid())
+  title               String            @default("")
+  type                GigType
+  description         String            @default("")
+  freelancerProfile   FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+  freelancerProfileId String            @unique
+  price               Decimal
+  searchTags          SkillsOnGigs[]
+}
+
+model Skill {
+  name               SkillName                    @id @unique
+  freelancerProfiles SkillsOnFreelancerProfiles[]
+  gigs               SkillsOnGigs[]
+}
+
+model SkillsOnFreelancerProfiles {
+  skill               Skill             @relation(fields: [skillName], references: [name], onDelete: Cascade)
+  skillName           SkillName
+  FreelancerProfile   FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+  freelancerProfileId String
+
+  @@id([skillName, freelancerProfileId])
+}
+
+model SkillsOnGigs {
+  gig       Gig       @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  gigId     String
+  skill     Skill     @relation(fields: [skillName], references: [name], onDelete: Cascade)
+  skillName SkillName
+
+  @@id([skillName, gigId])
 }

@@ -1,0 +1,177 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Account {
+  id String [pk]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  user User [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table Session {
+  id String [pk]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+  user User [not null]
+}
+
+Table User {
+  id String [pk]
+  name String
+  email String [unique]
+  emailVerified DateTime
+  image String
+  role UserRole [not null, default: 'EMPLOYER']
+  accounts Account [not null]
+  sessions Session [not null]
+  profile Profile
+  FreelancerProfile FreelancerProfile
+}
+
+Table Profile {
+  id String [pk]
+  user User [not null]
+  userId String [unique, not null]
+  description String [not null, default: '']
+  address String [not null, default: '']
+  country Country [not null, default: 'UK']
+  city String [not null, default: '']
+  phoneNumber String [not null, default: '']
+  dob DateTime
+  zip String [not null, default: '']
+}
+
+Table VerificationToken {
+  identifier String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+Table FreelancerProfile {
+  id String [pk]
+  user User [not null]
+  userId String [unique, not null]
+  type FreelancerType [not null]
+  gigs Gig [not null]
+  verified Boolean [not null]
+  skills SkillsOnFreelancerProfiles [not null]
+}
+
+Table Gig {
+  id String [pk]
+  title String [not null, default: '']
+  type GigType [not null]
+  description String [not null, default: '']
+  freelancerProfile FreelancerProfile [not null]
+  freelancerProfileId String [unique, not null]
+  price Decimal [not null]
+  searchTags SkillsOnGigs [not null]
+}
+
+Table Skill {
+  name SkillName [pk]
+  freelancerProfiles SkillsOnFreelancerProfiles [not null]
+  gigs SkillsOnGigs [not null]
+}
+
+Table SkillsOnFreelancerProfiles {
+  skill Skill [not null]
+  skillName SkillName [not null]
+  FreelancerProfile FreelancerProfile [not null]
+  freelancerProfileId String [not null]
+
+  indexes {
+    (skillName, freelancerProfileId) [pk]
+  }
+}
+
+Table SkillsOnGigs {
+  gig Gig [not null]
+  gigId String [not null]
+  skill Skill [not null]
+  skillName SkillName [not null]
+
+  indexes {
+    (skillName, gigId) [pk]
+  }
+}
+
+Enum UserRole {
+  ADMIN
+  FREELANCER
+  EMPLOYER
+}
+
+Enum Country {
+  UK
+}
+
+Enum FreelancerType {
+  DEVELOPERS
+  DESIGNERS
+  TESTERS
+  PROJECT_MANAGERS
+  DEVOPS_ENGINEERS
+  BUSINESS_ANALYSTS
+}
+
+Enum GigType {
+  INDIVIDUAL
+  TEAM
+}
+
+Enum SkillName {
+  JAVASCRIPT
+  JAVA
+  PYTHON
+  GOLANG
+  PHOTOSHOP
+  ILLUSTRATOR
+  FIGMA
+  POSTMAN
+  CYPRESS
+  JEST
+  AGILE_METHODOLOGY
+  PROJECT_PLANNING
+  DOCKER
+  KUBERNETES
+  REQUIREMENTS_ANALYSIS
+  DATA_ANALYSIS
+}
+
+Ref: Account.userId > User.id [delete: Cascade]
+
+Ref: Session.userId > User.id [delete: Cascade]
+
+Ref: Profile.userId - User.id [delete: Cascade]
+
+Ref: FreelancerProfile.userId - User.id [delete: Cascade]
+
+Ref: Gig.freelancerProfileId > FreelancerProfile.id [delete: Cascade]
+
+Ref: SkillsOnFreelancerProfiles.skillName > Skill.name [delete: Cascade]
+
+Ref: SkillsOnFreelancerProfiles.freelancerProfileId > FreelancerProfile.id [delete: Cascade]
+
+Ref: SkillsOnGigs.gigId > Gig.id [delete: Cascade]
+
+Ref: SkillsOnGigs.skillName > Skill.name [delete: Cascade]
