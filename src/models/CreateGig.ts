@@ -12,7 +12,7 @@ export const CreateGigSchema = z.object({
     gigType: z.nativeEnum(GigType),
     skills: z.string().array().nonempty({message: "At least one skill must be selected"}),
     gigPrice: z.number().positive().min(1).max(1000),
-    gigPhoto: z.any(),
+    gigPhoto: z.any().array().nonempty({message: "Only one photo is allowed and must be image"}),
 })
 
 export type CreateGig = z.infer<typeof CreateGigSchema>

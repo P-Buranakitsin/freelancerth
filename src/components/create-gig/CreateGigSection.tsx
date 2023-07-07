@@ -14,8 +14,8 @@ import {
 } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { CSSProperties, useEffect, useState } from "react";
-import { FileWithPath, useDropzone } from "react-dropzone";
+import {useEffect } from "react";
+import Dropzone from "react-dropzone";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
 
@@ -29,10 +29,6 @@ interface GigTypeOptionProps {
   value: GigType;
   label: GigType;
   isDisabled: boolean;
-}
-
-interface FileWithPreview extends FileWithPath {
-  preview?: string;
 }
 
 type SkillOptions = {
@@ -67,36 +63,6 @@ const skillOptions: SkillOptions = {
   TESTERS: ["CYPRESS", "JEST", "POSTMAN"],
 };
 
-const thumbsContainer = {
-  display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  marginTop: 16,
-};
-
-const thumb: CSSProperties = {
-  display: "inline-flex",
-  borderRadius: 2,
-  marginBottom: 8,
-  marginRight: 16,
-  width: 300,
-  height: 300,
-  padding: 4,
-  boxSizing: "border-box",
-};
-
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
-
 export default function CreateGigSection() {
   const { data: session, update } = useSession();
 
@@ -109,12 +75,15 @@ export default function CreateGigSection() {
       watch,
       reset,
       getValues,
+      setValue,
     } = useForm<CreateGig>({
       resolver: zodResolver(CreateGigSchema),
       defaultValues: {
         skills: [],
         freelancerType: freelancerTypeOptions[0].value,
         gigType: gigTypeOptions[0].value,
+        gigPrice: 1,
+        gigPhoto: [],
       },
     });
     const onSubmit = handleSubmit(async (data) => {
@@ -122,6 +91,7 @@ export default function CreateGigSection() {
     });
 
     const freelancerType = watch("freelancerType");
+    const gigPhoto = watch("gigPhoto");
 
     const SkillCheckBoxes = () => {
       return skillOptions[freelancerType].map((skill, index) => {
@@ -142,46 +112,33 @@ export default function CreateGigSection() {
         );
       });
     };
-
-    const [files, setFiles] = useState<FileWithPreview[]>([]);
-    const { getRootProps, getInputProps } = useDropzone({
-      accept: {
-        "image/*": [],
-      },
-      onDrop: (acceptedFiles) => {
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
-      },
-      maxFiles: 1,
-    });
-
-    const thumbs = files.map((file) => (
-      <div style={thumb as CSSProperties} key={file.name}>
-        <div style={thumbInner}>
-          <Image
-            src={file.preview || ""}
-            style={img}
-            // Revoke data uri after image is loaded
-            onLoad={() => {
-              URL.revokeObjectURL(file.preview || "");
-            }}
-            alt=""
-            width={500}
-            height={500}
-          />
+  
+    const Thumbs = gigPhoto.map((file) => {
+      return (
+        <div
+          className="w-[300px] h-[300px] box-border inline-flex"
+          key={file.name}
+        >
+          <div className="flex overflow-hidden">
+            <Image
+              src={file.preview}
+              // Revoke data uri after image is loaded
+              onLoad={() => {
+                URL.revokeObjectURL(file.preview);
+              }}
+              alt=""
+              width={500}
+              height={500}
+            />
+          </div>
         </div>
-      </div>
-    ));
+      );
+    });
 
     useEffect(() => {
       // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
       return () =>
-        files.forEach((file) => URL.revokeObjectURL(file.preview || ""));
+        gigPhoto.forEach((file) => URL.revokeObjectURL(file.preview || ""));
     }, []);
 
     return (
@@ -195,7 +152,7 @@ export default function CreateGigSection() {
               {...register("gigTitle", { disabled: false })}
               type="text"
               className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
-              placeholder="Bonnie"
+              placeholder="Write your title here"
             />
             {errors.gigTitle?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">
@@ -211,7 +168,7 @@ export default function CreateGigSection() {
               {...register("gigDescription", { disabled: false })}
               className={`disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white`}
               rows={4}
-              placeholder="Write your description here."
+              placeholder="Write your description here"
             />
             {errors.gigDescription?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">
@@ -252,6 +209,7 @@ export default function CreateGigSection() {
                     reset({
                       ...getValues(),
                       skills: [], // Reset selected skills to an empty array
+                      gigPrice: 1,
                     });
                   }}
                   options={freelancerTypeOptions}
@@ -349,15 +307,63 @@ export default function CreateGigSection() {
           </div>
           <div className="flex flex-col">
             <label className="mb-2 block text-sm font-medium dark:text-gray-400">
-              Gig Photos
+              Gig Photo
             </label>
-            <section className="">
-              <aside style={thumbsContainer as CSSProperties}>{thumbs}</aside>
-              <div {...getRootProps({ className: "dropzone" })}>
-                <input {...getInputProps()} />
-                <p>Drag and drop some files here, or click to select files</p>
-              </div>
-            </section>
+            <div className="flex flex-wrap gap-5 my-4">{Thumbs}</div>
+
+            {/* Code from https://github.com/orgs/react-hook-form/discussions/2146 */}
+            <Controller
+              control={control}
+              name="gigPhoto"
+              render={({ field: { onChange, onBlur } }) => (
+                <Dropzone
+                  noClick
+                  accept={{ "image/*": [] }}
+                  onDrop={(acceptedFiles: any[]) => {
+                    setValue(
+                      "gigPhoto",
+                      acceptedFiles.map((file) =>
+                        Object.assign(file, {
+                          preview: URL.createObjectURL(file),
+                        })
+                      ) as any,
+                      {
+                        shouldValidate: true,
+                      }
+                    );
+                  }}
+                  maxFiles={1}
+                >
+                  {({ getRootProps, getInputProps, open }) => (
+                    <div>
+                      <div
+                        className="cursor-pointer dark:bg-slate-900 dark:border-gray-700 border-dashed border-2 p-10 rounded-md gap-5 flex flex-wrap justify-center items-center"
+                        {...getRootProps()}
+                        onClick={open}
+                      >
+                        <input
+                          {...getInputProps({
+                            id: "spreadsheet",
+                            onChange,
+                            onBlur,
+                          })}
+                        />
+
+                        <p className="dark:text-gray-400">
+                          Drag and drop some files here, or click to select
+                          files
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </Dropzone>
+              )}
+            />
+            {errors.gigPhoto?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.gigPhoto.message}
+              </p>
+            )}
           </div>
           <div className="flex flex-col mt-4 justify-center items-end">
             <button
