@@ -26,9 +26,16 @@ export default function Navbar() {
   const pathname = usePathname();
   const isLandingPage = pathname === "/";
   const isProfilePage = pathname.includes("/profile/");
+  const isCreateGigPage = pathname.includes("/create-gig");
+
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
-    if (window.innerWidth <= 640 && document.querySelector("#navbar-collapse-with-animation")?.className.includes('open')) {
+    if (
+      window.innerWidth <= 640 &&
+      document
+        .querySelector("#navbar-collapse-with-animation")
+        ?.className.includes("open")
+    ) {
       (window as any).HSCollapse.hide(
         document.querySelector("#navbar-collapse-with-animation")
       );
@@ -186,12 +193,13 @@ export default function Navbar() {
             >
               Home
             </Link>
-            <Link
-              className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
-              href="#"
+            <a
+              href="/create-gig"
+              className={`font-medium ${isCreateGigPage ? active : inactive}`}
+              onClick={closeCollapse}
             >
-              Account
-            </Link>
+              Create a gig
+            </a>
             <Link
               className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
               href="#"

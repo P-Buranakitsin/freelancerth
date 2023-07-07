@@ -17,7 +17,7 @@ interface OptionProps {
 
 const options: Options<OptionProps> = [
   { value: "EMPLOYER", label: "EMPLOYER", isDisabled: false },
-  { value: "FREELANCER", label: "FREELANCER", isDisabled: true },
+  { value: "FREELANCER", label: "FREELANCER", isDisabled: false },
   { value: 'ADMIN' , label: "ADMIN" , isDisabled: true},
 ];
 
