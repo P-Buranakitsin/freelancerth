@@ -82,8 +82,9 @@ Table Gig {
   type GigType [not null]
   description String [not null, default: '']
   freelancerProfile FreelancerProfile [not null]
-  freelancerProfileId String [unique, not null]
+  freelancerProfileId String [not null]
   price Decimal [not null]
+  image String [not null]
   searchTags SkillsOnGigs [not null]
 }
 

@@ -10,9 +10,9 @@ export const CreateGigSchema = z.object({
         .max(100).min(10),
     freelancerType: z.nativeEnum(FreelancerType),
     gigType: z.nativeEnum(GigType),
-    skills: z.string().array().nonempty({message: "At least one skill must be selected"}),
+    skills: z.string().array().nonempty({ message: "At least one skill must be selected" }),
     gigPrice: z.number().positive().min(1).max(1000),
-    gigPhoto: z.any().array().nonempty({message: "Only one photo is allowed and must be image"}),
+    gigImage: z.any().array().min(1).max(1),
 })
 
 export type CreateGig = z.infer<typeof CreateGigSchema>

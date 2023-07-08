@@ -4,14 +4,16 @@ import { endpoints } from "@/constants/endpoints";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FreelancerType, GigType } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect } from "react";
-import Dropzone from "react-dropzone";
+import Dropzone, { FileWithPath } from "react-dropzone";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useUploadThing } from "@/utils/uploadthing";
 interface FreelancerTypeOptionProps {
   value: FreelancerType;
   label: FreelancerType;
@@ -38,9 +40,15 @@ const gigTypeOptions: Options<GigTypeOptionProps> = [
   { value: "TEAM", label: "TEAM", isDisabled: true },
 ];
 
-
 export default function CreateGigSection() {
   const { data: session, update } = useSession();
+
+  const { startUpload } = useUploadThing({
+    endpoint: "imageUploader",
+    onUploadError: (e) => {
+      throw new Error(e.message);
+    },
+  });
 
   async function getFreelancerProfileByUserId() {
     const res = await fetch(
@@ -84,15 +92,88 @@ export default function CreateGigSection() {
         freelancerType: initData.data.type,
         gigType: gigTypeOptions[0].value,
         gigPrice: 1,
-        gigPhoto: [],
+        gigImage: [],
       },
     });
 
-    const onSubmit = handleSubmit(async (data) => {
-      console.log(data);
+    const client = useQueryClient();
+
+    const uploadImageMutation = useMutation<CreateGig, Error, CreateGig>({
+      mutationFn: async (data) => {
+        const uploadedFile = await startUpload(data.gigImage);
+        if (!uploadedFile) {
+          throw new Error("upload failed");
+        }
+        return {
+          ...data,
+          gigImage: uploadedFile,
+        };
+      },
+      onSuccess: (data) => {
+        createGigMutation.mutate(data);
+      },
+      onError: (error) => {
+        toast.error(error.message, {
+          toastId: "descriptionSection",
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      },
     });
 
-    const gigPhoto = watch("gigPhoto");
+    const createGigMutation = useMutation<any, Error, CreateGig>({
+      mutationFn: async (data) => {
+        const res = await fetch(endpoints.gigs(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.message);
+        }
+        return res.json();
+      },
+      onSuccess: () => {
+        toast.success("gig created successfully", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      },
+      onError: (error) => {
+        toast.error(error.message, {
+          toastId: "descriptionSection",
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      },
+    });
+    console.log(createGigMutation.isLoading)
+    const onSubmit = handleSubmit(async (data) => {
+      uploadImageMutation.mutate(data);
+    });
+
+    const gigPhoto = watch("gigImage");
 
     const SkillCheckBoxes = () => {
       return data?.data.skills.map((skill, index) => {
@@ -315,19 +396,19 @@ export default function CreateGigSection() {
             {/* Code from https://github.com/orgs/react-hook-form/discussions/2146 */}
             <Controller
               control={control}
-              name="gigPhoto"
+              name="gigImage"
               render={({ field: { onChange, onBlur } }) => (
                 <Dropzone
                   noClick
                   accept={{ "image/*": [] }}
                   onDrop={(acceptedFiles: any[]) => {
                     setValue(
-                      "gigPhoto",
+                      "gigImage",
                       acceptedFiles.map((file) =>
                         Object.assign(file, {
                           preview: URL.createObjectURL(file),
                         })
-                      ) as any,
+                      ),
                       {
                         shouldValidate: true,
                       }
@@ -360,9 +441,9 @@ export default function CreateGigSection() {
                 </Dropzone>
               )}
             />
-            {errors.gigPhoto?.message && (
+            {errors.gigImage?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">
-                {errors.gigPhoto.message}
+                {errors.gigImage.message}
               </p>
             )}
           </div>
@@ -371,6 +452,13 @@ export default function CreateGigSection() {
               type="submit"
               className="w-fit py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
             >
+              {createGigMutation.isLoading && (
+                <span
+                  className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
+                  role="status"
+                  aria-label="loading"
+                ></span>
+              )}
               Publish
             </button>
           </div>

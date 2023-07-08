@@ -138,8 +138,9 @@ model Gig {
   type                GigType
   description         String            @default("")
   freelancerProfile   FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
-  freelancerProfileId String            @unique
+  freelancerProfileId String
   price               Decimal
+  image               String
   searchTags          SkillsOnGigs[]
 }
 
