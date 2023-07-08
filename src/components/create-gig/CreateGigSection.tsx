@@ -4,11 +4,11 @@ import { endpoints } from "@/constants/endpoints";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FreelancerType, GigType } from "@prisma/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect } from "react";
-import Dropzone, { FileWithPath } from "react-dropzone";
+import Dropzone from "react-dropzone";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
 import { toast } from "react-toastify";
@@ -41,14 +41,7 @@ const gigTypeOptions: Options<GigTypeOptionProps> = [
 ];
 
 export default function CreateGigSection() {
-  const { data: session, update } = useSession();
-
-  const { startUpload } = useUploadThing({
-    endpoint: "imageUploader",
-    onUploadError: (e) => {
-      throw new Error(e.message);
-    },
-  });
+  const { data: session } = useSession();
 
   async function getFreelancerProfileByUserId() {
     const res = await fetch(
@@ -96,8 +89,6 @@ export default function CreateGigSection() {
       },
     });
 
-    const client = useQueryClient();
-
     const uploadImageMutation = useMutation<CreateGig, Error, CreateGig>({
       mutationFn: async (data) => {
         const uploadedFile = await startUpload(data.gigImage);
@@ -108,22 +99,6 @@ export default function CreateGigSection() {
           ...data,
           gigImage: uploadedFile,
         };
-      },
-      onSuccess: (data) => {
-        createGigMutation.mutate(data);
-      },
-      onError: (error) => {
-        toast.error(error.message, {
-          toastId: "descriptionSection",
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
       },
     });
 
@@ -136,42 +111,57 @@ export default function CreateGigSection() {
           },
           body: JSON.stringify(data),
         });
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.message);
-        }
         return res.json();
       },
-      onSuccess: () => {
-        toast.success("gig created successfully", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      },
-      onError: (error) => {
-        toast.error(error.message, {
-          toastId: "descriptionSection",
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      },
     });
-    console.log(createGigMutation.isLoading)
+
+    const { startUpload } = useUploadThing({
+      endpoint: "imageUploader",
+    });
+
     const onSubmit = handleSubmit(async (data) => {
-      uploadImageMutation.mutate(data);
+      try {
+        const res = await uploadImageMutation.mutateAsync(data);
+        createGigMutation.mutateAsync(res);
+        toast.success("Gig created successfully", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        reset();
+        window.scrollTo(0, 0);
+      } catch (error: any) {
+        toast.error(error.message, {
+          toastId: "userImageSection",
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
     });
+
+    const LoadingSpinner = () => {
+      if (uploadImageMutation.isLoading || createGigMutation.isLoading) {
+        return (
+          <span
+            className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
+            role="status"
+            aria-label="loading"
+          ></span>
+        );
+      }
+      return <></>;
+    };
 
     const gigPhoto = watch("gigImage");
 
@@ -452,13 +442,7 @@ export default function CreateGigSection() {
               type="submit"
               className="w-fit py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
             >
-              {createGigMutation.isLoading && (
-                <span
-                  className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
-                  role="status"
-                  aria-label="loading"
-                ></span>
-              )}
+              <LoadingSpinner />
               Publish
             </button>
           </div>
