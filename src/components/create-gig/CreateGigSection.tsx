@@ -1,5 +1,6 @@
 "use client";
 
+import { endpoints } from "@/constants/endpoints";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FreelancerType, GigType } from "@prisma/client";
@@ -23,15 +24,6 @@ interface GigTypeOptionProps {
   isDisabled: boolean;
 }
 
-type SkillOptions = {
-  [FreelancerType.DEVELOPERS]: string[];
-  [FreelancerType.DESIGNERS]: string[];
-  [FreelancerType.TESTERS]: string[];
-  [FreelancerType.PROJECT_MANAGERS]: string[];
-  [FreelancerType.DEVOPS_ENGINEERS]: string[];
-  [FreelancerType.BUSINESS_ANALYSTS]: string[];
-};
-
 const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
   { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
   { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
@@ -46,29 +38,36 @@ const gigTypeOptions: Options<GigTypeOptionProps> = [
   { value: "TEAM", label: "TEAM", isDisabled: true },
 ];
 
-const skillOptions: SkillOptions = {
-  DEVELOPERS: ["JAVASCRIPT", "GOLANG", "JAVA", "PYTHON"],
-  BUSINESS_ANALYSTS: ["DATA_ANALYSIS", "REQUIREMENTS_ANALYSIS"],
-  DESIGNERS: ["FIGMA", "ILLUSTRATOR", "PHOTOSHOP"],
-  DEVOPS_ENGINEERS: ["DOCKER", "KUBERNETES"],
-  PROJECT_MANAGERS: ["AGILE_METHODOLOGY", "PROJECT_PLANNING"],
-  TESTERS: ["CYPRESS", "JEST", "POSTMAN"],
-};
 
 export default function CreateGigSection() {
   const { data: session, update } = useSession();
 
   async function getFreelancerProfileByUserId() {
-
+    const res = await fetch(
+      endpoints.freelancerProfileSkillsByUserId(session?.user.sub || ""),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const skills =
+      (await res.json()) as IResponseDataGETFreelancerProfileSkillsByUserId;
+    return skills;
   }
 
   const { data } = useQuery({
-    queryKey: ["freelancerProfile"],
+    queryKey: ["freelancerProfileSkillsByUserId"],
     queryFn: () => getFreelancerProfileByUserId(),
     enabled: !!session,
   });
 
-  const CreateGigForm = () => {
+  const CreateGigForm = ({
+    initData,
+  }: {
+    initData: IResponseDataGETFreelancerProfileSkillsByUserId;
+  }) => {
     const {
       register,
       handleSubmit,
@@ -82,23 +81,21 @@ export default function CreateGigSection() {
       resolver: zodResolver(CreateGigSchema),
       defaultValues: {
         skills: [],
-        freelancerType: freelancerTypeOptions[0].value,
+        freelancerType: initData.data.type,
         gigType: gigTypeOptions[0].value,
         gigPrice: 1,
         gigPhoto: [],
       },
     });
 
-
     const onSubmit = handleSubmit(async (data) => {
       console.log(data);
     });
 
-    const freelancerType = watch("freelancerType");
     const gigPhoto = watch("gigPhoto");
 
     const SkillCheckBoxes = () => {
-      return skillOptions[freelancerType].map((skill, index) => {
+      return data?.data.skills.map((skill, index) => {
         return (
           <div key={index}>
             <label className="cursor-pointer flex p-3 w-fit bg-white border border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400">
@@ -384,7 +381,7 @@ export default function CreateGigSection() {
 
   return (
     <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      {<CreateGigForm />}
+      {data && <CreateGigForm initData={data} />}
     </div>
   );
 }
