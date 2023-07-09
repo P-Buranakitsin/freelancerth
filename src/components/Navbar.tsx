@@ -27,6 +27,7 @@ export default function Navbar() {
   const isLandingPage = pathname === "/";
   const isProfilePage = pathname.includes("/profile/");
   const isCreateGigPage = pathname.includes("/create-gig");
+  const isBrowseGigPage = pathname.includes("/browse/gigs");
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
@@ -198,13 +199,14 @@ export default function Navbar() {
               className={`font-medium ${isCreateGigPage ? active : inactive}`}
               onClick={closeCollapse}
             >
-              Create a gig
+              Create a Gig
             </a>
             <Link
-              className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
-              href="#"
+              className={`font-medium ${isBrowseGigPage ? active : inactive}`}
+              href="/browse/gigs?page=1"
+              onClick={closeCollapse}
             >
-              Work
+              Browse Gigs
             </Link>
             <Link
               className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"

@@ -16,6 +16,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
 
     try {
         const json = await req.json();
+
         const user = await prisma.user.update({
             where: {
                 id: params.id
@@ -31,6 +32,13 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
 
     } catch (error) {
         console.log(error)
+        if (error instanceof SyntaxError) {
+            const badRequestResponse = responses().badRequest;
+            return NextResponse.json(
+                badRequestResponse.body,
+                badRequestResponse.status
+            );
+        }
         const errorResponse = responses(error).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }

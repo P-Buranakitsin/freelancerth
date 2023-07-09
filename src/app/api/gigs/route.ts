@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
-import { CreateGig } from "@/models/CreateGig";
+import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 
 export const POST = async (req: NextRequest) => {
     const token = await getToken({ req })
@@ -25,6 +25,15 @@ export const POST = async (req: NextRequest) => {
             }
         });
         const json = await req.json() as CreateGig;
+
+        const response = CreateGigSchema.safeParse(json);
+        if (!response.success) {
+            const { errors } = response.error;
+
+            const errorResponse = responses(errors).badRequest
+            return NextResponse.json(errorResponse.body, errorResponse.status)
+        }
+
         const skillObjects = json.skills.map(skill => ({ skillName: skill }));
         const gig = await prisma.gig.create({
             data: {

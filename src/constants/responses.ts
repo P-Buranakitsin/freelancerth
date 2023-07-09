@@ -37,7 +37,7 @@ export const responses = (responseData?: any) => ({
         }
     },
     badRequest: {
-        body: { error: "Bad Request", message: "The request body is missing or invalid" },
+        body: { error: responseData || "Bad Request", message: "The request body is missing or invalid" },
         status: {
             status: 400
         }

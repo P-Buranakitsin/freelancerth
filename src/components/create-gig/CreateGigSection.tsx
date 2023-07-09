@@ -3,7 +3,6 @@
 import { endpoints } from "@/constants/endpoints";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FreelancerType, GigType } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -14,30 +13,19 @@ import Select, { Options } from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
-interface FreelancerTypeOptionProps {
-  value: FreelancerType;
-  label: FreelancerType;
-  isDisabled: boolean;
-}
 
-interface GigTypeOptionProps {
-  value: GigType;
-  label: GigType;
-  isDisabled: boolean;
-}
-
-const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
-  { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
-  { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
-  { value: "TESTERS", label: "TESTERS", isDisabled: true },
-  { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: true },
-  { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: true },
-  { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: true },
+export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
+    { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
+    { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
+    { value: "TESTERS", label: "TESTERS", isDisabled: true },
+    { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: true },
+    { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: true },
+    { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: true },
 ];
 
-const gigTypeOptions: Options<GigTypeOptionProps> = [
-  { value: "INDIVIDUAL", label: "INDIVIDUAL", isDisabled: false },
-  { value: "TEAM", label: "TEAM", isDisabled: true },
+export const gigTypeOptions: Options<GigTypeOptionProps> = [
+    { value: "INDIVIDUAL", label: "INDIVIDUAL", isDisabled: false },
+    { value: "TEAM", label: "TEAM", isDisabled: true },
 ];
 
 export default function CreateGigSection() {
@@ -163,7 +151,7 @@ export default function CreateGigSection() {
       return <></>;
     };
 
-    const gigPhoto = watch("gigImage");
+    const gigImage = watch("gigImage");
 
     const SkillCheckBoxes = () => {
       return data?.data.skills.map((skill, index) => {
@@ -185,7 +173,7 @@ export default function CreateGigSection() {
       });
     };
 
-    const Thumbs = gigPhoto.map((file) => {
+    const Thumbs = gigImage.map((file) => {
       return (
         <div
           className="w-[300px] h-[300px] box-border inline-flex"
@@ -210,7 +198,7 @@ export default function CreateGigSection() {
     useEffect(() => {
       // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
       return () =>
-        gigPhoto.forEach((file) => URL.revokeObjectURL(file.preview || ""));
+      gigImage.forEach((file) => URL.revokeObjectURL(file.preview || ""));
     }, []);
 
     return (
