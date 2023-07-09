@@ -32,32 +32,26 @@ export const authOptions: NextAuthOptions =
         // Using the `...rest` parameter to be able to narrow down the type based on `trigger`
         // Variable session is sent from client side
         async jwt({ token, user, trigger, session }) {
-            if (trigger === "signIn") {
-                token.role = user.role
+            if (trigger === "signIn" || trigger === "signUp") {
+                token.role = user.role;
             }
-            if (trigger === "update") {
-                // Note, that `session` can be any arbitrary object, remember to validate it!
-                if (session?.name) {
-                    token.name = session.name
-                }
-                if (session?.fileUrl) {
-                    token.picture = session.fileUrl
-                }
-                if (session?.fileKey) {
+
+            if (trigger === "update" && session) {
+                const { name, fileUrl, fileKey, role } = session;
+
+                if (name) token.name = name;
+                if (fileUrl) token.picture = fileUrl;
+                if (role) token.role = role;
+
+                if (fileKey) {
                     if (token.fileKey) {
                         await utapi.deleteFiles(token.fileKey);
                     }
-                    token.fileKey = session.fileKey
+                    token.fileKey = fileKey;
                 }
-                if (session?.role) {
-                    token.role = session.role
-                }
+            }
 
-            }
-            if (trigger === "signUp") {
-                token.role = user.role
-            }
-            return token
+            return token;
         },
         async session({ session, token }) {
             // Send properties to the client, like an access_token and user id from a provider.

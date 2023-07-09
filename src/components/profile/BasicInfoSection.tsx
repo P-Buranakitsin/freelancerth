@@ -30,7 +30,7 @@ export default function BasicInfoSection() {
     const mutation = useMutation<any, Error, BasicInfo>({
       mutationFn: async (data) => {
         const updatedName = data.firstName + " " + data.lastName;
-        const res = await fetch(endpoints.userById(session?.user.sub || ''), {
+        const res = await fetch(endpoints.userById(session?.user.sub || ""), {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -46,13 +46,9 @@ export default function BasicInfoSection() {
         }
         return res.json();
       },
-      onSuccess: async (res) => {
-        const updatedName =
-          (res.data?.user.name?.split(" ")[0] || "") +
-          " " +
-          (res.data?.user.name?.split(" ")[1] || "");
+      onSuccess: async (res: IResponseDataPATCHUserById) => {
         await update({
-          name: updatedName,
+          name: res.data.name,
         });
         toast.success("info updated", {
           position: "top-center",

@@ -24,7 +24,8 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
             },
         });
         if (!freelancerProfile) {
-            throw new Error("not found")
+            const notfoundResponse = responses('profile').notFoundError
+            return NextResponse.json(notfoundResponse.body, notfoundResponse.status)
         }
         const skillNames = freelancerProfile.skills.map((skill) => skill.skillName);
         const responseData = {
@@ -34,6 +35,7 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
         const successResponse = responses(responseData).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
+        console.log(error)
         const errorResponse = responses(error).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }

@@ -16,7 +16,6 @@ export const POST = async (req: NextRequest) => {
                 userId: token.sub
             }
         })
-        console.log(freelancerProfile)
         if (!freelancerProfile) {
             throw new Error('freelancer profile not found!')
         }

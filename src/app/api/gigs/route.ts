@@ -6,8 +6,8 @@ import { CreateGig } from "@/models/CreateGig";
 
 export const POST = async (req: NextRequest) => {
     const token = await getToken({ req })
-    // Not Signed in or not an admin
-    if (!token?.sub) {
+    // Not Signed in or not a freelancer
+    if (!token?.sub || token.role !== "FREELANCER") {
         const unauthorizedResponse = responses().unauthorized
         return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
     }
@@ -45,6 +45,13 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
         console.log(error)
+        if (error instanceof SyntaxError) {
+            const badRequestResponse = responses().badRequest;
+            return NextResponse.json(
+                badRequestResponse.body,
+                badRequestResponse.status
+            );
+        }
         const errorResponse = responses(error).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }

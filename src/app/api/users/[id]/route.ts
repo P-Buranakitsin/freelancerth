@@ -16,7 +16,6 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
 
     try {
         const json = await req.json();
-
         const user = await prisma.user.update({
             where: {
                 id: params.id
