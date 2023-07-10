@@ -4,6 +4,38 @@ import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 
+export const GET = async (req: NextRequest) => {
+    const token = await getToken({ req })
+    // Not Signed in
+    if (!token) {
+        const unauthorizedResponse = responses().unauthorized
+        return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
+    }
+
+    try {
+        const url = new URL(req.url);
+        const params = new URLSearchParams(url.search)
+        const gigs = await prisma.gig.findMany({
+            include: {
+                searchTags: {
+                    select: {
+                        skillName: true
+                    }
+                }
+            }
+        })
+        const gigsWithSearchTagsAsStrings = gigs.map(gig => ({
+            ...gig,
+            searchTags: gig.searchTags.map(tag => tag.skillName)
+        }))
+        const successResponse = responses(gigsWithSearchTagsAsStrings).success
+        return NextResponse.json(successResponse.body, successResponse.status)
+    } catch (error) {
+        const errorResponse = responses(error).internalError
+        return NextResponse.json(errorResponse.body, errorResponse.status)
+    }
+}
+
 export const POST = async (req: NextRequest) => {
     const token = await getToken({ req })
     // Not Signed in or not a freelancer

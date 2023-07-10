@@ -1,7 +1,10 @@
 "use client";
 
+import { endpoints } from "@/constants/endpoints";
 import { FilterGig, FilterGigSchema } from "@/models/FilterGig";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
 import { components } from "react-select";
@@ -15,7 +18,34 @@ export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
   { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: false },
 ];
 
-export const skillOptions = {
+export const skillOptions = [
+  { value: "JAVASCRIPT", label: "JAVASCRIPT", isDisabled: false },
+  { value: "PYTHON", label: "PYTHON", isDisabled: false },
+  { value: "GOLANG", label: "GOLANG", isDisabled: false },
+  { value: "JAVA", label: "JAVA", isDisabled: false },
+  { value: "PHOTOSHOP", label: "PHOTOSHOP", isDisabled: false },
+  { value: "ILLUSTRATOR", label: "ILLUSTRATOR", isDisabled: false },
+  { value: "FIGMA", label: "FIGMA", isDisabled: false },
+  { value: "POSTMAN", label: "POSTMAN", isDisabled: false },
+  { value: "CYPRESS", label: "CYPRESS", isDisabled: false },
+  { value: "JEST", label: "JEST", isDisabled: false },
+  {
+    value: "AGILE_METHODOLOGY",
+    label: "AGILE_METHODOLOGY",
+    isDisabled: false,
+  },
+  { value: "PROJECT_PLANNING", label: "PROJECT_PLANNING", isDisabled: false },
+  { value: "DOCKER", label: "DOCKER", isDisabled: false },
+  { value: "KUBERNETES", label: "KUBERNETES", isDisabled: false },
+  {
+    value: "REQUIREMENTS_ANALYSIS",
+    label: "REQUIREMENTS_ANALYSIS",
+    isDisabled: false,
+  },
+  { value: "DATA_ANALYSIS", label: "DATA_ANALYSIS", isDisabled: false },
+];
+
+export const skillOptionsBasedOnType = {
   DEVELOPERS: [
     { value: "JAVASCRIPT", label: "JAVASCRIPT", isDisabled: false },
     { value: "PYTHON", label: "PYTHON", isDisabled: false },
@@ -66,6 +96,19 @@ export const startingPriceOptions: Options<StartingOptionProps> = [
 ];
 
 export default function FilterBySection() {
+  const { data: session } = useSession();
+
+  async function getGigs() {
+    const res = await fetch(endpoints.gigs(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const gigs = (await res.json()) as IResponseDataGETGigs;
+    return gigs;
+  }
+
   const FilterByForm = () => {
     const {
       control,
@@ -89,6 +132,12 @@ export default function FilterBySection() {
 
     const onSubmit = handleSubmit(async (data) => {
       console.log(data);
+    });
+
+    const { data } = useQuery({
+      queryKey: ["gigs"],
+      queryFn: () => getGigs(),
+      enabled: !!session,
     });
 
     const defaultOnClick = () => {
@@ -202,7 +251,17 @@ export default function FilterBySection() {
                   defaultValue={null}
                   value={
                     freelancerType && skills
-                      ? skillOptions[freelancerType]
+                      ? skillOptionsBasedOnType[freelancerType]
+                          .filter((option) =>
+                            skills.includes(option.value as any)
+                          )
+                          .sort(
+                            (a, b) =>
+                              skills.indexOf(a.value as any) -
+                              skills.indexOf(b.value as any)
+                          )
+                      : skills
+                      ? skillOptions
                           .filter((option) =>
                             skills.includes(option.value as any)
                           )
@@ -214,7 +273,11 @@ export default function FilterBySection() {
                       : null
                   }
                   onChange={(val) => onChange(val.map((el) => el.value))}
-                  options={freelancerType ? skillOptions[freelancerType] : []}
+                  options={
+                    freelancerType
+                      ? skillOptionsBasedOnType[freelancerType]
+                      : skillOptions
+                  }
                   isClearable={true}
                   isDisabled={false}
                   isMulti={true}
