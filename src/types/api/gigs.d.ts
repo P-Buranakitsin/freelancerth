@@ -1,6 +1,6 @@
 declare interface IResponseDataGETGigs {
     message: string
-    data: [{
+    data: {
         id: string,
         title: string,
         type: GigType,
@@ -9,6 +9,7 @@ declare interface IResponseDataGETGigs {
         price: number,
         image: string
         searchTags: SkillName[]
-    }]
+    }[]
+    total: number
 
 }

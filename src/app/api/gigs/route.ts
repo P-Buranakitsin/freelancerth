@@ -15,6 +15,8 @@ export const GET = async (req: NextRequest) => {
     try {
         const url = new URL(req.url);
         const params = new URLSearchParams(url.search)
+        const page = Number(params.get("page")) || 0
+        const limit = Number(params.get("limit")) || 6
 
         const [total, data] = await prisma.$transaction([
             prisma.gig.count(),
@@ -26,6 +28,8 @@ export const GET = async (req: NextRequest) => {
                         }
                     },
                 },
+                skip: page * limit,
+                take: limit,
             })
         ])
 

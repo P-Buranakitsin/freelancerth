@@ -127,23 +127,23 @@ export default function FilterBySection() {
       console.log(data);
     });
 
-    async function getGigs(page: number) {
-      const res = await fetch(endpoints.gigs(page), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const gigs = (await res.json()) as IResponseDataGETGigs;
-      return gigs;
-    }
+    // async function getGigs(page: number) {
+    //   const res = await fetch(endpoints.gigs(page), {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+    //   const gigs = (await res.json()) as IResponseDataGETGigs;
+    //   return gigs;
+    // }
 
-    const { data } = useQuery({
-      queryKey: ["gigs", Number(page) || 1],
-      queryFn: () => getGigs(Number(page) || 1),
-      keepPreviousData: true,
-      enabled: !!session,
-    });
+    // const { data } = useQuery({
+    //   queryKey: ["gigs", Number(page) || 0],
+    //   queryFn: () => getGigs(Number(page) || 0),
+    //   keepPreviousData: true,
+    //   enabled: !!session,
+    // });
 
 
     const defaultOnClick = () => {

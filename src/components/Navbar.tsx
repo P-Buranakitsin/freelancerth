@@ -203,7 +203,7 @@ export default function Navbar() {
             </a>
             <Link
               className={`font-medium ${isBrowseGigPage ? active : inactive}`}
-              href="/browse/gigs?page=1"
+              href="/browse/gigs?page=0&limit=6"
               onClick={closeCollapse}
             >
               Browse Gigs

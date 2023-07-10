@@ -5,15 +5,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { Fragment } from "react";
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from "next/navigation";
+import ReactPaginate from "react-paginate";
 
 export default function GigSection() {
   const { data: session } = useSession();
-  const searchParams = useSearchParams()
-  const page = searchParams.get('page')
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page")) || 0;
+  const limit = Number(searchParams.get("limit")) || 6;
+  const router = useRouter();
 
-  async function getGigs(page: number) {
-    const res = await fetch(endpoints.gigs(page), {
+  async function getGigs(page: number, limit: number) {
+    const res = await fetch(endpoints.gigs(page, limit), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,14 +27,45 @@ export default function GigSection() {
   }
 
   const { data } = useQuery({
-    queryKey: ["gigs", Number(page) || 1],
-    queryFn: () => getGigs(Number(page) || 1),
+    queryKey: ["gigs", page],
+    queryFn: () => getGigs(page, limit),
     keepPreviousData: true,
     enabled: !!session,
   });
 
-  const GigCard = () => {
-    return data?.data.map((el, index) => {
+  const PaginatedItems = ({ itemsPerPage }: { itemsPerPage: number }) => {
+    const handlePageClick = (event: any) => {
+      router.push(`gigs?page=${event.selected}&limit=${itemsPerPage}`);
+    };
+
+    const pageCount = Math.ceil((data?.total || 0) / itemsPerPage);
+
+    return (
+      <>
+        <div className="grid sm:grid-cols-2 grid-cols-1 gap-6 mt-4">
+          <GigCard currentItems={data?.data || []} />
+        </div>
+        <div className=" mt-[60px] mb-8">
+          <ReactPaginate
+            containerClassName="flex flex-row justify-end gap-8 flex-wrap text-gray-500"
+            breakLabel="..."
+            nextLabel="Next"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={3}
+            pageCount={pageCount}
+            previousLabel="Previous"
+            renderOnZeroPageCount={null}
+            forcePage={page}
+            marginPagesDisplayed={2}
+            activeClassName="text-blue-500 font-bold"
+          />
+        </div>
+      </>
+    );
+  };
+
+  const GigCard = ({ currentItems }: { currentItems: any[] }) => {
+    return currentItems.map((el, index) => {
       return (
         <Fragment key={`gig-card-${index}`}>
           <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
@@ -65,7 +99,7 @@ export default function GigSection() {
                 </p>
               </div>
               <div className="flex flex-row gap-3 mt-2 mb-4 flex-wrap">
-                {el.searchTags.map((tag, index) => {
+                {el.searchTags.map((tag: any, index: any) => {
                   return (
                     <span
                       className="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-500 text-white"
@@ -95,9 +129,8 @@ export default function GigSection() {
   return (
     <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <p className="text-white font-bold text-xl">Gigs</p>
-      <div className="grid sm:grid-cols-2 grid-cols-1 gap-4 mt-4">
-        <GigCard />
-      </div>
+
+      <PaginatedItems itemsPerPage={limit} />
     </div>
   );
 }
