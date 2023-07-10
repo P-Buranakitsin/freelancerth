@@ -1,14 +1,32 @@
 "use client";
 
+import { endpoints } from "@/constants/endpoints";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { Fragment } from "react";
+import React, { Fragment } from "react";
+import { useSearchParams } from 'next/navigation'
 
 export default function GigSection() {
   const { data: session } = useSession();
-  const { data }: { data: IResponseDataGETGigs | undefined } = useQuery({
-    queryKey: ["gigs"],
+  const searchParams = useSearchParams()
+  const page = searchParams.get('page')
+
+  async function getGigs(page: number) {
+    const res = await fetch(endpoints.gigs(page), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const gigs = (await res.json()) as IResponseDataGETGigs;
+    return gigs;
+  }
+
+  const { data } = useQuery({
+    queryKey: ["gigs", Number(page) || 1],
+    queryFn: () => getGigs(Number(page) || 1),
+    keepPreviousData: true,
     enabled: !!session,
   });
 

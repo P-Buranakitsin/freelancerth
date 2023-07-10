@@ -1,5 +1,5 @@
 
-export const responses = (responseData?: any) => ({
+export const responses = (responseData?: any, total?: any) => ({
     unauthorized: {
         body: {
             message: 'unauthorized access',
@@ -40,6 +40,16 @@ export const responses = (responseData?: any) => ({
         body: { error: responseData || "Bad Request", message: "The request body is missing or invalid" },
         status: {
             status: 400
+        }
+    },
+    pagination: {
+        body: {
+            message: 'success',
+            data: responseData,
+            total: total
+        },
+        status: {
+            status: 200
         }
     }
 })

@@ -1,13 +1,15 @@
 "use client";
 
-import { endpoints } from "@/constants/endpoints";
 import { FilterGig, FilterGigSchema } from "@/models/FilterGig";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
 import { components } from "react-select";
+import { useSearchParams } from "next/navigation";
+import { endpoints } from "@/constants/endpoints";
 
 export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
   { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: false },
@@ -97,17 +99,8 @@ export const startingPriceOptions: Options<StartingOptionProps> = [
 
 export default function FilterBySection() {
   const { data: session } = useSession();
-
-  async function getGigs() {
-    const res = await fetch(endpoints.gigs(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const gigs = (await res.json()) as IResponseDataGETGigs;
-    return gigs;
-  }
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page");
 
   const FilterByForm = () => {
     const {
@@ -134,11 +127,24 @@ export default function FilterBySection() {
       console.log(data);
     });
 
+    async function getGigs(page: number) {
+      const res = await fetch(endpoints.gigs(page), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const gigs = (await res.json()) as IResponseDataGETGigs;
+      return gigs;
+    }
+
     const { data } = useQuery({
-      queryKey: ["gigs"],
-      queryFn: () => getGigs(),
+      queryKey: ["gigs", Number(page) || 1],
+      queryFn: () => getGigs(Number(page) || 1),
+      keepPreviousData: true,
       enabled: !!session,
     });
+
 
     const defaultOnClick = () => {
       reset({

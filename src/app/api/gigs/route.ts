@@ -15,21 +15,28 @@ export const GET = async (req: NextRequest) => {
     try {
         const url = new URL(req.url);
         const params = new URLSearchParams(url.search)
-        const gigs = await prisma.gig.findMany({
-            include: {
-                searchTags: {
-                    select: {
-                        skillName: true
-                    }
-                }
-            }
-        })
-        const gigsWithSearchTagsAsStrings = gigs.map(gig => ({
+
+        const [total, data] = await prisma.$transaction([
+            prisma.gig.count(),
+            prisma.gig.findMany({
+                include: {
+                    searchTags: {
+                        select: {
+                            skillName: true
+                        }
+                    },
+                },
+            })
+        ])
+
+
+        const gigsWithSearchTagsAsStrings = data.map(gig => ({
             ...gig,
             searchTags: gig.searchTags.map(tag => tag.skillName)
         }))
-        const successResponse = responses(gigsWithSearchTagsAsStrings).success
-        return NextResponse.json(successResponse.body, successResponse.status)
+        const paginationResponse = responses(gigsWithSearchTagsAsStrings, total).pagination
+        return NextResponse.json(paginationResponse.body, paginationResponse.status)
+
     } catch (error) {
         const errorResponse = responses(error).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
