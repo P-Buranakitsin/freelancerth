@@ -1,5 +1,12 @@
 
-export const responses = (responseData?: any, total?: any) => ({
+export interface IPagination {
+    totalItems: number
+    limit: number
+    page: number
+    totalPages: number
+}
+
+export const responses = (responseData?: any, pagination?: IPagination) => ({
     unauthorized: {
         body: {
             message: 'unauthorized access',
@@ -46,7 +53,7 @@ export const responses = (responseData?: any, total?: any) => ({
         body: {
             message: 'success',
             data: responseData,
-            total: total
+            pagination
         },
         status: {
             status: 200

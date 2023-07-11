@@ -43,12 +43,10 @@ export default function GigSection() {
           title,
           freelancerType,
           skills: skillsParams as SkillName[] | undefined,
-          price
+          price,
         })
       );
     };
-
-    const pageCount = Math.ceil((gigs.data?.total || 0) / limit);
 
     return (
       <>
@@ -62,7 +60,7 @@ export default function GigSection() {
             nextLabel="Next"
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
-            pageCount={pageCount}
+            pageCount={gigs.data?.pagination.totalPages || 0}
             previousLabel="Previous"
             renderOnZeroPageCount={null}
             forcePage={page}

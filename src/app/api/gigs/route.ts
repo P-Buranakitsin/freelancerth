@@ -3,19 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
-import { Prisma } from "@prisma/client";
+import { FreelancerType, Prisma } from "@prisma/client";
 
 export const GET = async (req: NextRequest) => {
-    const token = await getToken({ req })
-    // Not Signed in
-    if (!token) {
-        const unauthorizedResponse = responses().unauthorized
-        return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
-    }
-
     try {
         const url = new URL(req.url);
         const params = new URLSearchParams(url.search)
+
+        // Query params
         const page = Number(params.get("page")) || 0
         const limit = Number(params.get("limit")) || 6
         const title = (params.get("title")) || ''
@@ -66,7 +61,7 @@ export const GET = async (req: NextRequest) => {
             }
         }
 
-        const [total, data] = await prisma.$transaction([
+        const [totalItems, data] = await prisma.$transaction([
             prisma.gig.count({
                 where: whereCondition
             }),
@@ -84,12 +79,18 @@ export const GET = async (req: NextRequest) => {
             })
         ])
 
+        const pageCount = Math.ceil(totalItems / limit);
 
         const gigsWithSearchTagsAsStrings = data.map(gig => ({
             ...gig,
             searchTags: gig.searchTags.map(tag => tag.skillName)
         }))
-        const paginationResponse = responses(gigsWithSearchTagsAsStrings, total).pagination
+        const paginationResponse = responses(gigsWithSearchTagsAsStrings, {
+            limit,
+            totalItems,
+            totalPages: pageCount,
+            page,
+        }).pagination
         return NextResponse.json(paginationResponse.body, paginationResponse.status)
 
     } catch (error) {

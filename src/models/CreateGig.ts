@@ -11,7 +11,7 @@ export const CreateGigSchema = z.object({
     gigType: z.nativeEnum(GigType),
     freelancerType: z.nativeEnum(FreelancerType).optional(),
     skills: z.nativeEnum(SkillName).array().nonempty({ message: "At least one skill must be selected" }),
-    gigPrice: z.number().positive().min(1).max(1000),
+    gigPrice: z.number().positive().min(1).max(1000).multipleOf(0.01),
     gigImage: z.any().array().min(1).max(1),
 })
 

@@ -1,7 +1,8 @@
 declare interface IResponseGETGigs {
     message: string
     data: IResponseDataGETGigs[]
-    total: number
+    pagination: import('@/constants/responses').IPagination;
+
 }
 
 declare interface IResponseDataGETGigs {
