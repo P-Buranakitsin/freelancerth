@@ -30,7 +30,7 @@ export default function BasicInfoSection() {
     const mutation = useMutation<any, Error, BasicInfo>({
       mutationFn: async (data) => {
         const updatedName = data.firstName + " " + data.lastName;
-        const res = await fetch(endpoints.userById(session?.user.sub || ""), {
+        const res = await fetch(endpoints.API.userById(session?.user.sub || ""), {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

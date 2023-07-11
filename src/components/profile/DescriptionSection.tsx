@@ -6,28 +6,14 @@ import { DescriptionSchema, Description } from "@/models/Description";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { endpoints } from "@/constants/endpoints";
+import { useProfiles } from "@/hooks/useQuery";
 
 export default function DescriptionSection() {
   const { data: session } = useSession();
-  async function getProfileByUserId() {
-    const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const profiles = (await res.json()) as IResponseDataGETProfileByUserId;
-    return profiles;
-  }
-  const { data } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => getProfileByUserId(),
-    enabled: !!session,
-  });
-
+  const { data } = useProfiles(session);
   const [isEditable, setIsEditable] = useState<boolean>(false);
 
   const DescriptionForm = ({ initData }: { initData: string }) => {
@@ -46,15 +32,18 @@ export default function DescriptionSection() {
 
     const mutation = useMutation<any, Error, Description>({
       mutationFn: async (data) => {
-        const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            description: data.description,
-          }),
-        });
+        const res = await fetch(
+          endpoints.API.profileByUserId(session?.user.sub || ""),
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              description: data.description,
+            }),
+          }
+        );
         if (!res.ok) {
           const error = await res.json();
           throw new Error(error.message);
@@ -62,7 +51,9 @@ export default function DescriptionSection() {
         return res.json();
       },
       onSuccess: async () => {
-        await client.invalidateQueries({ queryKey: ["profile"] });
+        await client.invalidateQueries({
+          queryKey: ["profiles", session?.user.sub || ""],
+        });
         toast.success("Description Updated", {
           toastId: "descriptionSection",
           position: "top-center",
@@ -155,9 +146,7 @@ export default function DescriptionSection() {
       <p className="text-gray-400 mt-2">
         Write anything that you would like other users to know.
       </p>
-      {data && (
-        <DescriptionForm initData={data.data?.description || ""} />
-      )}
+      {data && <DescriptionForm initData={data.data?.description || ""} />}
     </div>
   );
 }

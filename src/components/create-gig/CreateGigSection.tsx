@@ -3,7 +3,7 @@
 import { endpoints } from "@/constants/endpoints";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect } from "react";
@@ -13,44 +13,26 @@ import Select, { Options } from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
+import { useFreelancerProfile } from "@/hooks/useQuery";
 
 export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
-    { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
-    { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
-    { value: "TESTERS", label: "TESTERS", isDisabled: true },
-    { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: true },
-    { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: true },
-    { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: true },
+  { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
+  { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
+  { value: "TESTERS", label: "TESTERS", isDisabled: true },
+  { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: true },
+  { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: true },
+  { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: true },
 ];
 
 export const gigTypeOptions: Options<GigTypeOptionProps> = [
-    { value: "INDIVIDUAL", label: "INDIVIDUAL", isDisabled: false },
-    { value: "TEAM", label: "TEAM", isDisabled: true },
+  { value: "INDIVIDUAL", label: "INDIVIDUAL", isDisabled: false },
+  { value: "TEAM", label: "TEAM", isDisabled: true },
 ];
 
 export default function CreateGigSection() {
   const { data: session } = useSession();
 
-  async function getFreelancerProfileByUserId() {
-    const res = await fetch(
-      endpoints.freelancerProfileSkillsByUserId(session?.user.sub || ""),
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const skills =
-      (await res.json()) as IResponseDataGETFreelancerProfileSkillsByUserId;
-    return skills;
-  }
-
-  const { data } = useQuery({
-    queryKey: ["freelancerProfileSkillsByUserId"],
-    queryFn: () => getFreelancerProfileByUserId(),
-    enabled: !!session,
-  });
+  const { data } = useFreelancerProfile(session);
 
   const CreateGigForm = ({
     initData,
@@ -92,7 +74,7 @@ export default function CreateGigSection() {
 
     const createGigMutation = useMutation<any, Error, CreateGig>({
       mutationFn: async (data) => {
-        const res = await fetch(endpoints.gigs(), {
+        const res = await fetch(endpoints.API.gigs({}), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -198,7 +180,7 @@ export default function CreateGigSection() {
     useEffect(() => {
       // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
       return () =>
-      gigImage.forEach((file) => URL.revokeObjectURL(file.preview || ""));
+        gigImage.forEach((file) => URL.revokeObjectURL(file.preview || ""));
     }, []);
 
     return (

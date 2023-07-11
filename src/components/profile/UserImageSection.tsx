@@ -86,7 +86,7 @@ export default function UserImageSection() {
     fileUrl?: string;
     fileKey?: string;
   }) => {
-    const res = await fetch(endpoints.userById(session?.user.sub || ''), {
+    const res = await fetch(endpoints.API.userById(session?.user.sub || ''), {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -2,16 +2,16 @@
 
 import { FilterGig, FilterGigSchema } from "@/models/FilterGig";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
 import { components } from "react-select";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useGigs } from "@/hooks/useQuery";
 import { endpoints } from "@/constants/endpoints";
 
-export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
+const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
   { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: false },
   { value: "DESIGNERS", label: "DESIGNERS", isDisabled: false },
   { value: "TESTERS", label: "TESTERS", isDisabled: false },
@@ -20,34 +20,7 @@ export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
   { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: false },
 ];
 
-export const skillOptions = [
-  { value: "JAVASCRIPT", label: "JAVASCRIPT", isDisabled: false },
-  { value: "PYTHON", label: "PYTHON", isDisabled: false },
-  { value: "GOLANG", label: "GOLANG", isDisabled: false },
-  { value: "JAVA", label: "JAVA", isDisabled: false },
-  { value: "PHOTOSHOP", label: "PHOTOSHOP", isDisabled: false },
-  { value: "ILLUSTRATOR", label: "ILLUSTRATOR", isDisabled: false },
-  { value: "FIGMA", label: "FIGMA", isDisabled: false },
-  { value: "POSTMAN", label: "POSTMAN", isDisabled: false },
-  { value: "CYPRESS", label: "CYPRESS", isDisabled: false },
-  { value: "JEST", label: "JEST", isDisabled: false },
-  {
-    value: "AGILE_METHODOLOGY",
-    label: "AGILE_METHODOLOGY",
-    isDisabled: false,
-  },
-  { value: "PROJECT_PLANNING", label: "PROJECT_PLANNING", isDisabled: false },
-  { value: "DOCKER", label: "DOCKER", isDisabled: false },
-  { value: "KUBERNETES", label: "KUBERNETES", isDisabled: false },
-  {
-    value: "REQUIREMENTS_ANALYSIS",
-    label: "REQUIREMENTS_ANALYSIS",
-    isDisabled: false,
-  },
-  { value: "DATA_ANALYSIS", label: "DATA_ANALYSIS", isDisabled: false },
-];
-
-export const skillOptionsBasedOnType = {
+const skillOptionsBasedOnType = {
   DEVELOPERS: [
     { value: "JAVASCRIPT", label: "JAVASCRIPT", isDisabled: false },
     { value: "PYTHON", label: "PYTHON", isDisabled: false },
@@ -86,12 +59,17 @@ export const skillOptionsBasedOnType = {
   ],
 };
 
-export const gigTypeOptions: Options<GigTypeOptionProps> = [
+const skillOptions = Object.values(skillOptionsBasedOnType).reduce(
+  (acc, val) => acc.concat(val),
+  []
+);
+
+const gigTypeOptions: Options<GigTypeOptionProps> = [
   { value: "INDIVIDUAL", label: "INDIVIDUAL", isDisabled: false },
   { value: "TEAM", label: "TEAM", isDisabled: true },
 ];
 
-export const startingPriceOptions: Options<StartingOptionProps> = [
+const startingPriceOptions: Options<StartingOptionProps> = [
   { value: "CHEAP", label: "Less than £19.99", isDisabled: false },
   { value: "NORMAL", label: "£19.99 - £99.99", isDisabled: false },
   { value: "EXPENSIVE", label: "More than £99.99", isDisabled: false },
@@ -100,19 +78,35 @@ export const startingPriceOptions: Options<StartingOptionProps> = [
 export default function FilterBySection() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
-  const page = searchParams.get("page");
+  const page = Number(searchParams.get("page")) || 0;
+  const limit = Number(searchParams.get("limit")) || 6;
+  const title = searchParams.get("title") || "";
+  const freelancerTypeParam =
+    (searchParams.get("freelancerType") as FreelancerType) || undefined;
+  const skillsParams = searchParams.getAll("skills") || undefined;
+  const gigType = (searchParams.get("gigType") as GigType) || undefined;
+  const price = searchParams.get("price") || undefined;
+
+  const router = useRouter();
 
   const FilterByForm = () => {
     const {
       control,
       handleSubmit,
       register,
-      getValues,
       reset,
       watch,
       formState: { errors },
+      setValue,
     } = useForm<FilterGig>({
       resolver: zodResolver(FilterGigSchema),
+      defaultValues: {
+        gigTitle: title,
+        freelancerType: freelancerTypeParam,
+        skills: skillsParams as SkillName[],
+        gigType,
+        startingPrice: price as "CHEAP" | "NORMAL" | "EXPENSIVE",
+      },
     });
 
     const NoOptionsMessage = (props: any) => {
@@ -125,26 +119,27 @@ export default function FilterBySection() {
 
     const onSubmit = handleSubmit(async (data) => {
       console.log(data);
+      router.push(
+        endpoints.PAGE.gigs({
+          page: 0,
+          limit,
+          title: data.gigTitle,
+          freelancerType: data.freelancerType,
+          skills: data.skills,
+          gigType: data.gigType,
+          price: data.startingPrice,
+        })
+      );
     });
 
-    // async function getGigs(page: number) {
-    //   const res = await fetch(endpoints.gigs(page), {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-    //   const gigs = (await res.json()) as IResponseDataGETGigs;
-    //   return gigs;
-    // }
-
-    // const { data } = useQuery({
-    //   queryKey: ["gigs", Number(page) || 0],
-    //   queryFn: () => getGigs(Number(page) || 0),
-    //   keepPreviousData: true,
-    //   enabled: !!session,
+    // const { data } = useGigs({
+    //   session,
+    //   page,
+    //   freelancerType: freelancerTypeParam,
+    //   limit,
+    //   title,
+    //   skills: skillsParams as SkillName[] | undefined,
     // });
-
 
     const defaultOnClick = () => {
       reset({
@@ -154,10 +149,17 @@ export default function FilterBySection() {
         gigType: undefined,
         startingPrice: undefined,
       });
+      router.push(
+        endpoints.PAGE.gigs({
+          page: 0,
+          limit: 6,
+        })
+      );
     };
 
     const freelancerType = watch("freelancerType");
     const skills = watch("skills");
+
     return (
       <form onSubmit={onSubmit}>
         <div className="grid grid-cols-1 gap-4 mt-4">
@@ -203,18 +205,15 @@ export default function FilterBySection() {
                     }),
                   }}
                   value={
-                    field.value
+                    freelancerType
                       ? freelancerTypeOptions.find(
-                          (c) => c.value === field.value
+                          (c) => c.value === freelancerType
                         )
                       : null
                   }
                   onChange={(val) => {
                     field.onChange(val?.value);
-                    reset({
-                      ...getValues(),
-                      skills: undefined,
-                    });
+                    setValue("skills", undefined);
                   }}
                   options={freelancerTypeOptions}
                   isDisabled={false}
@@ -230,7 +229,7 @@ export default function FilterBySection() {
           </div>
           <div className="flex flex-col">
             <label className="mb-2 block text-sm font-medium dark:text-gray-400">
-              Skill
+              Skills
             </label>
             <Controller
               control={control}

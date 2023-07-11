@@ -5,13 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import React, { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Select, { Options } from "react-select";
 import DatePicker from "react-multi-date-picker";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { endpoints } from "@/constants/endpoints";
 import { Country } from "@prisma/client";
+import { useProfiles } from "@/hooks/useQuery";
 
 interface CountryOptionProps {
   value: Country;
@@ -26,11 +27,7 @@ const countryOptions: Options<CountryOptionProps> = [
 export default function MoreInfoSection() {
   const { data: session } = useSession();
   const [isEditable, setIsEditable] = useState<boolean>(false);
-
-  const { data }: { data: IResponseDataGETProfileByUserId | undefined } = useQuery({
-    queryKey: ["profile"],
-    enabled: !!session,
-  });
+  const { data } = useProfiles(session);
 
   const MoreInfoForm = () => {
     const {
@@ -54,21 +51,24 @@ export default function MoreInfoSection() {
 
     const mutation = useMutation<any, Error, MoreInfo>({
       mutationFn: async (data) => {
-        const res = await fetch(endpoints.profileByUserId(session?.user.sub || ''), {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...(session?.user.sub && { userId: session.user.sub }),
-            address: data.address || "",
-            country: data.country || "",
-            city: data.city || "",
-            phoneNumber: data.phoneNumber || "",
-            dob: data.dob || null,
-            zip: data.zip || "",
-          }),
-        });
+        const res = await fetch(
+          endpoints.API.profileByUserId(session?.user.sub || ""),
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...(session?.user.sub && { userId: session.user.sub }),
+              address: data.address || "",
+              country: data.country || "",
+              city: data.city || "",
+              phoneNumber: data.phoneNumber || "",
+              dob: data.dob || null,
+              zip: data.zip || "",
+            }),
+          }
+        );
         if (!res.ok) {
           const error = await res.json();
           throw new Error(error.message);
@@ -76,7 +76,7 @@ export default function MoreInfoSection() {
         return res.json();
       },
       onSuccess: async () => {
-        await client.invalidateQueries({ queryKey: ["profile"] });
+        await client.invalidateQueries({ queryKey: ["profiles", session?.user.sub || ''] });
         toast.success("Info Updated", {
           toastId: "descriptionSection",
           position: "top-center",

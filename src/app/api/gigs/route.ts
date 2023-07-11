@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
+import { Prisma } from "@prisma/client";
 
 export const GET = async (req: NextRequest) => {
     const token = await getToken({ req })
@@ -17,10 +18,60 @@ export const GET = async (req: NextRequest) => {
         const params = new URLSearchParams(url.search)
         const page = Number(params.get("page")) || 0
         const limit = Number(params.get("limit")) || 6
+        const title = (params.get("title")) || ''
+        const freelancerType = params.get("freelancerType") || undefined;
+        const skills = params.getAll("skills") || undefined;
+        const price = params.get("price") || undefined;
+
+        const whereCondition: Prisma.GigWhereInput = {};
+
+        if (title) {
+            whereCondition.title = {
+                contains: title
+            }
+        }
+
+        if (freelancerType) {
+            whereCondition.freelancerProfile = {
+                type: {
+                    equals: freelancerType as FreelancerType
+                }
+            }
+        }
+
+        if (skills && skills.length > 0) {
+            whereCondition.searchTags = {
+                some: {
+                    skillName: {
+                        in: skills as SkillName[]
+                    }
+                }
+            };
+        }
+
+        if (price) {
+            if (price === "CHEAP") {
+                whereCondition.price = {
+                    lt: 19.99
+                }
+            } else if (price === "NORMAL") {
+                whereCondition.price = {
+                    gte: 19.99,
+                    lte: 99.99,
+                }
+            } else if (price === "EXPENSIVE") {
+                whereCondition.price = {
+                    gt: 99.99
+                }
+            }
+        }
 
         const [total, data] = await prisma.$transaction([
-            prisma.gig.count(),
+            prisma.gig.count({
+                where: whereCondition
+            }),
             prisma.gig.findMany({
+                where: whereCondition,
                 include: {
                     searchTags: {
                         select: {
