@@ -2,13 +2,11 @@
 
 import { FilterGig, FilterGigSchema } from "@/models/FilterGig";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select, { Options } from "react-select";
 import { components } from "react-select";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useGigs } from "@/hooks/useQuery";
 import { endpoints } from "@/constants/endpoints";
 
 const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
@@ -76,16 +74,14 @@ const startingPriceOptions: Options<StartingOptionProps> = [
 ];
 
 export default function FilterBySection() {
-  const { data: session } = useSession();
   const searchParams = useSearchParams();
-  const page = Number(searchParams.get("page")) || 0;
   const limit = Number(searchParams.get("limit")) || 6;
   const title = searchParams.get("title") || "";
   const freelancerTypeParam =
     (searchParams.get("freelancerType") as FreelancerType) || undefined;
   const skillsParams = searchParams.getAll("skills") || undefined;
-  const gigType = (searchParams.get("gigType") as GigType) || undefined;
-  const price = searchParams.get("price") || undefined;
+  const gigTypeParam = (searchParams.get("gigType") as GigType) || undefined;
+  const priceParam = searchParams.get("price") || undefined;
 
   const router = useRouter();
 
@@ -104,8 +100,8 @@ export default function FilterBySection() {
         gigTitle: title,
         freelancerType: freelancerTypeParam,
         skills: skillsParams as SkillName[],
-        gigType,
-        startingPrice: price as "CHEAP" | "NORMAL" | "EXPENSIVE",
+        gigType: gigTypeParam,
+        startingPrice: priceParam as "CHEAP" | "NORMAL" | "EXPENSIVE",
       },
     });
 
@@ -132,15 +128,6 @@ export default function FilterBySection() {
       );
     });
 
-    // const { data } = useGigs({
-    //   session,
-    //   page,
-    //   freelancerType: freelancerTypeParam,
-    //   limit,
-    //   title,
-    //   skills: skillsParams as SkillName[] | undefined,
-    // });
-
     const defaultOnClick = () => {
       reset({
         gigTitle: "",
@@ -159,6 +146,8 @@ export default function FilterBySection() {
 
     const freelancerType = watch("freelancerType");
     const skills = watch("skills");
+    const startingPrice = watch("startingPrice");
+    const gigType = watch("gigType");
 
     return (
       <form onSubmit={onSubmit}>
@@ -322,7 +311,9 @@ export default function FilterBySection() {
                     }),
                   }}
                   value={
-                    value ? gigTypeOptions.find((c) => c.value === value) : null
+                    gigType
+                      ? gigTypeOptions.find((c) => c.value === gigType)
+                      : null
                   }
                   onChange={(val) => onChange(val?.value)}
                   options={gigTypeOptions}
@@ -364,8 +355,10 @@ export default function FilterBySection() {
                     }),
                   }}
                   value={
-                    value
-                      ? startingPriceOptions.find((c) => c.value === value)
+                    startingPrice
+                      ? startingPriceOptions.find(
+                          (c) => c.value === startingPrice
+                        )
                       : null
                   }
                   onChange={(val) => onChange(val?.value)}
