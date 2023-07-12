@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { Fragment } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactPaginate from "react-paginate";
-import { useFreelancerProfile, useGigs } from "@/hooks/useQuery";
+import { useGigs } from "@/hooks/useQuery";
 import { endpoints } from "@/constants/endpoints";
 
 export default function GigSection() {
@@ -32,7 +32,6 @@ export default function GigSection() {
     type: gigType,
     price,
   });
-  const freelancerProfile = useFreelancerProfile(session);
 
   const PaginatedItems = () => {
     const handlePageClick = (event: any) => {
@@ -97,18 +96,18 @@ export default function GigSection() {
                 {el.title}
               </h3>
               <div className="flex flex-row gap-3 items-center">
-                {session?.user.image && (
+                {el.freelancerProfile.user.image && (
                   <Image
-                    className=" h-[inherit] rounded-full "
-                    src={session.user.image}
+                    className=" h-[30px] w-[30px] rounded-full object-cover"
+                    src={el.freelancerProfile.user.image}
                     alt=""
-                    width={30}
-                    height={30}
+                    width={100}
+                    height={100}
                   />
                 )}
                 <p className="text-gray-500 text-ellipsis overflow-hidden">
-                  {session?.user.email?.split("@")[0]} -{" "}
-                  {freelancerProfile.data?.data.type}
+                  {el.freelancerProfile.user.email.split("@")[0]} -{" "}
+                  {el.freelancerProfile.type}
                 </p>
               </div>
               <div className="flex flex-row gap-3 mt-2 mb-4 flex-wrap">

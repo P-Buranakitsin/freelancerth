@@ -73,6 +73,12 @@ export const GET = async (req: NextRequest) => {
                             skillName: true
                         }
                     },
+                    freelancerProfile: {
+                        select: {
+                            user: true,
+                            type: true,
+                        }
+                    }
                 },
                 skip: page * limit,
                 take: limit,

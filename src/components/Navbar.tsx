@@ -28,6 +28,7 @@ export default function Navbar() {
   const isProfilePage = pathname.includes("/profile/");
   const isCreateGigPage = pathname.includes("/create-gig");
   const isBrowseGigPage = pathname.includes("/browse/gigs");
+  const isRegisterFreelancerPage = pathname === "/register/freelancer";
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
@@ -78,7 +79,7 @@ export default function Navbar() {
             >
               {session.user.image ? (
                 <Image
-                  className="inline-block h-[2.375rem] w-[2.375rem] rounded-full"
+                  className="inline-block h-[2.375rem] w-[2.375rem] rounded-full object-cover"
                   src={session.user.image || ""}
                   width={200}
                   alt="pic"
@@ -187,7 +188,7 @@ export default function Navbar() {
         >
           <div className="flex flex-col gap-y-4 gap-x-0 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
             <Link
-              className={`font-medium ${isLandingPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${isLandingPage ? active : inactive}`}
               href="/"
               aria-current="page"
               onClick={closeCollapse}
@@ -196,23 +197,24 @@ export default function Navbar() {
             </Link>
             <a
               href="/create-gig"
-              className={`font-medium ${isCreateGigPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${isCreateGigPage ? active : inactive}`}
               onClick={closeCollapse}
             >
               Create a Gig
             </a>
             <Link
-              className={`font-medium ${isBrowseGigPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${isBrowseGigPage ? active : inactive}`}
               href="/browse/gigs?page=0"
               onClick={closeCollapse}
             >
               Browse Gigs
             </Link>
             <Link
-              className="font-medium text-gray-500 hover:text-gray-400 sm:py-6 dark:text-white dark:hover:text-gray-300"
-              href="#"
+              className={`font-medium sm:py-6 ${isRegisterFreelancerPage ? active : inactive}`}
+              href="/register/freelancer"
+              onClick={closeCollapse}
             >
-              Blog
+              Become a Freelancer
             </Link>
           </div>
         </div>

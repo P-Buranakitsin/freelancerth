@@ -4,7 +4,7 @@ export const config = {
   matcher: [
     "/auth/new-user",
     "/profile/:path*",
-    "/create-gig"
+    "/create-gig",
+    "/register/freelancer",
   ],
-  
 }
