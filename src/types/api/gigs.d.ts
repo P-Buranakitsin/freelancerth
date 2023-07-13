@@ -10,6 +10,7 @@ declare interface IResponseDataGETGigs {
     title: string,
     type: GigType,
     description: string,
+    freelancerProfileId: string,
     freelancerProfile: {
         user: {
             id: string,

@@ -16,16 +16,11 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { endpoints } from "@/constants/endpoints";
 import { ImUpload3 } from "react-icons/im";
 import { useState, useEffect } from "react";
-import Select, { Options } from "react-select";
-
-export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
-  { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: false },
-  { value: "DESIGNERS", label: "DESIGNERS", isDisabled: false },
-  { value: "TESTERS", label: "TESTERS", isDisabled: false },
-  { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: false },
-  { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: false },
-  { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: false },
-];
+import Select from "react-select";
+import {
+  freelancerTypeOptions,
+  skillOptionsBasedOnType,
+} from "@/constants/react-select";
 
 export default function RegisterFreelancerSection() {
   const { data: session, update } = useSession();
@@ -44,10 +39,15 @@ export default function RegisterFreelancerSection() {
       defaultValues: {
         passportOrIdImage: [],
         profilePic: session?.user.image || "",
+        freelancerType: "DEVELOPERS",
+        skills: [],
+        resumeOrCV: [],
       },
     });
 
     const passportOrIdImage = watch("passportOrIdImage");
+    const freelancerType = watch("freelancerType");
+    const resumeOrCV = watch("resumeOrCV");
 
     useEffect(() => {
       // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
@@ -108,6 +108,35 @@ export default function RegisterFreelancerSection() {
       }
     };
 
+    const SkillCheckBoxes = () => {
+      if (!freelancerType) {
+        return <></>;
+      }
+      const transformedSkillOptions = Object.fromEntries(
+        Object.entries(skillOptionsBasedOnType).map(([key, value]) => [
+          key,
+          value.map((option) => option.value),
+        ])
+      );
+      return transformedSkillOptions[freelancerType].map((skill, index) => {
+        return (
+          <div key={index}>
+            <label className="cursor-pointer flex p-3 w-fit bg-white border border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400">
+              <input
+                type="checkbox"
+                {...register("skills")}
+                className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 pointer-events-none focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+                value={skill}
+              />
+              <span className="text-sm text-gray-500 ml-3 dark:text-gray-400">
+                {skill}
+              </span>
+            </label>
+          </div>
+        );
+      });
+    };
+
     const Thumbs = passportOrIdImage.map((file) => {
       return (
         <div
@@ -130,7 +159,7 @@ export default function RegisterFreelancerSection() {
       );
     });
 
-    const { fileRejections, getRootProps, getInputProps } = useDropzone({
+    const { getRootProps, getInputProps } = useDropzone({
       accept: {
         "image/*": [],
       },
@@ -175,17 +204,19 @@ export default function RegisterFreelancerSection() {
       onDropRejected(fileRejections) {
         console.log("rejected ");
         console.log(fileRejections);
+        toast.error(fileRejections[0].errors[0].message, {
+          toastId: "userImageSection",
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       },
     });
-
-    const fileRejectionItems = fileRejections.map(
-      ({ errors }: { file: FileWithPath; errors: FileError[] }) =>
-        errors.map((e) => (
-          <p key={e.code} className="text-xs text-red-600 mt-2">
-            {e.message}
-          </p>
-        ))
-    );
 
     return (
       <form onSubmit={onSubmit}>
@@ -239,7 +270,6 @@ export default function RegisterFreelancerSection() {
                       )}
                     </button>
                   </div>
-                  {fileRejectionItems}
                 </div>
               </div>
               {errors.profilePic?.message && (
@@ -358,7 +388,7 @@ export default function RegisterFreelancerSection() {
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 mt-4">
+        <div className="grid grid-cols-1 gap-4 mt-8">
           <div>
             <p className="text-white font-bold text-xl mb-4">
               Professional Information
@@ -393,10 +423,11 @@ export default function RegisterFreelancerSection() {
                     )}
                     onChange={(val) => {
                       field.onChange(val?.value);
+                      setValue("skills", [] as any);
                     }}
                     options={freelancerTypeOptions}
                     isDisabled={false}
-                    isClearable={true}
+                    isClearable={false}
                   />
                 )}
                 name="freelancerType"
@@ -407,6 +438,170 @@ export default function RegisterFreelancerSection() {
                 </p>
               )}
             </div>
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-2 block text-sm font-medium dark:text-gray-400">
+              Skills
+            </label>
+            <div className="dark:bg-slate-900 dark:border-gray-700 dark:text-white border-[1px] p-6 rounded-md gap-5 flex flex-wrap">
+              <SkillCheckBoxes />
+            </div>
+            {errors.skills?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.skills.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-2 block text-sm font-medium dark:text-gray-400">
+              Resume or CV
+            </label>
+            <div className="flex rounded-md shadow-sm">
+              <Controller
+                control={control}
+                name="resumeOrCV"
+                render={({ field: { onChange, onBlur } }) => (
+                  <Dropzone
+                    noClick
+                    accept={{ "application/pdf": [] }}
+                    onDropAccepted={(acceptedFiles) => {
+                      setValue("resumeOrCV", acceptedFiles, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    onDropRejected={(fileRejections) => {
+                      toast.error(fileRejections[0].errors[0].message, {
+                        toastId: "userImageSection",
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                      });
+                    }}
+                    maxFiles={1}
+                  >
+                    {({ getRootProps, getInputProps, open }) => (
+                      <>
+                        <div
+                          className="cursor-pointer py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-l-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 transition-all text-sm"
+                          {...getRootProps()}
+                          onClick={open}
+                        >
+                          <input
+                            {...getInputProps({
+                              id: "spreadsheet",
+                              onChange,
+                              onBlur,
+                            })}
+                          />
+
+                          <p className="dark:text-white">Choose file</p>
+                        </div>
+                      </>
+                    )}
+                  </Dropzone>
+                )}
+              />
+              <input
+                disabled
+                type="text"
+                value={
+                  resumeOrCV && resumeOrCV.length > 0 && !resumeOrCV[0].errors
+                    ? resumeOrCV[0].name
+                    : "No file chosen"
+                }
+                id="hs-leading-button-add-on"
+                name="hs-leading-button-add-on"
+                className="py-3 px-4 block w-full border-gray-200 shadow-sm rounded-r-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 border-[1px]"
+              />
+            </div>
+            {errors.resumeOrCV?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.resumeOrCV.message}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 mt-8">
+          <div>
+            <p className="text-white font-bold text-xl mb-4">Links</p>
+            <div className="flex flex-col">
+              <label className="block text-sm font-medium mb-2 dark:text-gray-400">
+                LinkedIn URL
+              </label>
+              <input
+                {...register("linkedInURL", { disabled: false })}
+                type="text"
+                className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                placeholder=""
+              />
+              {errors.linkedInURL?.message && (
+                <p className="text-xs font-semibold text-red-600 mt-2">
+                  {errors.linkedInURL.message}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <label className="block text-sm font-medium mb-2 dark:text-gray-400">
+              Github URL
+            </label>
+            <input
+              {...register("githubURL", { disabled: false })}
+              type="text"
+              className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              placeholder=""
+            />
+            {errors.githubURL?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.githubURL.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="block text-sm font-medium mb-2 dark:text-gray-400">
+              Portfolio URL
+            </label>
+            <input
+              {...register("portfolioURL", { disabled: false })}
+              type="text"
+              className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              placeholder=""
+            />
+            {errors.portfolioURL?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.portfolioURL.message}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="border-t-[2px] border-gray-700 mt-8" />
+        <div className="grid grid-cols-1 gap-4 mt-8">
+          <p className="text-white font-bold text-xl">Submit Application</p>
+          <p className="font-medium text-gray-400">
+            In order to contact you, we need to store your personal data. If you
+            are happy for us to do so please click the checkbox below.
+          </p>
+          <div className="flex flex-col">
+            <label className="cursor-pointer flex p-3 w-fit bg-white border border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400">
+              <input
+                type="checkbox"
+                {...register("term")}
+                className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 pointer-events-none focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+              />
+              <span className="text-sm text-gray-500 ml-3 dark:text-gray-400">
+                Allow us to process your personal information
+              </span>
+            </label>
+            {errors.term?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.term.message}
+              </p>
+            )}
           </div>
         </div>
         <div className="mt-4">

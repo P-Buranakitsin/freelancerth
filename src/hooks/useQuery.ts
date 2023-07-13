@@ -31,27 +31,28 @@ export const useGigs = (
             return gigs;
         },
         keepPreviousData: true,
-        enabled: !!session,
     });
 };
 
+export async function getFreelancerProfileByUserId(userId: string) {
+    const res = await fetch(
+        endpoints.API.freelancerProfileByUserId(userId),
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    const skills =
+        (await res.json()) as IResponseDataGETFreelancerProfileByUserId;
+    return skills;
+}
+
 export const useFreelancerProfile = (session: Session | null) => {
     return useQuery({
-        queryKey: ["freelancerProfileByUserId"],
-        queryFn: async () => {
-            const res = await fetch(
-                endpoints.API.freelancerProfileByUserId(session?.user.sub || ""),
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-            const skills =
-                (await res.json()) as IResponseDataGETFreelancerProfileSkillsByUserId;
-            return skills;
-        },
+        queryKey: ["freelancerProfileByUserId", session?.user.sub || ""],
+        queryFn: () => getFreelancerProfileByUserId(session?.user.sub || ""),
         enabled: !!session,
     });
 }

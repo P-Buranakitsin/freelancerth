@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
 import { useFreelancerProfile } from "@/hooks/useQuery";
+import RoleVerification from "../RoleVerification";
 
 export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
   { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
@@ -33,11 +34,10 @@ export default function CreateGigSection() {
   const { data: session } = useSession();
 
   const { data } = useFreelancerProfile(session);
-
   const CreateGigForm = ({
     initData,
   }: {
-    initData: IResponseDataGETFreelancerProfileSkillsByUserId;
+    initData: IResponseDataGETFreelancerProfileByUserId;
   }) => {
     const {
       register,
@@ -52,7 +52,7 @@ export default function CreateGigSection() {
       resolver: zodResolver(CreateGigSchema),
       defaultValues: {
         skills: [],
-        freelancerType: initData.data.type,
+        freelancerType: initData.data?.type || undefined,
         gigType: gigTypeOptions[0].value,
         gigPrice: 1,
         gigImage: [],
@@ -136,6 +136,9 @@ export default function CreateGigSection() {
     const gigImage = watch("gigImage");
 
     const SkillCheckBoxes = () => {
+      if (!data?.data) {
+        return <></>;
+      }
       return data?.data.skills.map((skill, index) => {
         return (
           <div key={index}>
@@ -420,10 +423,28 @@ export default function CreateGigSection() {
       </form>
     );
   };
+  if (!data?.data) {
+    return (
+      <RoleVerification
+        title={"Check your freelancer profile"}
+        description={
+          "You need to create a freelancer profile and be verified first"
+        }
+        linkMessage={"Go back to home page"}
+      />
+    );
+  }
 
   return (
-    <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      {data && <CreateGigForm initData={data} />}
-    </div>
+    <main className="">
+      <div className="max-w-[85rem] mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col">
+          <h1 className="text-white font-bold text-3xl mb-6">Gig Creation</h1>
+          <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            {<CreateGigForm initData={data} />}
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
