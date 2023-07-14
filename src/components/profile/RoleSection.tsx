@@ -8,18 +8,13 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { endpoints } from "@/constants/endpoints";
+import { useFreelancerProfile } from "@/hooks/useQuery";
 
 interface OptionProps {
   value: UserRole;
   label: UserRole;
   isDisabled: boolean;
 }
-
-const options: Options<OptionProps> = [
-  { value: "EMPLOYER", label: "EMPLOYER", isDisabled: false },
-  { value: "FREELANCER", label: "FREELANCER", isDisabled: false },
-  { value: 'ADMIN' , label: "ADMIN" , isDisabled: true},
-];
 
 export default function RoleSection() {
   const [selectedOption, setSelectedOption] = useState<OptionProps | null>(
@@ -28,6 +23,13 @@ export default function RoleSection() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const { data: session, update } = useSession();
+  const { data } = useFreelancerProfile(session);
+  const options: Options<OptionProps> = [
+    { value: "EMPLOYER", label: "EMPLOYER", isDisabled: false },
+    { value: "FREELANCER", label: "FREELANCER", isDisabled: !data?.data ? true : false },
+    { value: "ADMIN", label: "ADMIN", isDisabled: true },
+  ];
+
   useEffect(() => {
     if (session?.user.role) {
       setSelectedOption(
@@ -40,15 +42,18 @@ export default function RoleSection() {
     if (isEditable) {
       try {
         setIsLoading(true);
-        const res = await fetch(endpoints.API.userById(session?.user.sub || ''), {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...(selectedOption && { role: selectedOption.value }),
-          }),
-        });
+        const res = await fetch(
+          endpoints.API.userById(session?.user.sub || ""),
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...(selectedOption && { role: selectedOption.value }),
+            }),
+          }
+        );
         if (!res.ok) {
           throw new Error("Failed to update user");
         } else {
@@ -99,8 +104,9 @@ export default function RoleSection() {
     <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <p className="text-white font-bold text-xl">Role</p>
       <p className="text-gray-400 mt-2">
-        To become a freelancer, you need to be approved by one of our admins first.
-        Once you are approved, you can switch between buyer and freelancer freely.
+        To become a freelancer, you need to be approved by one of our admins
+        first. Once you are approved, you can switch between buyer and
+        freelancer freely.
       </p>
       <Select
         className="mt-8"
@@ -130,7 +136,10 @@ export default function RoleSection() {
       />
       <p className="text-gray-400 mt-3">
         Want to become a freelancer?&nbsp;&nbsp;
-        <Link href={"/"} className="text-blue-600 font-semibold">
+        <Link
+          href={"/register/freelancer"}
+          className="text-blue-600 font-semibold"
+        >
           Click here
         </Link>
       </p>

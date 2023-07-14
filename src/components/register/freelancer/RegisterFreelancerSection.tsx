@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import Image from "next/image";
 import { BsPersonCircle } from "react-icons/bs";
-import Dropzone, { FileError, FileWithPath, useDropzone } from "react-dropzone";
+import Dropzone, { FileWithPath, useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
@@ -21,10 +21,15 @@ import {
   freelancerTypeOptions,
   skillOptionsBasedOnType,
 } from "@/constants/react-select";
+import { useMutation } from "@tanstack/react-query";
+import { Session } from "next-auth";
+import { useFreelancerProfile } from "@/hooks/useQuery";
+import UnauthorisedAccess from "@/components/UnauthorisedAccess";
 
 export default function RegisterFreelancerSection() {
   const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { data } = useFreelancerProfile(session);
 
   const RegisterFreelancerForm = () => {
     const {
@@ -43,6 +48,7 @@ export default function RegisterFreelancerSection() {
         skills: [],
         resumeOrCV: [],
       },
+      shouldUnregister: false,
     });
 
     const passportOrIdImage = watch("passportOrIdImage");
@@ -57,12 +63,75 @@ export default function RegisterFreelancerSection() {
         );
     }, []);
 
-    const onSubmit = handleSubmit(async (data) => {
+    const onSubmit = handleSubmit(async (submittedData) => {
       console.log(data);
+      try {
+        if (data?.data) {
+          throw new Error("freelancer profile already exists");
+        }
+        // Post to APIs in parallel
+        const [uploadedPassportOrId, user, uploadedResumeOrCV] =
+          await Promise.all([
+            uploadPassportOrIdMutation.mutateAsync(submittedData),
+            patchUserByIdMutation.mutateAsync(submittedData),
+            uploadResumeOrCVMutation.mutateAsync(submittedData),
+          ]);
+        await Promise.all([
+          postFreelancerProfileMutation.mutateAsync({
+            ...submittedData,
+            passportOrIdImage: uploadedPassportOrId || [],
+            resumeOrCV: uploadedResumeOrCV || [],
+          }),
+          updateSessionMutation.mutateAsync(user),
+        ]);
+        toast.success("Freelancer profile created successfully", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } catch (error: any) {
+        toast.error(error.message, {
+          toastId: "userImageSection",
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } finally {
+        window.scrollTo(0, 0);
+      }
     });
 
+    const LoadingSpinner = () => {
+      if (
+        patchUserByIdMutation.isLoading ||
+        uploadPassportOrIdMutation.isLoading ||
+        uploadResumeOrCVMutation.isLoading ||
+        updateSessionMutation.isLoading ||
+        postFreelancerProfileMutation.isLoading
+      ) {
+        return (
+          <span
+            className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
+            role="status"
+            aria-label="loading"
+          ></span>
+        );
+      }
+      return <></>;
+    };
+
     const { startUpload } = useUploadThing({
-      endpoint: "imageUploader",
+      endpoint: "imageOrFileUploader",
       onClientUploadComplete: () => {
         toast.success("uploaded successfully", {
           position: "top-center",
@@ -218,6 +287,106 @@ export default function RegisterFreelancerSection() {
       },
     });
 
+    const uploadPassportOrIdMutation = useMutation<
+      | {
+          fileUrl: string;
+          fileKey: string;
+        }[]
+      | undefined,
+      Error,
+      RegisterFreelancer
+    >({
+      mutationFn: async (data) => {
+        const uploadedFile = await startUpload(data.passportOrIdImage);
+        if (!uploadedFile) {
+          throw new Error("upload failed");
+        }
+        return uploadedFile;
+      },
+    });
+
+    const updateSessionMutation = useMutation<
+      Session | null,
+      Error,
+      IResponseDataPATCHUserById
+    >({
+      mutationFn: async (data) => {
+        const res = await update({
+          name: data.data.name,
+          role: data.data.role,
+        });
+        return res;
+      },
+    });
+
+    const uploadResumeOrCVMutation = useMutation<
+      | {
+          fileUrl: string;
+          fileKey: string;
+        }[]
+      | undefined,
+      Error,
+      RegisterFreelancer
+    >({
+      mutationFn: async (data) => {
+        const uploadedFile = await startUpload(data.resumeOrCV);
+        if (!uploadedFile) {
+          throw new Error("upload failed");
+        }
+        return uploadedFile;
+      },
+    });
+
+    const postFreelancerProfileMutation = useMutation<
+      any,
+      Error,
+      RegisterFreelancer
+    >({
+      mutationFn: async (data) => {
+        const res = await fetch(endpoints.API.freelancerProfile(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.message);
+        }
+        return res.json();
+      },
+    });
+
+    const patchUserByIdMutation = useMutation<
+      IResponseDataPATCHUserById,
+      Error,
+      RegisterFreelancer
+    >({
+      mutationFn: async (data) => {
+        const updatedName = data.firstName + " " + data.lastName;
+        const res = await fetch(
+          endpoints.API.userById(session?.user.sub || ""),
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: updatedName,
+              role: "FREELANCER",
+              ...(session?.user.email && { email: session.user.email }),
+            }),
+          }
+        );
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.message);
+        }
+        return res.json();
+      },
+    });
+
     return (
       <form onSubmit={onSubmit}>
         <div className="grid grid-cols-1 gap-4">
@@ -341,7 +510,7 @@ export default function RegisterFreelancerSection() {
                 <Dropzone
                   noClick
                   accept={{ "image/*": [] }}
-                  onDrop={(acceptedFiles: any[]) => {
+                  onDrop={async (acceptedFiles) => {
                     setValue(
                       "passportOrIdImage",
                       acceptedFiles.map((file) =>
@@ -464,7 +633,7 @@ export default function RegisterFreelancerSection() {
                   <Dropzone
                     noClick
                     accept={{ "application/pdf": [] }}
-                    onDropAccepted={(acceptedFiles) => {
+                    onDropAccepted={async (acceptedFiles) => {
                       setValue("resumeOrCV", acceptedFiles, {
                         shouldValidate: true,
                       });
@@ -609,6 +778,7 @@ export default function RegisterFreelancerSection() {
             type="submit"
             className="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
           >
+            <LoadingSpinner />
             Submit application
           </button>
         </div>
@@ -616,9 +786,30 @@ export default function RegisterFreelancerSection() {
     );
   };
 
+  if (data?.data) {
+    return (
+      <UnauthorisedAccess
+        title={"You already have a freelancer profile"}
+        description={
+          "If you would like to edit your freelancer profile, please click the link below"
+        }
+        linkMessage={"Go to my freelancer profile page"}
+      />
+    );
+  }
+
   return (
-    <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      {session && <RegisterFreelancerForm />}
-    </div>
+    <main className="">
+      <div className="max-w-[85rem] mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col">
+          <h1 className="text-white font-bold text-3xl mb-6">
+            Freelancer Registration
+          </h1>
+          <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            {session && <RegisterFreelancerForm />}
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }

@@ -84,7 +84,7 @@ export default function VerifyRequest() {
   });
 
   const { startUpload } = useUploadThing({
-    endpoint: "imageUploader",
+    endpoint: "imageOrFileUploader",
     onClientUploadComplete: () => {
       toast.success("uploaded successfully", {
         position: "top-center",

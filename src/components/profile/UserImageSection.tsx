@@ -16,7 +16,7 @@ export default function UserImageSection() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { startUpload } = useUploadThing({
-    endpoint: "imageUploader",
+    endpoint: "imageOrFileUploader",
     onClientUploadComplete: () => {
       toast.success("uploaded successfully", {
         position: "top-center",
@@ -121,7 +121,7 @@ export default function UserImageSection() {
       <div className="min-w-fit">
         {session?.user.image ? (
           <Image
-            className="inline-block h-24 w-24 rounded-full"
+            className="inline-block h-24 w-24 rounded-full object-cover"
             src={session.user.image || ""}
             width={200}
             alt="pic"

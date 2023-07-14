@@ -9,26 +9,13 @@ import Image from "next/image";
 import { useEffect } from "react";
 import Dropzone from "react-dropzone";
 import { useForm, Controller } from "react-hook-form";
-import Select, { Options } from "react-select";
+import Select from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
 import { useFreelancerProfile } from "@/hooks/useQuery";
-import RoleVerification from "../RoleVerification";
-
-export const freelancerTypeOptions: Options<FreelancerTypeOptionProps> = [
-  { value: "DEVELOPERS", label: "DEVELOPERS", isDisabled: true },
-  { value: "DESIGNERS", label: "DESIGNERS", isDisabled: true },
-  { value: "TESTERS", label: "TESTERS", isDisabled: true },
-  { value: "PROJECT_MANAGERS", label: "PROJECT_MANAGERS", isDisabled: true },
-  { value: "DEVOPS_ENGINEERS", label: "DEVOPS_ENGINEERS", isDisabled: true },
-  { value: "BUSINESS_ANALYSTS", label: "BUSINESS_ANALYSTS", isDisabled: true },
-];
-
-export const gigTypeOptions: Options<GigTypeOptionProps> = [
-  { value: "INDIVIDUAL", label: "INDIVIDUAL", isDisabled: false },
-  { value: "TEAM", label: "TEAM", isDisabled: true },
-];
+import { freelancerTypeOptions, gigTypeOptions } from "@/constants/react-select";
+import UnauthorisedAccess from "../UnauthorisedAccess";
 
 export default function CreateGigSection() {
   const { data: session } = useSession();
@@ -86,7 +73,7 @@ export default function CreateGigSection() {
     });
 
     const { startUpload } = useUploadThing({
-      endpoint: "imageUploader",
+      endpoint: "imageOrFileUploader",
     });
 
     const onSubmit = handleSubmit(async (data) => {
@@ -261,7 +248,7 @@ export default function CreateGigSection() {
                   components={{
                     IndicatorSeparator: () => null,
                   }}
-                  isDisabled={false}
+                  isDisabled={true}
                 />
               )}
               name="freelancerType"
@@ -425,7 +412,7 @@ export default function CreateGigSection() {
   };
   if (!data?.data) {
     return (
-      <RoleVerification
+      <UnauthorisedAccess
         title={"Check your freelancer profile"}
         description={
           "You need to create a freelancer profile and be verified first"

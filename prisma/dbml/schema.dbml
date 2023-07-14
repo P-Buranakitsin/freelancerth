@@ -74,6 +74,12 @@ Table FreelancerProfile {
   gigs Gig [not null]
   verified Boolean [not null]
   skills SkillsOnFreelancerProfiles [not null]
+  bio String [not null]
+  passportOrId String [not null, default: '']
+  resumeOrCV String [not null, default: '']
+  linkedInURL String [not null, default: '']
+  githubURL String [not null, default: '']
+  portfolioURL String [not null, default: '']
 }
 
 Table Gig {

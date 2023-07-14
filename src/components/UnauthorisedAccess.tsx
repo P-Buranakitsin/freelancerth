@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-interface RoleVerificationProps {
+interface UnauthorisedAccessProps {
   title: String;
   description: String;
   linkMessage: string;
 }
 
-export default function RoleVerification(props: RoleVerificationProps) {
+export default function UnauthorisedAccess(props: UnauthorisedAccessProps) {
   const { title, description, linkMessage } = props;
   return (
     <main className="flex-grow items-center justify-center flex">

@@ -6,6 +6,27 @@ export interface IPagination {
     totalPages: number
 }
 
+export interface IResponse {
+    body: {
+        message: string;
+        data: any;
+        error?: any;
+        pagination?: IPagination;
+    };
+    status: {
+        status: number;
+    };
+}
+export interface IResponses {
+    unauthorized: IResponse;
+    success: IResponse;
+    internalError: IResponse;
+    notFoundError: IResponse;
+    badRequest: IResponse;
+    pagination: IResponse;
+    conflict: IResponse;
+}
+
 export const responses = (responseData?: any, pagination?: IPagination) => ({
     unauthorized: {
         body: {
@@ -57,6 +78,15 @@ export const responses = (responseData?: any, pagination?: IPagination) => ({
         },
         status: {
             status: 200
+        }
+    },
+    conflict: {
+        body: {
+            message: "freelancer profile already exists",
+            data: null,
+        },
+        status: {
+            status: 409,
         }
     }
 })
