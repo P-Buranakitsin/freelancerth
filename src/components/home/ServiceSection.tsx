@@ -1,19 +1,28 @@
+"use client";
+
+import { endpoints } from "@/constants/endpoints";
+import { useRouter } from "next/navigation";
 import { SiJavascript, SiAzuredevops } from "react-icons/si";
 import { FaPenNib } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
 import { BiTestTube } from "react-icons/bi";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import { IoBarChartOutline } from "react-icons/io5";
+import { MouseEventHandler } from "react";
 interface ServiceProps {
   title: string;
   description: string;
   Icon: IconType;
+  onClick: MouseEventHandler<HTMLDivElement>;
 }
 
 const Service = (props: ServiceProps) => {
-  const { title, description, Icon } = props;
+  const { title, description, Icon, onClick } = props;
   return (
-    <div className="flex flex-col bg-white border rounded-xl dark:bg-slate-900 dark:border-gray-700 hover:shadow hover:shadow-blue-400 cursor-pointer ">
+    <div
+      className="flex flex-col bg-white border rounded-xl dark:bg-slate-900 dark:border-gray-700 hover:shadow hover:shadow-blue-400 cursor-pointer "
+      onClick={onClick}
+    >
       <div className="flex h-[200px] items-center justify-center">
         <svg width="0" height="0">
           <linearGradient
@@ -43,42 +52,60 @@ const Service = (props: ServiceProps) => {
 };
 
 export default function ServiceSection() {
+  const router = useRouter();
   const services: ServiceProps[] = [
     {
       title: "Developers",
       Icon: SiJavascript,
       description:
         "Front-End Developers, Back-End Developers, Full-Stack Developers, Game Developers, you name it, we have it!",
+      onClick: () => {
+        router.push(endpoints.PAGE.browseGigs(0, "DEVELOPERS"));
+      },
     },
     {
       title: "Designers",
       Icon: FaPenNib,
       description:
         "Whether you look for UX/UI, logo designers or animators, all are available here.",
+      onClick: () => {
+        router.push(endpoints.PAGE.browseGigs(0, "DESIGNERS"));
+      },
     },
     {
       title: "Testers",
       Icon: BiTestTube,
-      description:
-        "Never worry about bugs on production again.",
+      description: "Never worry about bugs on production again.",
+      onClick: () => {
+        router.push(endpoints.PAGE.browseGigs(0, "TESTERS"));
+      },
     },
     {
       title: "Project Managers",
       Icon: AiOutlineFundProjectionScreen,
       description:
         "Need someone to manage your project? Click here to work with our experienced project managers.",
+      onClick: () => {
+        router.push(endpoints.PAGE.browseGigs(0, "PROJECT_MANAGERS"));
+      },
     },
     {
       title: "DevOps Engineers",
       Icon: SiAzuredevops,
       description:
         "Our DevOps engineers can help your IT's infrastructure run smooth.",
+      onClick: () => {
+        router.push(endpoints.PAGE.browseGigs(0, "DEVOPS_ENGINEERS"));
+      },
     },
     {
       title: "Business Analysts",
       Icon: IoBarChartOutline,
       description:
         "Our business analysts are here to help identifying your requirements",
+      onClick: () => {
+        router.push(endpoints.PAGE.browseGigs(0, "BUSINESS_ANALYSTS"));
+      },
     },
   ];
   return (

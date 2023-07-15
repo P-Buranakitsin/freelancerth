@@ -1,6 +1,18 @@
+"use client";
+
+import { endpoints } from "@/constants/endpoints";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function HeroSection() {
+  const router = useRouter();
+  const startHiringOnClick = () => {
+    router.push(endpoints.PAGE.browseGigs(0));
+  };
+  const becomeFreelancerOnClick = () => {
+    router.push(endpoints.PAGE.registerFreelancer());
+  };
+
   return (
     <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-4  bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-600 via-slate-900 to-slate-900">
       <div>
@@ -19,12 +31,16 @@ export default function HeroSection() {
         <button
           type="button"
           className="w-full sm:w-fit mt-16 py-3 px-8 bg-gradient-to-r from-blue-600 to-cyan-300 hover:from-cyan-300 hover:to-blue-600 rounded-3xl text-white font-bold transition-colors"
+          onClick={startHiringOnClick}
         >
           Start Hiring
         </button>
 
         <div className="w-full sm:w-fit sm:mt-0 mt-4 sm:ml-8 ml-0 p-0.5 bg-gradient-to-r rounded-3xl from-blue-600 to-cyan-300 hover:from-cyan-300 hover:to-blue-600 inline-flex">
-          <button className="py-3 px-8 text-white bg-slate-900 w-full rounded-3xl font-bold">
+          <button
+            className="py-3 px-8 text-white bg-slate-900 w-full rounded-3xl font-bold"
+            onClick={becomeFreelancerOnClick}
+          >
             Become a freelancer
           </button>
         </div>

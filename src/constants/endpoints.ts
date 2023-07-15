@@ -43,7 +43,16 @@ export const endpoints = {
         gigs: (params: GigsParams) => createGigsEndpoint('/api/gigs', params),
     },
     PAGE: {
-        gigs: (params: GigsParams) => createGigsEndpoint('gigs', params)
+        gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),
+        home: () => '/',
+        browseGigs: (page: number, freelancerType?: FreelancerType) => {
+            const basePath = `/browse/gigs?page=${page}`
+            if (freelancerType) {
+                return `${basePath}&freelancerType=${freelancerType}`
+            }
+            return basePath
+        },
+        registerFreelancer: () => `register/freelancer`
     }
 
 }

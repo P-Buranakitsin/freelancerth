@@ -26,6 +26,7 @@ import { Session } from "next-auth";
 import { useFreelancerProfile } from "@/hooks/useQuery";
 import UnauthorisedAccess from "@/components/UnauthorisedAccess";
 import { useRouter } from "next/navigation";
+import { HiXMark } from "react-icons/hi2";
 
 export default function RegisterFreelancerSection() {
   const { data: session, update } = useSession();
@@ -110,9 +111,17 @@ export default function RegisterFreelancerSection() {
         });
       } finally {
         window.scrollTo(0, 0);
-        router.replace("/")
+        router.replace("/");
       }
     });
+
+    const clearFileOnClick = () => {
+      setValue("resumeOrCV", []);
+    };
+
+    const clearPassportOrIdOnClick = () => {
+      setValue("passportOrIdImage", [])
+    }
 
     const LoadingSpinner = () => {
       if (
@@ -212,7 +221,7 @@ export default function RegisterFreelancerSection() {
     const Thumbs = passportOrIdImage.map((file) => {
       return (
         <div
-          className="w-[300px] h-[300px] box-border inline-flex my-4"
+          className="w-[300px] h-[300px] box-border inline-flex my-4 relative"
           key={file.name}
         >
           <div className="flex overflow-hidden">
@@ -226,6 +235,7 @@ export default function RegisterFreelancerSection() {
               width={500}
               height={500}
             />
+            <HiXMark size={32} color="white" className="cursor-pointer absolute bg-red-500 rounded-full right-[-10px] top-[-10px]" onClick={clearPassportOrIdOnClick} />
           </div>
         </div>
       );
@@ -691,8 +701,15 @@ export default function RegisterFreelancerSection() {
                 }
                 id="hs-leading-button-add-on"
                 name="hs-leading-button-add-on"
-                className="py-3 px-4 block w-full border-gray-200 shadow-sm rounded-r-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 border-[1px]"
+                className="py-3 px-4 block w-full border-gray-200 shadow-sm text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 border-[1px]"
               />
+              <button
+                type="button"
+                className="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-r-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-sm"
+                onClick={clearFileOnClick}
+              >
+                <HiXMark size={28} />
+              </button>
             </div>
             {errors.resumeOrCV?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">
