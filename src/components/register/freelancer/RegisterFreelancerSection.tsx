@@ -25,11 +25,13 @@ import { useMutation } from "@tanstack/react-query";
 import { Session } from "next-auth";
 import { useFreelancerProfile } from "@/hooks/useQuery";
 import UnauthorisedAccess from "@/components/UnauthorisedAccess";
+import { useRouter } from "next/navigation";
 
 export default function RegisterFreelancerSection() {
   const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { data } = useFreelancerProfile(session);
+  const router = useRouter();
 
   const RegisterFreelancerForm = () => {
     const {
@@ -77,7 +79,7 @@ export default function RegisterFreelancerSection() {
             uploadResumeOrCVMutation.mutateAsync(submittedData),
           ]);
         await Promise.all([
-          postFreelancerProfileMutation.mutateAsync({
+          putFreelancerProfileByUserIdMutation.mutateAsync({
             ...submittedData,
             passportOrIdImage: uploadedPassportOrId || [],
             resumeOrCV: uploadedResumeOrCV || [],
@@ -108,6 +110,7 @@ export default function RegisterFreelancerSection() {
         });
       } finally {
         window.scrollTo(0, 0);
+        router.replace("/")
       }
     });
 
@@ -117,7 +120,7 @@ export default function RegisterFreelancerSection() {
         uploadPassportOrIdMutation.isLoading ||
         uploadResumeOrCVMutation.isLoading ||
         updateSessionMutation.isLoading ||
-        postFreelancerProfileMutation.isLoading
+        putFreelancerProfileByUserIdMutation.isLoading
       ) {
         return (
           <span
@@ -337,19 +340,22 @@ export default function RegisterFreelancerSection() {
       },
     });
 
-    const postFreelancerProfileMutation = useMutation<
+    const putFreelancerProfileByUserIdMutation = useMutation<
       any,
       Error,
       RegisterFreelancer
     >({
       mutationFn: async (data) => {
-        const res = await fetch(endpoints.API.freelancerProfile(), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+        const res = await fetch(
+          endpoints.API.freelancerProfileByUserId(session?.user.sub || ""),
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
         if (!res.ok) {
           const error = await res.json();
           throw new Error(error.message);

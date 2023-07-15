@@ -41,7 +41,6 @@ export const endpoints = {
         profileByUserId: (userId: string) => `/api/profiles/${userId}`,
         freelancerProfileByUserId: (userId: string) => `/api/freelancer-profiles/${userId}`,
         gigs: (params: GigsParams) => createGigsEndpoint('/api/gigs', params),
-        freelancerProfile: () => `/api/freelancer-profiles`
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params)
