@@ -1,7 +1,7 @@
 "use client";
 
 import { useGig } from "@/hooks/useQuery";
-
+import { HiArrowSmRight } from "react-icons/hi";
 interface IPackageSectionProps {
   dynamicRoute: {
     freelancerProfileId: string;
@@ -15,9 +15,7 @@ export default function PackageSection(props: IPackageSectionProps) {
   const gig = useGig(gigId);
 
   if (!gig.data?.data) {
-    return (
-        <></>
-    )
+    return <></>;
   }
 
   return (
@@ -70,6 +68,13 @@ export default function PackageSection(props: IPackageSectionProps) {
               £&nbsp;{Number(gig.data?.data.price).toFixed(2)}
             </p>
           </div>
+          <button
+            type="button"
+            className="mt-7 w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+          >
+            Continue
+            <HiArrowSmRight size={24} />
+          </button>
         </div>
         <div
           id="bar-with-underline-2"
