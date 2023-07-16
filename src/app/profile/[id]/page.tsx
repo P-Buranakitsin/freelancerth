@@ -4,7 +4,7 @@ import MoreInfoSection from "@/components/profile/MoreInfoSection";
 import RoleSection from "@/components/profile/RoleSection";
 import UserImageSection from "@/components/profile/UserImageSection";
 
-export default async function Profile({ params }: { params: { id: string } }) {
+export default function Profile({ params }: { params: { id: string } }) {
  
   return (
     <main className="">

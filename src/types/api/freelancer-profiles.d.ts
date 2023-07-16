@@ -8,6 +8,12 @@ declare interface IResponseDataGETFreelancerProfileByUserId {
         userId: string
         type: FreelancerType
         verified: boolean
+        bio: string
+        passportOrId: string
+        resumeOrCV: string
+        linkedInURL: string
+        githubURL: string
+        portfolioURL: string
         skills: SkillName[]
     } | null
 }

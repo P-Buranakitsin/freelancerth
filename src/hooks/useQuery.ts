@@ -76,3 +76,21 @@ export const useProfiles = (session: Session | null) => {
         enabled: !!session,
     });
 }
+
+async function getGigByGigId(gigId: string) {
+    const res = await fetch(endpoints.API.gigByGigId(gigId), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const gig = (await res.json()) as IResponseGETGig
+    return gig
+}
+
+export const useGig = (gigId: string) => {
+    return useQuery({
+        queryKey: ["gig", gigId],
+        queryFn: () => getGigByGigId(gigId),
+    })
+}

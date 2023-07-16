@@ -5,6 +5,11 @@ declare interface IResponseGETGigs {
 
 }
 
+declare interface IResponseGETGig {
+    message: string
+    data: IResponseDataGETGigs
+}
+
 declare interface IResponseDataGETGigs {
     id: string,
     title: string,
@@ -26,3 +31,4 @@ declare interface IResponseDataGETGigs {
     image: string
     searchTags: SkillName[]
 }
+

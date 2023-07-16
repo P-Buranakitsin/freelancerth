@@ -209,13 +209,13 @@ export default function Navbar() {
             >
               Browse Gigs
             </Link>
-            <Link
+            <a
               className={`font-medium sm:py-6 ${isRegisterFreelancerPage ? active : inactive}`}
               href="/register/freelancer"
               onClick={closeCollapse}
             >
               Become a Freelancer
-            </Link>
+            </a>
           </div>
         </div>
         <div className="-sm:hidden sm:ml-auto">

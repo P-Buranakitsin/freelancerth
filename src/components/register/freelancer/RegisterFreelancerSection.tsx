@@ -23,15 +23,12 @@ import {
 } from "@/constants/react-select";
 import { useMutation } from "@tanstack/react-query";
 import { Session } from "next-auth";
-import { useFreelancerProfile } from "@/hooks/useQuery";
-import UnauthorisedAccess from "@/components/UnauthorisedAccess";
 import { useRouter } from "next/navigation";
 import { HiXMark } from "react-icons/hi2";
 
 export default function RegisterFreelancerSection() {
   const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { data } = useFreelancerProfile(session);
   const router = useRouter();
 
   const RegisterFreelancerForm = () => {
@@ -67,11 +64,7 @@ export default function RegisterFreelancerSection() {
     }, []);
 
     const onSubmit = handleSubmit(async (submittedData) => {
-      console.log(data);
       try {
-        if (data?.data) {
-          throw new Error("freelancer profile already exists");
-        }
         // Post to APIs in parallel
         const [uploadedPassportOrId, user, uploadedResumeOrCV] =
           await Promise.all([
@@ -808,18 +801,6 @@ export default function RegisterFreelancerSection() {
       </form>
     );
   };
-
-  if (data?.data) {
-    return (
-      <UnauthorisedAccess
-        title={"You already have a freelancer profile"}
-        description={
-          "If you would like to edit your freelancer profile, please click the link below"
-        }
-        linkMessage={"Go to my freelancer profile page"}
-      />
-    );
-  }
 
   return (
     <main className="">

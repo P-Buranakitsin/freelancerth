@@ -4,7 +4,6 @@ import { endpoints } from "@/constants/endpoints";
 import { CreateGig, CreateGigSchema } from "@/models/CreateGig";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect } from "react";
 import Dropzone from "react-dropzone";
@@ -13,14 +12,18 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUploadThing } from "@/utils/uploadthing";
-import { useFreelancerProfile } from "@/hooks/useQuery";
-import { freelancerTypeOptions, gigTypeOptions } from "@/constants/react-select";
-import UnauthorisedAccess from "../UnauthorisedAccess";
+import {
+  freelancerTypeOptions,
+  gigTypeOptions,
+} from "@/constants/react-select";
 
-export default function CreateGigSection() {
-  const { data: session } = useSession();
+interface ICreateGigSectionProps {
+  freelancerProfile: IResponseDataGETFreelancerProfileByUserId;
+}
 
-  const { data } = useFreelancerProfile(session);
+export default function CreateGigSection(props: ICreateGigSectionProps) {
+  const data = props.freelancerProfile;
+
   const CreateGigForm = ({
     initData,
   }: {
@@ -410,17 +413,6 @@ export default function CreateGigSection() {
       </form>
     );
   };
-  if (!data?.data) {
-    return (
-      <UnauthorisedAccess
-        title={"Check your freelancer profile"}
-        description={
-          "You need to create a freelancer profile and be verified first"
-        }
-        linkMessage={"Go back to home page"}
-      />
-    );
-  }
 
   return (
     <main className="">

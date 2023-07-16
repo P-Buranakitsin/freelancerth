@@ -7,6 +7,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ReactPaginate from "react-paginate";
 import { useGigs } from "@/hooks/useQuery";
 import { endpoints } from "@/constants/endpoints";
+import EmptyStateCard from "@/components/EmptyStateCard";
+import Link from "next/link";
 
 export default function GigSection() {
   const { data: session } = useSession();
@@ -46,6 +48,9 @@ export default function GigSection() {
         })
       );
     };
+    if (!gigs.data || gigs.data.data.length < 1) {
+      return <EmptyStateCard />;
+    }
 
     return (
       <>
@@ -59,7 +64,7 @@ export default function GigSection() {
             nextLabel="Next"
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
-            pageCount={gigs.data?.pagination.totalPages || 0}
+            pageCount={gigs.data?.pagination?.totalPages || 0}
             previousLabel="Previous"
             renderOnZeroPageCount={null}
             forcePage={page}
@@ -92,7 +97,7 @@ export default function GigSection() {
               )}
             </div>
             <div className="p-4 md:p-5 border-t-2 border-gray-700 bg-slate-900 rounded-br-[inherit] rounded-bl-[inherit] flex-grow">
-              <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white break-words">
                 {el.title}
               </h3>
               <div className="flex flex-row gap-3 items-center">
@@ -126,14 +131,14 @@ export default function GigSection() {
                 {el.description}
               </p>
               <div className="flex flex-row justify-between mt-6 items-center">
-                <a
+                <Link
                   className=" py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
-                  href="#"
+                  href={endpoints.PAGE.gigDetails(el.freelancerProfileId, el.id)}
                 >
                   View
-                </a>
+                </Link>
                 <p className="mt-1 text-gray-800 dark:text-white text-end">
-                  £&nbsp;{el.price}
+                  £&nbsp;{Number(el.price).toFixed(2)}
                 </p>
               </div>
             </div>
