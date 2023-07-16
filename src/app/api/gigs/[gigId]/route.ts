@@ -18,6 +18,7 @@ export const GET = async (req: NextRequest, { params }: { params: { gigId: strin
                     select: {
                         user: true,
                         type: true,
+                        bio: true,
                     }
                 }
             },

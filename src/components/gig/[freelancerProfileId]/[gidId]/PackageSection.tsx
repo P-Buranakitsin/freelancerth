@@ -1,25 +1,19 @@
 "use client";
 
-import { useGig } from "@/hooks/useQuery";
 import { HiArrowSmRight } from "react-icons/hi";
 interface IPackageSectionProps {
   dynamicRoute: {
     freelancerProfileId: string;
     gigId: string;
   };
+  gigData: IResponseDataGETGigs
 }
 
 export default function PackageSection(props: IPackageSectionProps) {
-  const { gigId } = props.dynamicRoute;
-
-  const gig = useGig(gigId);
-
-  if (!gig.data?.data) {
-    return <></>;
-  }
+  const { price } = props.gigData;
 
   return (
-    <div className="flex flex-col bg-gray-800 border rounded-xl border-gray-700">
+    <div className="flex flex-col bg-gray-800 border rounded-xl border-gray-700 sticky top-[120px]">
       <nav
         className="relative z-0 flex border rounded-xl overflow-hidden dark:border-gray-700"
         aria-label="Tabs"
@@ -65,7 +59,7 @@ export default function PackageSection(props: IPackageSectionProps) {
           <div className="flex flex-row justify-between">
             <p className="text-gray-500 dark:text-gray-400">Basic Package</p>
             <p className="text-gray-500 dark:text-gray-400">
-              £&nbsp;{Number(gig.data?.data.price).toFixed(2)}
+              £&nbsp;{Number(price).toFixed(2)}
             </p>
           </div>
           <button

@@ -18,7 +18,7 @@ import {
 } from "@/constants/react-select";
 
 interface ICreateGigSectionProps {
-  freelancerProfile: IResponseDataGETFreelancerProfileByUserId;
+  freelancerProfile: IResponsGETFreelancerProfileByUserId;
 }
 
 export default function CreateGigSection(props: ICreateGigSectionProps) {
@@ -27,7 +27,7 @@ export default function CreateGigSection(props: ICreateGigSectionProps) {
   const CreateGigForm = ({
     initData,
   }: {
-    initData: IResponseDataGETFreelancerProfileByUserId;
+    initData: IResponsGETFreelancerProfileByUserId;
   }) => {
     const {
       register,

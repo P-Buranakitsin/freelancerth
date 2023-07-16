@@ -77,6 +77,7 @@ export const GET = async (req: NextRequest) => {
                         select: {
                             user: true,
                             type: true,
+                            bio: true,
                         }
                     }
                 },

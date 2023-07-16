@@ -25,7 +25,8 @@ declare interface IResponseDataGETGigs {
             image: string,
             role: import('@prisma/client').UserRole
         }
-        type: FreelancerType
+        type: FreelancerType,
+        bio: string,
     },
     price: number,
     image: string

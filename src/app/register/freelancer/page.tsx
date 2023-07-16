@@ -19,7 +19,7 @@ async function getFreelancerProfileByUserId(token: string, userId: string) {
     }
   );
   const data =
-    (await response.json()) as IResponseDataGETFreelancerProfileByUserId;
+    (await response.json()) as IResponsGETFreelancerProfileByUserId;
   return data;
 }
 

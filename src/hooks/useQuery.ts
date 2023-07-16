@@ -45,7 +45,7 @@ export async function getFreelancerProfileByUserId(userId: string) {
         }
     );
     const skills =
-        (await res.json()) as IResponseDataGETFreelancerProfileByUserId;
+        (await res.json()) as IResponsGETFreelancerProfileByUserId;
     return skills;
 }
 

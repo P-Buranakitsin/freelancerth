@@ -1,7 +1,7 @@
 type SkillName = import('@prisma/client').SkillName;
 type FreelancerType = import('@prisma/client').FreelancerType;
 
-declare interface IResponseDataGETFreelancerProfileByUserId {
+declare interface IResponsGETFreelancerProfileByUserId {
     message: string
     data: {
         id: string
