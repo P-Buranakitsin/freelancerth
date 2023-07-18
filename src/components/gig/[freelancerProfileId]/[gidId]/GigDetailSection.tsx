@@ -1,8 +1,9 @@
 "use client";
 
 import Accordion from "@/components/Accordion";
+import { endpoints } from "@/constants/endpoints";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 interface IGigDetailSectinoProps {
   dynamicRoute: {
     freelancerProfileId: string;
@@ -14,6 +15,10 @@ interface IGigDetailSectinoProps {
 export default function GigDetailSection(props: IGigDetailSectinoProps) {
   const { image, title, searchTags, description, freelancerProfile } =
     props.gigData;
+  const router = useRouter();
+  const viewProfileOnClick = () => {
+    router.push(endpoints.PAGE.publicUserProfile(freelancerProfile.user.id));
+  };
   return (
     <div className="flex flex-col bg-gray-800 border rounded-xl border-gray-700 p-6">
       <Image
@@ -58,6 +63,7 @@ export default function GigDetailSection(props: IGigDetailSectinoProps) {
             <button
               type="button"
               className="mt-7 w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+              onClick={viewProfileOnClick}
             >
               View Full Profile
             </button>

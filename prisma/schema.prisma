@@ -138,6 +138,14 @@ model FreelancerProfile {
   portfolioURL String                       @default("")
 }
 
+model Cart {
+  id                  String            @id @default(cuid())
+  // 1 - 1 User
+  // many - many gigs
+  // create at
+  // updated at
+}
+
 model Gig {
   id                  String            @id @default(cuid())
   title               String            @default("")
