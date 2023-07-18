@@ -4,16 +4,6 @@ import { getToken } from "next-auth/jwt";
 import { responses } from "@/constants/responses";
 
 export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const token = await getToken({ req })
-    console.log(params)
-    // Not signed in
-    if (!token) {
-        const unauthorizedResponse = responses().unauthorized;
-        return NextResponse.json(
-            unauthorizedResponse.body,
-            unauthorizedResponse.status
-        );
-    }
 
     try {
         const user = await prisma.user.findUniqueOrThrow({
@@ -27,8 +17,28 @@ export const GET = async (req: NextRequest, { params }: { params: { id: string }
                         githubURL: true,
                         linkedInURL: true,
                         portfolioURL: true,
-                        skills: true,
+                        skills: {
+                            select: {
+                                skillName: true,
+                            }
+                        },
                         type: true,
+                        gigs: {
+                            select: {
+                                id: true,
+                                title: true,
+                                type: true,
+                                description: true,
+                                freelancerProfileId: true,
+                                price: true,
+                                image: true,
+                                searchTags: {
+                                    select: {
+                                        skillName: true
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 profile: {
@@ -40,11 +50,7 @@ export const GET = async (req: NextRequest, { params }: { params: { id: string }
                 }
             }
         })
-        if (user.FreelancerProfile) {
-            const skills = user.FreelancerProfile.skills.map(skill => skill.skillName);
-            const successResponse = responses({ ...user, FreelancerProfile: { ...user.FreelancerProfile, skills } }).success;
-            return NextResponse.json(successResponse.body, successResponse.status)
-        }
+
         const successResponse = responses(user).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {

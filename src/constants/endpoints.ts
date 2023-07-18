@@ -14,10 +14,13 @@ function createGigsEndpoint(basePath: string, params: GigsParams) {
         return basePath
     }
 
-    const { page = 0, title, freelancerType, skills, gigType, price } = params
+    const { page = 0, title, freelancerType, skills, gigType, price, limit = 6 } = params
     let url = `${basePath}?page=${page}`;
     if (title) {
         url += `&title=${encodeURIComponent(title)}`;
+    }
+    if (limit) {
+        url += `&limit=${encodeURIComponent(limit)}`;
     }
     if (freelancerType) {
         url += `&freelancerType=${encodeURIComponent(freelancerType)}`;

@@ -24,8 +24,20 @@ declare interface IResponseDataGETUserById {
         githubURL: string
         linkedInURL: string
         portfolioURL: string
-        skills: SkillName[]
+        skills: {
+            skillName: SkillName
+        }[]
         type: FreelancerType
+        gigs: {
+            id: string;
+            title: string;
+            type: FreelancerType
+            description: string;
+            freelancerProfileId: string;
+            price: string;
+            image: string;
+            searchTags: { skillName: string }[]
+        }[]
     }
     profile?: {
         city: string
@@ -36,5 +48,6 @@ declare interface IResponseDataGETUserById {
 
 declare interface IResponseGETUserById {
     message: string
-    data: IResponseDataGETUserById
+    data?: IResponseDataGETUserById
+    error?: any
 }

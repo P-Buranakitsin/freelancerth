@@ -1,4 +1,5 @@
 import { endpoints } from "@/constants/endpoints";
+import { IResponseGETUserById } from "@/types/api/users";
 import { useQuery } from "@tanstack/react-query";
 import { Session } from "next-auth";
 
@@ -92,5 +93,24 @@ export const useGig = (gigId: string) => {
     return useQuery({
         queryKey: ["gig", gigId],
         queryFn: () => getGigByGigId(gigId),
+    })
+}
+
+async function getUserByUserId(userId: string) {
+    const res = await fetch(endpoints.API.userById(userId), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const user = (await res.json()) as IResponseGETUserById
+    return user
+}
+
+export const useUser = (userId: string) => {
+    return useQuery({
+        queryKey: ["user", userId],
+        queryFn: () => getUserByUserId(userId),
+        
     })
 }
