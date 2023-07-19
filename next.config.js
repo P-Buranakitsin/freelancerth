@@ -20,13 +20,8 @@ const nextConfig = {
     return config;
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
-  },
+    domains: ['uploadthing.com'],
+},
 };
 
 module.exports = nextConfig;

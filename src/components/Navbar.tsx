@@ -2,11 +2,12 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { BiLogOut } from "react-icons/bi";
+import { BiCart, BiLogOut } from "react-icons/bi";
 import { BsPersonCircle } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { endpoints } from "@/constants/endpoints";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -29,6 +30,7 @@ export default function Navbar() {
   const isCreateGigPage = pathname.includes("/create-gig");
   const isBrowseGigPage = pathname.includes("/browse/gigs");
   const isRegisterFreelancerPage = pathname === "/register/freelancer";
+  const isGigCartPage = pathname.includes(endpoints.PAGE.gigCart(""));
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
@@ -114,7 +116,22 @@ export default function Navbar() {
                   onClick={closeCollapse}
                 >
                   <ImProfile size={16} className="flex-none" />
-                  <div>My Profile</div>
+                  <div>My profile</div>
+                </Link>
+                <Link
+                  className={`${
+                    isGigCartPage ? active : inactive
+                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  href={endpoints.PAGE.gigCart(session.user.sub || "")}
+                  onClick={closeCollapse}
+                >
+                  <BiCart size={16} className="flex-none" />
+                  <div className="flex flex-row justify-between w-full items-center">
+                    <div>My cart</div>
+                    <div className="flex justify-center items-center bg-blue-500 rounded-full p-1 w-6 h-6">
+                      <div className="text-white">0</div>
+                    </div>
+                  </div>
                 </Link>
                 <button
                   className={`${inactive} w-full flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300`}
@@ -188,7 +205,9 @@ export default function Navbar() {
         >
           <div className="flex flex-col gap-y-4 gap-x-0 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
             <Link
-              className={`font-medium sm:py-6 ${isLandingPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${
+                isLandingPage ? active : inactive
+              }`}
               href="/"
               aria-current="page"
               onClick={closeCollapse}
@@ -197,20 +216,26 @@ export default function Navbar() {
             </Link>
             <a
               href="/create-gig"
-              className={`font-medium sm:py-6 ${isCreateGigPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${
+                isCreateGigPage ? active : inactive
+              }`}
               onClick={closeCollapse}
             >
               Create a Gig
             </a>
             <Link
-              className={`font-medium sm:py-6 ${isBrowseGigPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${
+                isBrowseGigPage ? active : inactive
+              }`}
               href="/browse/gigs?page=0"
               onClick={closeCollapse}
             >
               Browse Gigs
             </Link>
             <a
-              className={`font-medium sm:py-6 ${isRegisterFreelancerPage ? active : inactive}`}
+              className={`font-medium sm:py-6 ${
+                isRegisterFreelancerPage ? active : inactive
+              }`}
               href="/register/freelancer"
               onClick={closeCollapse}
             >

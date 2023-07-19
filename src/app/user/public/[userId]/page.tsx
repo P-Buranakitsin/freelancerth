@@ -11,8 +11,11 @@ export default function PublicUserProfile({
 }: {
   params: { userId: string };
 }) {
-  const { data } = useUser(params.userId);
+  const { data, isLoading } = useUser(params.userId);
   const userData = data?.data;
+  if (isLoading) {
+    return <></>;
+  }
   if (!userData) {
     return (
       <UnauthorisedAccess
