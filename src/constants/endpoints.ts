@@ -47,6 +47,7 @@ export const endpoints = {
         gigByGigId: (gigId: string) => `/api/gigs/${gigId}`,
         cartByUserId: (userId: string) => `/api/carts/${userId}`,
         gigsOnCartByGigIdAndUserId: (gigId: string, userId: string) => `/api/gigs-on-cart/${gigId}/${userId}`,
+        checkoutSessions: () => `/api/checkout_sessions`,
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),
