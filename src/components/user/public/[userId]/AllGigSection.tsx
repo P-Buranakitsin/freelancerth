@@ -1,7 +1,6 @@
 "use client";
 
 import { endpoints } from "@/constants/endpoints";
-import { IResponseDataGETUserById } from "@/types/api/users";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";

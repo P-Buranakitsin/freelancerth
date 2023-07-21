@@ -41,6 +41,7 @@ Table User {
   sessions Session [not null]
   profile Profile
   FreelancerProfile FreelancerProfile
+  cart Cart
 }
 
 Table Profile {
@@ -82,6 +83,14 @@ Table FreelancerProfile {
   portfolioURL String [not null, default: '']
 }
 
+Table Cart {
+  userId String [pk]
+  user User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  gigs GigsOnCart [not null]
+}
+
 Table Gig {
   id String [pk]
   title String [not null, default: '']
@@ -92,6 +101,7 @@ Table Gig {
   price Decimal [not null]
   image String [not null]
   searchTags SkillsOnGigs [not null]
+  carts GigsOnCart [not null]
 }
 
 Table Skill {
@@ -119,6 +129,17 @@ Table SkillsOnGigs {
 
   indexes {
     (skillName, gigId) [pk]
+  }
+}
+
+Table GigsOnCart {
+  gig Gig [not null]
+  gigId String [not null]
+  cart Cart [not null]
+  userId String [not null]
+
+  indexes {
+    (gigId, userId) [pk]
   }
 }
 
@@ -173,6 +194,8 @@ Ref: Profile.userId - User.id [delete: Cascade]
 
 Ref: FreelancerProfile.userId - User.id [delete: Cascade]
 
+Ref: Cart.userId - User.id
+
 Ref: Gig.freelancerProfileId > FreelancerProfile.id [delete: Cascade]
 
 Ref: SkillsOnFreelancerProfiles.skillName > Skill.name [delete: Cascade]
@@ -182,3 +205,7 @@ Ref: SkillsOnFreelancerProfiles.freelancerProfileId > FreelancerProfile.id [dele
 Ref: SkillsOnGigs.gigId > Gig.id [delete: Cascade]
 
 Ref: SkillsOnGigs.skillName > Skill.name [delete: Cascade]
+
+Ref: GigsOnCart.gigId > Gig.id [delete: Cascade]
+
+Ref: GigsOnCart.userId > Cart.userId [delete: Cascade]

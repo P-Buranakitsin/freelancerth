@@ -99,6 +99,7 @@ model User {
 
   profile           Profile?
   FreelancerProfile FreelancerProfile?
+  cart              Cart?
 }
 
 model Profile {
@@ -139,11 +140,11 @@ model FreelancerProfile {
 }
 
 model Cart {
-  id                  String            @id @default(cuid())
-  // 1 - 1 User
-  // many - many gigs
-  // create at
-  // updated at
+  userId    String       @id @unique
+  user      User         @relation(fields: [userId], references: [id])
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  gigs      GigsOnCart[]
 }
 
 model Gig {
@@ -156,6 +157,7 @@ model Gig {
   price               Decimal
   image               String
   searchTags          SkillsOnGigs[]
+  carts               GigsOnCart[]
 }
 
 model Skill {
@@ -180,4 +182,13 @@ model SkillsOnGigs {
   skillName SkillName
 
   @@id([skillName, gigId])
+}
+
+model GigsOnCart {
+  gig    Gig    @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  gigId  String
+  cart   Cart   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId String
+
+  @@id([gigId, userId])
 }

@@ -8,9 +8,11 @@ import { ImProfile } from "react-icons/im";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { endpoints } from "@/constants/endpoints";
+import { useCart } from "@/hooks/useQuery";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const { data } = useCart(session);
   const handleSigninOnClick = () => {
     signIn();
   };
@@ -129,7 +131,13 @@ export default function Navbar() {
                   <div className="flex flex-row justify-between w-full items-center">
                     <div>My cart</div>
                     <div className="flex justify-center items-center bg-blue-500 rounded-full p-1 w-6 h-6">
-                      <div className="text-white">0</div>
+                      <div className="text-white">
+                        {data?.data?.gigs
+                          ? data.data?.gigs.length > 9
+                            ? "9+"
+                            : data.data.gigs.length
+                          : 0}
+                      </div>
                     </div>
                   </div>
                 </Link>

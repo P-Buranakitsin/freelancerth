@@ -1,4 +1,5 @@
-import { UserRole } from '@prisma/client';
+
+type UserRole = import('@prisma/client').UserRole
 type FreelancerType = import('@prisma/client').FreelancerType;
 declare interface IResponseDataPATCHUserById {
     message: string

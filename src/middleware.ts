@@ -6,5 +6,6 @@ export const config = {
     "/profile/:path*",
     "/create-gig",
     "/register/freelancer",
+    "/cart/gigs/:path*"
   ],
 }

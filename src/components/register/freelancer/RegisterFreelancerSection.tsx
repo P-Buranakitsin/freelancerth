@@ -90,6 +90,7 @@ export default function RegisterFreelancerSection() {
           progress: undefined,
           theme: "dark",
         });
+        router.replace("/");
       } catch (error: any) {
         toast.error(error.message, {
           toastId: "userImageSection",
@@ -113,17 +114,11 @@ export default function RegisterFreelancerSection() {
     };
 
     const clearPassportOrIdOnClick = () => {
-      setValue("passportOrIdImage", [])
-    }
+      setValue("passportOrIdImage", []);
+    };
 
     const LoadingSpinner = () => {
-      if (
-        patchUserByIdMutation.isLoading ||
-        uploadPassportOrIdMutation.isLoading ||
-        uploadResumeOrCVMutation.isLoading ||
-        updateSessionMutation.isLoading ||
-        putFreelancerProfileByUserIdMutation.isLoading
-      ) {
+      if (isSubmittingData) {
         return (
           <span
             className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
@@ -228,7 +223,12 @@ export default function RegisterFreelancerSection() {
               width={500}
               height={500}
             />
-            <HiXMark size={32} color="white" className="cursor-pointer absolute bg-red-500 rounded-full right-[-10px] top-[-10px]" onClick={clearPassportOrIdOnClick} />
+            <HiXMark
+              size={32}
+              color="white"
+              className="cursor-pointer absolute bg-red-500 rounded-full right-[-10px] top-[-10px]"
+              onClick={clearPassportOrIdOnClick}
+            />
           </div>
         </div>
       );
@@ -395,6 +395,13 @@ export default function RegisterFreelancerSection() {
         return res.json();
       },
     });
+
+    const isSubmittingData =
+      patchUserByIdMutation.isLoading ||
+      uploadPassportOrIdMutation.isLoading ||
+      uploadResumeOrCVMutation.isLoading ||
+      updateSessionMutation.isLoading ||
+      putFreelancerProfileByUserIdMutation.isLoading;
 
     return (
       <form onSubmit={onSubmit}>
@@ -793,6 +800,7 @@ export default function RegisterFreelancerSection() {
           <button
             type="submit"
             className="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+            disabled={isSubmittingData}
           >
             <LoadingSpinner />
             Submit application

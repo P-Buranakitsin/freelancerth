@@ -1,16 +1,82 @@
 "use client";
 
 import { HiArrowSmRight } from "react-icons/hi";
+import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { endpoints } from "@/constants/endpoints";
+import { useSession } from "next-auth/react";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 interface IPackageSectionProps {
   dynamicRoute: {
     freelancerProfileId: string;
     gigId: string;
   };
-  gigData: IResponseDataGETGigs
+  gigData: IResponseDataGETGigs;
 }
 
 export default function PackageSection(props: IPackageSectionProps) {
   const { price } = props.gigData;
+  const { gigId } = props.dynamicRoute;
+  const { data: session } = useSession();
+  const client = useQueryClient();
+  const router = useRouter();
+
+  const cartMutation = useMutation<any, Error, IRequestPUTCartByUserId>({
+    mutationFn: async (data) => {
+      const res = await fetch(
+        endpoints.API.cartByUserId(session?.user.sub || ""),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gigId: data.gigId,
+          }),
+        }
+      );
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message);
+      }
+      return res.json();
+    },
+    onSuccess: async () => {
+      await client.invalidateQueries({
+        queryKey: ["cart", session?.user.sub || ""],
+      });
+      toast.success("Info Updated", {
+        toastId: "descriptionSection",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      router.push(endpoints.PAGE.gigCart(session?.user.sub || ""));
+    },
+    onError: (error) => {
+      toast.error(error.message, {
+        toastId: "descriptionSection",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    },
+  });
+
+  const continueOnClick = (data: IRequestPUTCartByUserId) => {
+    cartMutation.mutate(data);
+  };
 
   return (
     <div className="flex flex-col bg-gray-800 border rounded-xl border-gray-700 sticky top-[120px]">
@@ -65,6 +131,8 @@ export default function PackageSection(props: IPackageSectionProps) {
           <button
             type="button"
             className="mt-7 w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+            onClick={() => continueOnClick({ gigId })}
+            disabled={cartMutation.isLoading}
           >
             Continue
             <HiArrowSmRight size={24} />

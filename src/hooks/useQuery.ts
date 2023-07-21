@@ -1,5 +1,4 @@
 import { endpoints } from "@/constants/endpoints";
-import { IResponseGETUserById } from "@/types/api/users";
 import { useQuery } from "@tanstack/react-query";
 import { Session } from "next-auth";
 
@@ -111,6 +110,27 @@ export const useUser = (userId: string) => {
     return useQuery({
         queryKey: ["user", userId],
         queryFn: () => getUserByUserId(userId),
-        
+
+    })
+}
+
+async function getCartByUserId(userId: string) {
+    const res = await fetch(endpoints.API.cartByUserId(userId), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const cart = (await res.json()) as IResponseGETCartByUserId
+    return cart
+}
+
+export const useCart = (session: Session | null) => {
+    const userId = session?.user.sub || ''
+    return useQuery({
+        queryKey: ["cart", userId],
+        queryFn: () => getCartByUserId(userId),
+        staleTime: Infinity,
+        enabled: !!session
     })
 }

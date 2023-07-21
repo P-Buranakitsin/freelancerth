@@ -8,10 +8,10 @@ export default function CartGigs({ params }: { params: { userId: string } }) {
         <h1 className="text-white font-bold text-2xl sm:text-3xl mb-6">Gig Cart</h1>
         <div className="flex flex-col lg:grid lg:grid-rows-1 grid-cols-1 lg:grid-cols-8 grid-flow-col gap-y-8 gap-x-6">
           <div className="lg:col-span-5">
-            <CartItemSection />
+            <CartItemSection dynamicRoute={params} />
           </div>
           <div className="lg:col-span-3 space-y-6">
-            <OrderSummarySection />
+            <OrderSummarySection dynamicRoute={params} />
           </div>
         </div>
       </div>

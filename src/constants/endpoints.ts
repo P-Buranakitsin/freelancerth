@@ -44,7 +44,9 @@ export const endpoints = {
         profileByUserId: (userId: string) => `/api/profiles/${userId}`,
         freelancerProfileByUserId: (userId: string) => `/api/freelancer-profiles/${userId}`,
         gigs: (params: GigsParams) => createGigsEndpoint('/api/gigs', params),
-        gigByGigId: (gigId: string) => `/api/gigs/${gigId}`
+        gigByGigId: (gigId: string) => `/api/gigs/${gigId}`,
+        cartByUserId: (userId: string) => `/api/carts/${userId}`,
+        gigsOnCartByGigIdAndUserId: (gigId: string, userId: string) => `/api/gigs-on-cart/${gigId}/${userId}`,
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),

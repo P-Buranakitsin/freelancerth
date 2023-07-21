@@ -1,5 +1,5 @@
 "use client";
-import { IResponseDataGETUserById } from "@/types/api/users";
+
 import Image from "next/image";
 import Link from "next/link";
 import { BsGithub, BsPersonCircle } from "react-icons/bs";
