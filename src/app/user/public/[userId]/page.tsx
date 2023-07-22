@@ -1,9 +1,10 @@
 "use client";
 
-import UnauthorisedAccess from "@/components/UnauthorisedAccess";
+import DialogBox from "@/components/DialogBox";
 import AllGigSection from "@/components/user/public/[userId]/AllGigSection";
 import ContactSection from "@/components/user/public/[userId]/ContactSection";
 import FullProfileSection from "@/components/user/public/[userId]/FullProfileSection";
+import { endpoints } from "@/constants/endpoints";
 import { useUser } from "@/hooks/useQuery";
 
 export default function PublicUserProfile({
@@ -18,10 +19,11 @@ export default function PublicUserProfile({
   }
   if (!userData) {
     return (
-      <UnauthorisedAccess
+      <DialogBox
         title={"Profile not found"}
         description={"Profile does not exist"}
         linkMessage={"Go to gig browsing page"}
+        url={endpoints.PAGE.browseGigs(0)}
       />
     );
   }

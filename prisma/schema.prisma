@@ -192,3 +192,7 @@ model GigsOnCart {
 
   @@id([gigId, userId])
 }
+
+model PurchasedOrder {
+  paymentId String @id @unique
+}

@@ -34,29 +34,37 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
       });
       return;
     }
-    const body: Stripe.Checkout.SessionCreateParams.LineItem[] =
-      data.data.gigs.map((el) => {
-        const gigPrice = Number((el.gig.price * 1.2).toFixed(2)) * 100
-        return {
-          quantity: 1,
-          price_data: {
-            currency: "GBP",
-            product_data: {
-              name: el.gig.title,
-              description: el.gig.description,
-              images: [el.gig.image],
-            },
-            unit_amount_decimal: String(gigPrice),
+
+    const body: IRequestPOSTCheckoutSessions = {
+      lineItems: [],
+      metaData: {
+        userId: session?.user.sub || ""
+      },
+    };
+
+    data.data.gigs.forEach((el) => {
+      const gigPrice = Number((el.gig.price * 1.2).toFixed(2)) * 100;
+      body.lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: "GBP",
+          product_data: {
+            name: el.gig.title,
+            description: el.gig.description,
+            images: [el.gig.image],
           },
-        };
+          unit_amount_decimal: String(gigPrice),
+        },
       });
+    });
+
     checkoutSessionMutation.mutate(body);
   };
 
   const checkoutSessionMutation = useMutation<
     { message: string; data: Stripe.Checkout.Session },
     Error,
-    Stripe.Checkout.SessionCreateParams.LineItem[]
+    IRequestPOSTCheckoutSessions
   >({
     mutationFn: async (body) => {
       const res = await fetch(endpoints.API.checkoutSessions(), {
@@ -145,7 +153,11 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
         type="button"
         className="mt-4 w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-base dark:focus:ring-offset-gray-800"
         onClick={checkoutOnClick}
-        disabled={checkoutSessionMutation.isLoading && !data?.data?.gigs}
+        disabled={
+          checkoutSessionMutation.isLoading ||
+          !data?.data?.gigs ||
+          data.data.gigs.length < 1
+        }
       >
         {checkoutSessionMutation.isLoading && (
           <span

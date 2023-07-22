@@ -23,17 +23,17 @@ export async function POST(req: NextRequest) {
         );
     }
     try {
-        const json = await req.json() as Stripe.Checkout.SessionCreateParams.LineItem[];
+        const body = await req.json() as IRequestPOSTCheckoutSessions;
 
         // Create Checkout Sessions from body params.
         const params: Stripe.Checkout.SessionCreateParams = {
             submit_type: 'pay',
             payment_method_types: ['card'],
-
-            line_items: json,
-            mode: "payment",
+            line_items: body.lineItems,
             success_url: `${process.env.BASE_URL}/result?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.BASE_URL}${endpoints.PAGE.gigCart(data?.user.sub || "")}`,
+            metadata: body.metaData,
+            mode: "payment"
         }
         const checkoutSession: Stripe.Checkout.Session = await stripe.checkout.sessions.create(params)
         const successResponse = responses(checkoutSession).success

@@ -1,4 +1,4 @@
-import UnauthorisedAccess from "@/components/UnauthorisedAccess";
+import DialogBox from "@/components/DialogBox";
 import GigDetailSection from "@/components/gig/[freelancerProfileId]/[gidId]/GigDetailSection";
 import PackageSection from "@/components/gig/[freelancerProfileId]/[gidId]/PackageSection";
 import RelatedGigSection from "@/components/gig/[freelancerProfileId]/[gidId]/RelatedGigSection";
@@ -54,10 +54,11 @@ export default async function GigDetails({
   const relatedGigs = await getRelatedGigs(token || "", myGig.data);
   if (!myGig.data) {
     return (
-      <UnauthorisedAccess
+      <DialogBox
         title={"Gig not found"}
         description={"Gig does not exist"}
         linkMessage={"Go to gig browsing page"}
+        url={endpoints.PAGE.browseGigs(0)}
       />
     );
   }
@@ -76,8 +77,13 @@ export default async function GigDetails({
         </div>
         {relatedGigs.length > 0 && (
           <>
-            <h1 className="text-white font-bold text-3xl mt-12">Related Gigs</h1>
-            <RelatedGigSection dynamicRoute={params} relatedGigs={relatedGigs} />
+            <h1 className="text-white font-bold text-3xl mt-12">
+              Related Gigs
+            </h1>
+            <RelatedGigSection
+              dynamicRoute={params}
+              relatedGigs={relatedGigs}
+            />
           </>
         )}
       </div>

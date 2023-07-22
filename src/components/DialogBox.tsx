@@ -1,13 +1,14 @@
 import Link from "next/link";
 
-interface UnauthorisedAccessProps {
+interface IDialogBoxProps {
   title: String;
   description: String;
   linkMessage: string;
+  url: string;
 }
 
-export default function UnauthorisedAccess(props: UnauthorisedAccessProps) {
-  const { title, description, linkMessage } = props;
+export default function DialogBox(props: IDialogBoxProps) {
+  const { title, description, linkMessage, url } = props;
   return (
     <main className="flex-grow items-center justify-center flex">
       <div className="min-w-[80%] lg:min-w-[30%] bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
@@ -20,7 +21,7 @@ export default function UnauthorisedAccess(props: UnauthorisedAccessProps) {
             <p className="mt-6 text-sm text-gray-600 dark:text-gray-400">
               <Link
                 className="text-blue-600 decoration-2 hover:underline font-medium"
-                href="/"
+                href={url}
               >
                 {linkMessage}
               </Link>

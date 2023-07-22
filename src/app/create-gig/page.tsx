@@ -1,7 +1,7 @@
 import CreateGigSection from "@/components/create-gig/CreateGigSection";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import UnauthorisedAccess from "@/components/UnauthorisedAccess";
+import DialogBox from "@/components/DialogBox";
 import { endpoints } from "@/constants/endpoints";
 import { cookies } from "next/headers";
 
@@ -18,8 +18,7 @@ async function getFreelancerProfileByUserId(token: string, userId: string) {
       },
     }
   );
-  const data =
-    (await response.json()) as IResponsGETFreelancerProfileByUserId;
+  const data = (await response.json()) as IResponsGETFreelancerProfileByUserId;
   return data;
 }
 
@@ -33,21 +32,23 @@ export default async function Profile() {
   );
   if (data?.user.role !== "FREELANCER") {
     return (
-      <UnauthorisedAccess
+      <DialogBox
         title={"Check your role"}
         description={"Your role needs to be freelancer to access this page"}
         linkMessage={"Go back to home page"}
+        url="/"
       />
     );
   }
   if (!res.data) {
     return (
-      <UnauthorisedAccess
+      <DialogBox
         title={"Check your freelancer profile"}
         description={
           "You need to create a freelancer profile and be verified first"
         }
         linkMessage={"Go back to home page"}
+        url="/"
       />
     );
   }

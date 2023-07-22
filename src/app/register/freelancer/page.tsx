@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import UnauthorisedAccess from "@/components/UnauthorisedAccess";
+import DialogBox from "@/components/DialogBox";
 import RegisterFreelancerSection from "@/components/register/freelancer/RegisterFreelancerSection";
 import { endpoints } from "@/constants/endpoints";
 import { getServerSession } from "next-auth";
@@ -34,12 +34,13 @@ export default async function RegisterFreelancer() {
 
   if (res.data) {
     return (
-      <UnauthorisedAccess
+      <DialogBox
         title={"You already have a freelancer profile"}
         description={
           "If you would like to edit your freelancer profile, please click the link below"
         }
         linkMessage={"Go to my freelancer profile page"}
+        url={"/"}
       />
     );
   }
