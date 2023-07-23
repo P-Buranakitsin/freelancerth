@@ -100,6 +100,7 @@ model User {
   profile           Profile?
   FreelancerProfile FreelancerProfile?
   cart              Cart?
+  purchasedOrder    PurchasedOrder[]
 }
 
 model Profile {
@@ -194,5 +195,10 @@ model GigsOnCart {
 }
 
 model PurchasedOrder {
-  paymentId String @id @unique
+  id         String   @id @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  amount     Decimal
+  createdAt  DateTime 
+  receiptUrl String
 }

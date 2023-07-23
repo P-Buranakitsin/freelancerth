@@ -38,13 +38,13 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
     const body: IRequestPOSTCheckoutSessions = {
       lineItems: [],
       metaData: {
-        userId: session?.user.sub || ""
+        userId: session?.user.sub || "",
       },
     };
 
     data.data.gigs.forEach((el) => {
       const gigPrice = Number((el.gig.price * 1.2).toFixed(2)) * 100;
-      body.lineItems.push({
+      const lineItem = {
         quantity: 1,
         price_data: {
           currency: "GBP",
@@ -55,7 +55,8 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
           },
           unit_amount_decimal: String(gigPrice),
         },
-      });
+      };
+      body.lineItems.push(lineItem);
     });
 
     checkoutSessionMutation.mutate(body);

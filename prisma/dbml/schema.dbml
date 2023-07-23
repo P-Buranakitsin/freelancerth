@@ -42,6 +42,7 @@ Table User {
   profile Profile
   FreelancerProfile FreelancerProfile
   cart Cart
+  purchasedOrder PurchasedOrder [not null]
 }
 
 Table Profile {
@@ -143,6 +144,15 @@ Table GigsOnCart {
   }
 }
 
+Table PurchasedOrder {
+  id String [pk]
+  user User [not null]
+  userId String [not null]
+  amount Decimal [not null]
+  createdAt DateTime [not null]
+  receiptUrl String [not null]
+}
+
 Enum UserRole {
   ADMIN
   FREELANCER
@@ -209,3 +219,5 @@ Ref: SkillsOnGigs.skillName > Skill.name [delete: Cascade]
 Ref: GigsOnCart.gigId > Gig.id [delete: Cascade]
 
 Ref: GigsOnCart.userId > Cart.userId [delete: Cascade]
+
+Ref: PurchasedOrder.userId > User.id [delete: Cascade]
