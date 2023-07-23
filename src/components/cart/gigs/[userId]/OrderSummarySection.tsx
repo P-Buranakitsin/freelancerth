@@ -51,7 +51,7 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
           product_data: {
             name: el.gig.title,
             description: el.gig.description,
-            images: [el.gig.image],
+            images: el.gig.image ? [el.gig.image] : undefined,
           },
           unit_amount_decimal: String(gigPrice),
         },

@@ -62,7 +62,8 @@ export const endpoints = {
         registerFreelancer: () => `register/freelancer`,
         gigDetails: (freelancerProfileId: string, gigId: string) => `/gig/${freelancerProfileId}/${gigId}`,
         publicUserProfile: (userId: string) => `/user/public/${userId}`,
-        gigCart: (userId: string) => `/cart/gigs/${userId}`
+        gigCart: (userId: string) => `/cart/gigs/${userId}`,
+        orderHistory: (userId: string) => `/order/history/${userId}`
     }
 
 }
