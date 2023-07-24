@@ -133,7 +133,7 @@ const columns = [
 export default function Table() {
   const { data: session } = useSession();
 
-  const trRef = React.useRef<HTMLTableRowElement>(null)
+  const trRef = React.useRef<HTMLTableRowElement>(null);
 
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
@@ -141,10 +141,18 @@ export default function Table() {
       pageSize: 10,
     });
 
-  const fetchDataOptions = {
-    pageIndex,
-    pageSize,
-  };
+  const [{ paymentStatus }, setGlobalFilter] = React.useState<{
+    paymentStatus: PaymentStatus[];
+  }>({
+    paymentStatus: ["PAID", "REFUNDED"],
+  });
+
+  const fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] } =
+    {
+      pageIndex,
+      pageSize,
+      paymentStatus,
+    };
 
   const { data } = useOrderHistory(session, fetchDataOptions);
 
@@ -156,6 +164,12 @@ export default function Table() {
     }),
     [pageIndex, pageSize]
   );
+  const globalFilter = React.useMemo(
+    () => ({
+      paymentStatus,
+    }),
+    [paymentStatus]
+  );
 
   const table = useReactTable({
     data: data?.data || defaultData,
@@ -163,14 +177,14 @@ export default function Table() {
     pageCount: data?.pagination?.totalPages || -1,
     state: {
       pagination,
+      globalFilter,
     },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    debugTable: true,
+    manualFiltering: true,
+    onGlobalFilterChange: setGlobalFilter,
   });
-
-  console.log(JSON.stringify(table.getState(), null, 2));
 
   const PageRange = () => {
     const limit = data?.pagination?.limit || 0;
@@ -207,14 +221,45 @@ export default function Table() {
     if (numberOfRows < pageSize) {
       for (let i = 0; i < pageSize - numberOfRows; i++) {
         rows.push(
-          <tr key={`dummy-row-page${pageIndex}-row${i}`} className={`h-[${trRef.current?.offsetHeight}px]`}>
-            <td key={`dummy-cell-page${pageIndex}-row${i}`}>
-            </td>
+          <tr
+            key={`dummy-row-page${pageIndex}-row${i}`}
+            className={`h-[${trRef.current?.offsetHeight}px]`}
+          >
+            <td key={`dummy-cell-page${pageIndex}-row${i}`}></td>
           </tr>
         );
       }
     }
     return rows;
+  };
+
+  const handleCheckboxChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    status: PaymentStatus
+  ) => {
+    if (e.currentTarget.checked) {
+      setGlobalFilter((prev) => ({
+        ...prev,
+        paymentStatus: [...prev.paymentStatus, status],
+      }));
+      setPagination({
+        pageIndex: 0,
+        pageSize: 10,
+      });
+    } else {
+      if (paymentStatus.length > 1) {
+        setGlobalFilter((prev) => ({
+          ...prev,
+          paymentStatus: prev.paymentStatus.filter((s) => s !== status),
+        }));
+        setPagination({
+          pageIndex: 0,
+          pageSize: 10,
+        });
+      } else {
+        e.currentTarget.checked = true;
+      }
+    }
   };
 
   return (
@@ -260,6 +305,7 @@ export default function Table() {
                           className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 pointer-events-none focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                           id="hs-as-filters-dropdown-frequency"
                           defaultChecked
+                          onChange={(e) => handleCheckboxChange(e, "PAID")}
                         />
                         <span className="ml-3 text-sm text-gray-800 dark:text-gray-200">
                           Paid
@@ -274,6 +320,7 @@ export default function Table() {
                           className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 pointer-events-none focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                           id="hs-as-filters-dropdown-status"
                           defaultChecked
+                          onChange={(e) => handleCheckboxChange(e, "REFUNDED")}
                         />
                         <span className="ml-3 text-sm text-gray-800 dark:text-gray-200">
                           Refunded
@@ -305,7 +352,7 @@ export default function Table() {
               ))}
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {!data ? (
+              {!data || !data.data || data.data.length < 1 ? (
                 <tr>
                   <td colSpan={5}>
                     <EmptyStateCard />
@@ -318,63 +365,66 @@ export default function Table() {
           </table>
           {/* End Table */}
           {/* Footer */}
-          <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200 dark:border-gray-700">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <PageRange />
-              </p>
-            </div>
-            <div>
-              <div className="inline-flex gap-x-2">
-                <button
-                  type="button"
-                  className="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  <svg
-                    className="w-3 h-3"
-                    width={16}
-                    height={16}
-                    viewBox="0 0 16 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+          {data && data.data && data.data.length > 0 && (
+            <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200 dark:border-gray-700">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <PageRange />
+                </p>
+              </div>
+              <div>
+                <div className="inline-flex gap-x-2">
+                  <button
+                    type="button"
+                    className="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
                   >
-                    <path
-                      d="M10.506 1.64001L4.85953 7.28646C4.66427 7.48172 4.66427 7.79831 4.85953 7.99357L10.506 13.64"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  Prev
-                </button>
-                <button
-                  type="button"
-                  className="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  Next
-                  <svg
-                    className="w-3 h-3"
-                    width={16}
-                    height={16}
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                    <svg
+                      className="w-3 h-3"
+                      width={16}
+                      height={16}
+                      viewBox="0 0 16 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10.506 1.64001L4.85953 7.28646C4.66427 7.48172 4.66427 7.79831 4.85953 7.99357L10.506 13.64"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    Prev
+                  </button>
+                  <button
+                    type="button"
+                    className="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
                   >
-                    <path
-                      d="M4.50598 2L10.1524 7.64645C10.3477 7.84171 10.3477 8.15829 10.1524 8.35355L4.50598 14"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
+                    Next
+                    <svg
+                      className="w-3 h-3"
+                      width={16}
+                      height={16}
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.50598 2L10.1524 7.64645C10.3477 7.84171 10.3477 8.15829 10.1524 8.35355L4.50598 14"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
           {/* End Footer */}
         </div>
       </div>

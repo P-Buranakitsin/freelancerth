@@ -1,3 +1,4 @@
+import { PaymentStatus } from "@prisma/client";
 import { PaginationState } from "@tanstack/react-table";
 
 export interface GigsParams {
@@ -50,7 +51,15 @@ export const endpoints = {
         cartByUserId: (userId: string) => `/api/carts/${userId}`,
         gigsOnCartByGigIdAndUserId: (gigId: string, userId: string) => `/api/gigs-on-cart/${gigId}/${userId}`,
         checkoutSessions: () => `/api/checkout_sessions`,
-        orderHistory: (userId: string, fetchDataOptions: PaginationState) => `/api/order/history/${userId}?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
+        orderHistory: (userId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) => {
+            const { paymentStatus } = fetchDataOptions
+            let url = `/api/order/history/${userId}?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
+            if (paymentStatus.length > 0) {
+                url += `&`
+                url += paymentStatus.map(paymentStatus => `paymentStatus=${encodeURIComponent(paymentStatus)}`).join('&');
+            }
+            return url
+        }
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),

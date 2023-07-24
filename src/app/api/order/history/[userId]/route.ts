@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
-import { Prisma } from "@prisma/client";
+import { PaymentStatus, Prisma } from "@prisma/client";
 
 export const GET = async (req: NextRequest, { params }: { params: { userId: string } }) => {
     const token = await getToken({ req })
@@ -22,14 +22,17 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
         // Query params
         const page = Number(searchParams.get("page")) || 0
         const limit = Number(searchParams.get("limit")) || 10
-        const paymentStatus = searchParams.get("paymentStatus") || undefined;
+        const paymentStatus = searchParams.getAll("paymentStatus") || undefined;
 
         const whereCondition: Prisma.OrderHistoryWhereInput = {
             userId: params.userId
         };
 
-        if (paymentStatus === "PAID" || paymentStatus === "REFUNDED") {
-            whereCondition.paymentStatus = paymentStatus
+        console.log(paymentStatus)
+        if (paymentStatus.length > 0) {
+            whereCondition.paymentStatus = {
+                in: paymentStatus as PaymentStatus[]
+            }
         }
 
         const [totalItems, data] = await prisma.$transaction([

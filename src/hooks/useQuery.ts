@@ -1,4 +1,5 @@
 import { endpoints } from "@/constants/endpoints";
+import { PaymentStatus } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { PaginationState } from "@tanstack/react-table";
 import { Session } from "next-auth";
@@ -136,7 +137,7 @@ export const useCart = (session: Session | null) => {
     })
 }
 
-async function getOrderHistoryByUserId(userId: string, fetchDataOptions: PaginationState) {
+async function getOrderHistoryByUserId(userId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) {
     const res = await fetch(endpoints.API.orderHistory(userId, fetchDataOptions), {
         method: "GET",
         headers: {
@@ -144,10 +145,10 @@ async function getOrderHistoryByUserId(userId: string, fetchDataOptions: Paginat
         },
     })
     const orderHistory = (await res.json()) as IResponseGETOrderHistoryByUserId
-    return orderHistory 
+    return orderHistory
 }
 
-export const useOrderHistory = (session: Session | null, fetchDataOptions: PaginationState) => {
+export const useOrderHistory = (session: Session | null, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) => {
     const userId = session?.user.sub || ''
     return useQuery({
         queryKey: ["orderHistory", userId, fetchDataOptions],
