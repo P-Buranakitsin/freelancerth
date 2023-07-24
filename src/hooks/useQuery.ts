@@ -1,5 +1,6 @@
 import { endpoints } from "@/constants/endpoints";
 import { useQuery } from "@tanstack/react-query";
+import { PaginationState } from "@tanstack/react-table";
 import { Session } from "next-auth";
 
 interface GigsHookParams {
@@ -135,8 +136,8 @@ export const useCart = (session: Session | null) => {
     })
 }
 
-async function getOrderHistoryByUserId(userId: string) {
-    const res = await fetch(endpoints.API.orderHistory(userId), {
+async function getOrderHistoryByUserId(userId: string, fetchDataOptions: PaginationState) {
+    const res = await fetch(endpoints.API.orderHistory(userId, fetchDataOptions), {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -146,11 +147,12 @@ async function getOrderHistoryByUserId(userId: string) {
     return orderHistory 
 }
 
-export const useOrderHistory = (session: Session | null) => {
+export const useOrderHistory = (session: Session | null, fetchDataOptions: PaginationState) => {
     const userId = session?.user.sub || ''
     return useQuery({
-        queryKey: ["orderHistory", userId],
-        queryFn: () => getOrderHistoryByUserId(userId),
-        enabled: !!session
+        queryKey: ["orderHistory", userId, fetchDataOptions],
+        queryFn: () => getOrderHistoryByUserId(userId, fetchDataOptions),
+        enabled: !!session,
+        keepPreviousData: true,
     })
 }

@@ -2,6 +2,7 @@
 
 import React from "react";
 import {
+  PaginationState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -11,6 +12,7 @@ import { useOrderHistory } from "@/hooks/useQuery";
 import { useSession } from "next-auth/react";
 import EmptyStateCard from "../EmptyStateCard";
 import Link from "next/link";
+import { PaymentStatus } from "@prisma/client";
 
 const columnHelper = createColumnHelper<IResponseDataGETOrderHistoryByUserId>();
 
@@ -130,14 +132,90 @@ const columns = [
 
 export default function Table() {
   const { data: session } = useSession();
-  const { data } = useOrderHistory(session);
+
+  const trRef = React.useRef<HTMLTableRowElement>(null)
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+
+  const fetchDataOptions = {
+    pageIndex,
+    pageSize,
+  };
+
+  const { data } = useOrderHistory(session, fetchDataOptions);
+
+  const defaultData = React.useMemo(() => [], []);
+  const pagination = React.useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
 
   const table = useReactTable({
-    data: data?.data || [],
+    data: data?.data || defaultData,
     columns,
-
+    pageCount: data?.pagination?.totalPages || -1,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    debugTable: true,
   });
+
+  console.log(JSON.stringify(table.getState(), null, 2));
+
+  const PageRange = () => {
+    const limit = data?.pagination?.limit || 0;
+    const page = data?.pagination?.page || 0;
+    const total = data?.pagination?.totalItems || 0;
+
+    const start = Number(page) * limit + 1;
+    const end = Math.min(start + limit - 1, total);
+
+    return (
+      <>
+        <span className="font-semibold text-gray-800 dark:text-gray-200">
+          {`${start} - ${end}`}
+        </span>{" "}
+        of{" "}
+        <span className="font-semibold text-gray-800 dark:text-gray-200">
+          {total}
+        </span>
+      </>
+    );
+  };
+
+  const TRows = () => {
+    const numberOfRows = table.getRowModel().rows.length;
+    const rows = table.getRowModel().rows.map((row) => (
+      <tr key={row.id} ref={trRef}>
+        {row.getVisibleCells().map((cell) => (
+          <td key={cell.id} className="h-px w-px whitespace-nowrap">
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </td>
+        ))}
+      </tr>
+    ));
+    if (numberOfRows < pageSize) {
+      for (let i = 0; i < pageSize - numberOfRows; i++) {
+        rows.push(
+          <tr key={`dummy-row-page${pageIndex}-row${i}`} className={`h-[${trRef.current?.offsetHeight}px]`}>
+            <td key={`dummy-cell-page${pageIndex}-row${i}`}>
+            </td>
+          </tr>
+        );
+      }
+    }
+    return rows;
+  };
 
   return (
     <div className="-m-1.5 overflow-x-auto">
@@ -234,18 +312,7 @@ export default function Table() {
                   </td>
                 </tr>
               ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="h-px w-px whitespace-nowrap">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))
+                <TRows />
               )}
             </tbody>
           </table>
@@ -254,10 +321,7 @@ export default function Table() {
           <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200 dark:border-gray-700">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                <span className="font-semibold text-gray-800 dark:text-gray-200">
-                  6
-                </span>{" "}
-                results
+                <PageRange />
               </p>
             </div>
             <div>
@@ -265,6 +329,8 @@ export default function Table() {
                 <button
                   type="button"
                   className="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
                 >
                   <svg
                     className="w-3 h-3"
@@ -286,6 +352,8 @@ export default function Table() {
                 <button
                   type="button"
                   className="py-2 px-3 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
                 >
                   Next
                   <svg

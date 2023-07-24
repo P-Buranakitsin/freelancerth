@@ -1,3 +1,5 @@
+import { PaginationState } from "@tanstack/react-table";
+
 export interface GigsParams {
     page?: number;
     limit?: number;
@@ -48,7 +50,7 @@ export const endpoints = {
         cartByUserId: (userId: string) => `/api/carts/${userId}`,
         gigsOnCartByGigIdAndUserId: (gigId: string, userId: string) => `/api/gigs-on-cart/${gigId}/${userId}`,
         checkoutSessions: () => `/api/checkout_sessions`,
-        orderHistory: (userId: string) => `/api/order/history/${userId}`
+        orderHistory: (userId: string, fetchDataOptions: PaginationState) => `/api/order/history/${userId}?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),

@@ -2,6 +2,7 @@ declare interface IResponseGETOrderHistoryByUserId {
     message: string
     data?: [] | IResponseDataGETOrderHistoryByUserId[]
     error?: any
+    pagination?: import('@/constants/responses').IPagination
 }
 
 declare interface IResponseDataGETOrderHistoryByUserId {
