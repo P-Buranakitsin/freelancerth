@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export const DELETE = async (req: NextRequest) => {
 
     try {
-        const purchasedOrder = await prisma.purchasedOrder.deleteMany({})
+        const purchasedOrder = await prisma.orderHistory.deleteMany({})
         const successResponse = responses(purchasedOrder).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {

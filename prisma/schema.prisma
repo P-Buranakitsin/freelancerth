@@ -58,6 +58,11 @@ enum SkillName {
   DATA_ANALYSIS
 }
 
+enum PaymentStatus {
+  PAID
+  REFUNDED
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -100,7 +105,7 @@ model User {
   profile           Profile?
   FreelancerProfile FreelancerProfile?
   cart              Cart?
-  purchasedOrder    PurchasedOrder[]
+  orderHistory      OrderHistory[]
 }
 
 model Profile {
@@ -194,11 +199,12 @@ model GigsOnCart {
   @@id([gigId, userId])
 }
 
-model PurchasedOrder {
-  id         String   @id @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  amount     Decimal
-  createdAt  DateTime 
-  receiptUrl String
+model OrderHistory {
+  id            String        @id @unique
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  amount        Decimal
+  createdAt     DateTime
+  receiptUrl    String
+  paymentStatus PaymentStatus @default(PAID)
 }

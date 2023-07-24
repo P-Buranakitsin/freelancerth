@@ -42,7 +42,7 @@ Table User {
   profile Profile
   FreelancerProfile FreelancerProfile
   cart Cart
-  purchasedOrder PurchasedOrder [not null]
+  orderHistory OrderHistory [not null]
 }
 
 Table Profile {
@@ -144,13 +144,14 @@ Table GigsOnCart {
   }
 }
 
-Table PurchasedOrder {
+Table OrderHistory {
   id String [pk]
   user User [not null]
   userId String [not null]
   amount Decimal [not null]
   createdAt DateTime [not null]
   receiptUrl String [not null]
+  paymentStatus PaymentStatus [not null, default: 'PAID']
 }
 
 Enum UserRole {
@@ -196,6 +197,11 @@ Enum SkillName {
   DATA_ANALYSIS
 }
 
+Enum PaymentStatus {
+  PAID
+  REFUNDED
+}
+
 Ref: Account.userId > User.id [delete: Cascade]
 
 Ref: Session.userId > User.id [delete: Cascade]
@@ -220,4 +226,4 @@ Ref: GigsOnCart.gigId > Gig.id [delete: Cascade]
 
 Ref: GigsOnCart.userId > Cart.userId [delete: Cascade]
 
-Ref: PurchasedOrder.userId > User.id [delete: Cascade]
+Ref: OrderHistory.userId > User.id [delete: Cascade]

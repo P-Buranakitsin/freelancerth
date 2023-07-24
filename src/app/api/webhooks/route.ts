@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
             await Promise.all([
                 prisma.cart.delete({ where: { userId: charge.metadata.userId } }),
-                prisma.purchasedOrder.create({
+                prisma.orderHistory.create({
                     data: {
                         amount: charge.amount / 100,
                         createdAt: date,

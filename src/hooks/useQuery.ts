@@ -134,3 +134,23 @@ export const useCart = (session: Session | null) => {
         enabled: !!session
     })
 }
+
+async function getOrderHistoryByUserId(userId: string) {
+    const res = await fetch(endpoints.API.orderHistory(userId), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const orderHistory = (await res.json()) as IResponseGETOrderHistoryByUserId
+    return orderHistory 
+}
+
+export const useOrderHistory = (session: Session | null) => {
+    const userId = session?.user.sub || ''
+    return useQuery({
+        queryKey: ["orderHistory", userId],
+        queryFn: () => getOrderHistoryByUserId(userId),
+        enabled: !!session
+    })
+}
