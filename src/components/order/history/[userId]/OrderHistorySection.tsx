@@ -74,7 +74,7 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
       ),
       cell: (info) => (
         <div className="px-6 py-2">
-          <p className="text-sm text-gray-500">£&nbsp;{info.getValue()}</p>
+          <p className="text-sm text-gray-500">£&nbsp;{Number(info.getValue()).toFixed(2)}</p>
         </div>
       ),
       footer: (info) => info.column.id,
@@ -148,6 +148,10 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
                     <button
                       className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                       data-hs-overlay="#hs-vertically-centered-scrollable-modal"
+                      onClick={() => {
+                        setGigs(info.row.original.gigs);
+                        setOrderId(info.row.original.id);
+                      }}
                     >
                       More details
                     </button>
@@ -163,6 +167,16 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
   ];
 
   const { data: session } = useSession();
+
+  const [gigs, setGigs] = React.useState<
+    {
+      title: string;
+      price: string;
+      id: string;
+      freelancerId: string;
+    }[]
+  >([]);
+  const [orderId, setOrderId] = React.useState<string>("");
 
   const trRef = React.useRef<HTMLTableRowElement>(null);
 
@@ -243,7 +257,6 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
     const rows = table.getRowModel().rows.map((row) => {
       return (
         <>
-          <MoreDetailsModal gigs={row.original.gigs} orderId={row.original.id} />
           <tr key={row.id} ref={trRef}>
             {row.getVisibleCells().map((cell) => {
               return (
@@ -301,6 +314,7 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
 
   return (
     <div className="-m-1.5 overflow-x-auto">
+      <MoreDetailsModal gigs={gigs} orderId={orderId} />
       <div className="p-1.5 min-w-full inline-block align-middle">
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700">
           {/* Header */}

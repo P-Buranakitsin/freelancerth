@@ -55,7 +55,7 @@ const columns = [
     cell: (info) => {
       return (
         <div className="px-6 py-2">
-          <p className="text-sm text-gray-500">{`£ ${info.getValue()}`}</p>
+          <p className="text-sm text-gray-500">{`£ ${Number(info.getValue()).toFixed(2)}`}</p>
         </div>
       );
     },
@@ -71,7 +71,7 @@ const columns = [
     ),
     cell: (info) => {
       return (
-        <div className="px-6 py-2 min-w-[160px]">
+        <div className="px-6 py-2 w-[160px]">
           <Link
             className="flex"
             href={endpoints.PAGE.gigDetails(
@@ -121,7 +121,7 @@ export default function MoreDetailsModal(props: IMoreDetailsModalProps) {
       id="hs-vertically-centered-scrollable-modal"
       className="hs-overlay hidden w-full h-full fixed top-0 left-0 z-[60] overflow-x-hidden overflow-y-auto"
     >
-      <div className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-3xl sm:w-full m-3 sm:mx-auto h-[calc(100%-3.5rem)] min-h-[calc(100%-3.5rem)] flex items-center justify-center">
+      <div className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-3xl sm:w-full m-3 sm:mx-auto sm:my-auto flex items-center justify-center">
         <div className="w-full max-h-full overflow-hidden flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
           <div className="flex justify-between items-center py-3 px-4 border-b dark:border-gray-700">
             <h3 className="font-bold text-gray-800 dark:text-white break-all">

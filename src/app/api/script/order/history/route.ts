@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { responses } from "@/constants/responses";
 import { prisma } from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
-import { Prisma } from "@prisma/client";
 
 export const POST = async (req: NextRequest, { params }: { params: { userId: string } }) => {
     const token = await getToken({ req })
@@ -12,21 +11,23 @@ export const POST = async (req: NextRequest, { params }: { params: { userId: str
         return NextResponse.json(unauthorizedResponse.body, unauthorizedResponse.status)
     }
     try {
-        const data = []
         for (let i = 0; i < 43; i++) {
-            const input: Prisma.OrderHistoryUncheckedCreateInput = {
-                amount: 9.99,
-                createdAt: new Date(new Date().getTime() + i * 60 * 1000),
-                id: 'ch_mock_' + i,
-                receiptUrl: "https://www.google.co.uk/",
-                userId: token.sub || ""
-            }
-            data.push(input)
+            await prisma.orderHistory.create({
+                data: {
+                    amount: 5.99 * 1.2,
+                    createdAt: new Date(new Date().getTime() + i * 60 * 1000),
+                    id: 'ch_mock_' + i,
+                    receiptUrl: "https://www.google.co.uk/",
+                    userId: token.sub || "",
+                    gigs: {
+                        create: [{
+                            gigId: "clk8ksqsb0007ujsky744ucnf"
+                        }]
+                    }
+                }
+            })
         }
-        const orderHistory = await prisma.orderHistory.createMany({
-            data
-        })
-        const successResponse = responses(orderHistory).success
+        const successResponse = responses({}).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
         console.log(error)
