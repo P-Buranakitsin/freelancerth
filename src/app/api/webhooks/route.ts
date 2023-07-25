@@ -39,6 +39,9 @@ export async function POST(req: NextRequest) {
             // charge.created is UNIX timestamp
             const timestamp = charge.created;
             const date = new Date(timestamp * 1000);
+            const gigsId: string[] = JSON.parse(charge.metadata.gigsId)
+            const freelancersId: string[] = JSON.parse(charge.metadata.freelancersId)
+
 
             await Promise.all([
                 prisma.cart.delete({ where: { userId: charge.metadata.userId } }),
@@ -48,7 +51,14 @@ export async function POST(req: NextRequest) {
                         createdAt: date,
                         id: charge.id,
                         receiptUrl: charge.receipt_url || "",
-                        userId: charge.metadata.userId
+                        userId: charge.metadata.userId,
+                        gigs: {
+                            create: gigsId.map((gigId: string) => {
+                                return {
+                                    gigId
+                                }
+                            })
+                        }
                     }
                 }),
             ]);

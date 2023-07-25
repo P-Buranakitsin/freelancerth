@@ -12,4 +12,10 @@ declare interface IResponseDataGETOrderHistoryByUserId {
     createdAt: string
     receiptUrl: string
     paymentStatus: import('@prisma/client').PaymentStatus
+    gigs: {
+        title: string
+        price: string
+        id: string
+        freelancerId: string
+    }[]
 }

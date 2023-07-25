@@ -2,7 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { BiCart, BiLogOut } from "react-icons/bi";
+import { BiCart, BiHistory, BiLogOut } from "react-icons/bi";
 import { BsPersonCircle } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
 import Link from "next/link";
@@ -33,6 +33,9 @@ export default function Navbar() {
   const isBrowseGigPage = pathname.includes("/browse/gigs");
   const isRegisterFreelancerPage = pathname === "/register/freelancer";
   const isGigCartPage = pathname.includes(endpoints.PAGE.gigCart(""));
+  const isOrderHistoryPage = pathname.includes(
+    endpoints.PAGE.orderHistory(session?.user.sub || "")
+  );
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
@@ -140,6 +143,16 @@ export default function Navbar() {
                       </div>
                     </div>
                   </div>
+                </Link>
+                <Link
+                  className={`${
+                    isOrderHistoryPage ? active : inactive
+                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  href={endpoints.PAGE.orderHistory(session.user.sub || "")}
+                  onClick={closeCollapse}
+                >
+                  <BiHistory size={16} className="flex-none" />
+                  <div>My order history</div>
                 </Link>
                 <button
                   className={`${inactive} w-full flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300`}

@@ -44,12 +44,45 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
                 orderBy: {
                     createdAt: 'desc'
                 },
+                include: {
+                    gigs: {
+                        select: {
+                            gig: {
+                                select: {
+                                    title: true,
+                                    price: true,
+                                    id: true,
+                                    freelancerProfile: {
+                                        select: {
+                                            id: true,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 skip: page * limit,
                 take: limit,
             })
         ])
+
+        const flattenedData = data.map((order) => ({
+            id: order.id,
+            userId: order.userId,
+            amount: order.amount,
+            createdAt: order.createdAt,
+            receiptUrl: order.receiptUrl,
+            paymentStatus: order.paymentStatus,
+            gigs: order.gigs.map((el) => ({
+                title: el.gig.title,
+                price: (Number(el.gig.price) * 1.2).toFixed(2),
+                id: el.gig.id,
+                freelancerId: el.gig.freelancerProfile.id,
+            })),
+        }));
         const pageCount = Math.ceil(totalItems / limit);
-        const paginationResponse = responses(data, {
+        const paginationResponse = responses(flattenedData, {
             limit,
             totalItems,
             totalPages: pageCount,

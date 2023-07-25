@@ -10,127 +10,158 @@ import {
 } from "@tanstack/react-table";
 import { useOrderHistory } from "@/hooks/useQuery";
 import { useSession } from "next-auth/react";
-import EmptyStateCard from "../EmptyStateCard";
-import Link from "next/link";
 import { PaymentStatus } from "@prisma/client";
+import Link from "next/link";
+import EmptyStateCard from "@/components/EmptyStateCard";
+import MoreDetailsModal from "./MoreDetailsModal";
 
-const columnHelper = createColumnHelper<IResponseDataGETOrderHistoryByUserId>();
+interface IOrderHistorySectionProps {}
 
-const columns = [
-  columnHelper.accessor("id", {
-    cell: (info) => (
-      <div className="px-6 py-2">
-        <p className="text-sm text-gray-500">{info.getValue()}</p>
-      </div>
-    ),
-    footer: (info) => info.column.id,
-    header: () => (
-      <div className="group inline-flex items-start gap-x-2">
-        <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-          Order ID
-        </span>
-      </div>
-    ),
-  }),
-  columnHelper.accessor("createdAt", {
-    header: () => (
-      <div className="group inline-flex items-start gap-x-2">
-        <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-          Date
-        </span>
-      </div>
-    ),
-    cell: (info) => {
-      const date = new Date(info.getValue());
+export default function OrderHistorySection(props: IOrderHistorySectionProps) {
+  const columnHelper =
+    createColumnHelper<IResponseDataGETOrderHistoryByUserId>();
 
-      const formattedDate = date.toLocaleString("en-GB", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      return (
+  const columns = [
+    columnHelper.accessor("id", {
+      cell: (info) => (
         <div className="px-6 py-2">
-          <p className="text-sm text-gray-500">{formattedDate}</p>
+          <p className="text-sm text-gray-500">{info.getValue()}</p>
         </div>
-      );
-    },
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("amount", {
-    header: () => (
-      <div className="group inline-flex items-start gap-x-2">
-        <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-          Amount
-        </span>
-      </div>
-    ),
-    cell: (info) => (
-      <div className="px-6 py-2">
-        <p className="text-sm text-gray-500">£&nbsp;{info.getValue()}</p>
-      </div>
-    ),
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("paymentStatus", {
-    header: () => (
-      <div className="group inline-flex items-start gap-x-2 min-w-[120px]">
-        <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-          Payment Status
-        </span>
-      </div>
-    ),
-    cell: (info) => (
-      <div className="px-6 py-3">
-        <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-          <svg
-            className="w-2.5 h-2.5"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-          </svg>
-          {info.getValue()}
-        </span>
-      </div>
-    ),
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("receiptUrl", {
-    header: () => "",
-    cell: (info) => (
-      <Link
-        className="block w-fit"
-        rel="noopener noreferrer"
-        target="_blank"
-        href={info.getValue()}
-      >
-        <div className="py-1 px-2 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white">
-          <svg
-            className="w-4 h-4"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zm.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51z" />
-            <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z" />
-          </svg>
-          View Receipt
+      ),
+      footer: (info) => info.column.id,
+      header: () => (
+        <div className="group inline-flex items-start gap-x-2">
+          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+            Order ID
+          </span>
         </div>
-      </Link>
-    ),
-    footer: (info) => info.column.id,
-  }),
-];
+      ),
+    }),
+    columnHelper.accessor("createdAt", {
+      header: () => (
+        <div className="group inline-flex items-start gap-x-2">
+          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+            Date
+          </span>
+        </div>
+      ),
+      cell: (info) => {
+        const date = new Date(info.getValue());
 
-export default function Table() {
+        const formattedDate = date.toLocaleString("en-GB", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        return (
+          <div className="px-6 py-2">
+            <p className="text-sm text-gray-500">{formattedDate}</p>
+          </div>
+        );
+      },
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("amount", {
+      header: () => (
+        <div className="group inline-flex items-start gap-x-2">
+          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+            Amount
+          </span>
+        </div>
+      ),
+      cell: (info) => (
+        <div className="px-6 py-2">
+          <p className="text-sm text-gray-500">£&nbsp;{info.getValue()}</p>
+        </div>
+      ),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("paymentStatus", {
+      header: () => (
+        <div className="group inline-flex items-start gap-x-2 min-w-[120px]">
+          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+            Payment Status
+          </span>
+        </div>
+      ),
+      cell: (info) => (
+        <div className="px-6 py-3">
+          <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            <svg
+              className="w-2.5 h-2.5"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </svg>
+            {info.getValue()}
+          </span>
+        </div>
+      ),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("receiptUrl", {
+      header: () => "",
+      cell: (info) => {
+        return (
+          <>
+            <div className="px-6 py-2">
+              <div className="hs-dropdown relative inline-block [--placement:bottom-right]">
+                <button
+                  id="hs-table-dropdown-1"
+                  type="button"
+                  className="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-md text-gray-700 align-middle focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={16}
+                    height={16}
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                  </svg>
+                </button>
+                <div
+                  className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden mt-2 divide-y divide-gray-200 min-w-[10rem] z-20 bg-white shadow-2xl rounded-lg p-2 mt-2 dark:divide-gray-700 dark:bg-gray-800 dark:border dark:border-gray-700"
+                  aria-labelledby="hs-table-dropdown-1"
+                >
+                  <div className="py-2 first:pt-0 last:pb-0">
+                    <span className="block py-2 px-3 text-xs font-medium uppercase text-gray-400 dark:text-gray-600">
+                      Actions
+                    </span>
+                    <Link
+                      className="flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      href={info.getValue()}
+                    >
+                      View receipt
+                    </Link>
+                    <button
+                      className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                      data-hs-overlay="#hs-vertically-centered-scrollable-modal"
+                    >
+                      More details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      },
+      footer: (info) => info.column.id,
+    }),
+  ];
+
   const { data: session } = useSession();
 
   const trRef = React.useRef<HTMLTableRowElement>(null);
@@ -209,22 +240,28 @@ export default function Table() {
 
   const TRows = () => {
     const numberOfRows = table.getRowModel().rows.length;
-    const rows = table.getRowModel().rows.map((row) => (
-      <tr key={row.id} ref={trRef}>
-        {row.getVisibleCells().map((cell) => (
-          <td key={cell.id} className="h-px w-px whitespace-nowrap">
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </td>
-        ))}
-      </tr>
-    ));
+    const rows = table.getRowModel().rows.map((row) => {
+      return (
+        <>
+          <MoreDetailsModal gigs={row.original.gigs} orderId={row.original.id} />
+          <tr key={row.id} ref={trRef}>
+            {row.getVisibleCells().map((cell) => {
+              return (
+                <>
+                  <td key={cell.id} className="h-px w-px whitespace-nowrap">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                </>
+              );
+            })}
+          </tr>
+        </>
+      );
+    });
     if (numberOfRows < pageSize) {
       for (let i = 0; i < pageSize - numberOfRows; i++) {
         rows.push(
-          <tr
-            key={`dummy-row-page${pageIndex}-row${i}`}
-            className={`h-[${trRef.current?.offsetHeight}px]`}
-          >
+          <tr key={`dummy-row-page${pageIndex}-row${i}`} className={`h-[51px]`}>
             <td key={`dummy-cell-page${pageIndex}-row${i}`}></td>
           </tr>
         );

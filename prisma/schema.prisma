@@ -154,16 +154,17 @@ model Cart {
 }
 
 model Gig {
-  id                  String            @id @default(cuid())
-  title               String            @default("")
+  id                  String               @id @default(cuid())
+  title               String               @default("")
   type                GigType
-  description         String            @default("")
-  freelancerProfile   FreelancerProfile @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+  description         String               @default("")
+  freelancerProfile   FreelancerProfile    @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
   freelancerProfileId String
   price               Decimal
   image               String
   searchTags          SkillsOnGigs[]
   carts               GigsOnCart[]
+  orderHistory        OrderHistoryOnGigs[]
 }
 
 model Skill {
@@ -199,12 +200,22 @@ model GigsOnCart {
   @@id([gigId, userId])
 }
 
+model OrderHistoryOnGigs {
+  gig            Gig          @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  gigId          String
+  orderHistory   OrderHistory @relation(fields: [orderHistoryId], references: [id], onDelete: Cascade)
+  orderHistoryId String
+
+  @@id([gigId, orderHistoryId])
+}
+
 model OrderHistory {
-  id            String        @id @unique
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String               @id @unique
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
   amount        Decimal
   createdAt     DateTime
   receiptUrl    String
-  paymentStatus PaymentStatus @default(PAID)
+  paymentStatus PaymentStatus        @default(PAID)
+  gigs          OrderHistoryOnGigs[]
 }

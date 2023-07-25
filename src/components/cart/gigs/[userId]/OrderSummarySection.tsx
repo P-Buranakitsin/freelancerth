@@ -39,6 +39,8 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
       lineItems: [],
       metaData: {
         userId: session?.user.sub || "",
+        freelancersId: [],
+        gigsId: [],
       },
     };
 
@@ -57,7 +59,12 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
         },
       };
       body.lineItems.push(lineItem);
+      body.metaData.gigsId.push(el.gig.id);
+      body.metaData.freelancersId.push(el.gig.freelancerProfileId);
     });
+    body.metaData.freelancersId = [...new Set(body.metaData.freelancersId)];
+    body.metaData.freelancersId = JSON.stringify(body.metaData.freelancersId);
+    body.metaData.gigsId = JSON.stringify(body.metaData.gigsId);
 
     checkoutSessionMutation.mutate(body);
   };

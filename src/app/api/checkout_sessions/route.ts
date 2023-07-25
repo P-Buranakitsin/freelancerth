@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
     try {
         const body = await req.json() as IRequestPOSTCheckoutSessions;
-
+        console.log(body)
         // Create Checkout Sessions from body params.
         const params: Stripe.Checkout.SessionCreateParams = {
             submit_type: 'pay',
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
             mode: "payment",
             payment_intent_data: {
                 metadata: body.metaData
-            }
+            },
         }
         const checkoutSession: Stripe.Checkout.Session = await stripe.checkout.sessions.create(params)
         const successResponse = responses(checkoutSession).success

@@ -103,6 +103,7 @@ Table Gig {
   image String [not null]
   searchTags SkillsOnGigs [not null]
   carts GigsOnCart [not null]
+  orderHistory OrderHistoryOnGigs [not null]
 }
 
 Table Skill {
@@ -144,6 +145,17 @@ Table GigsOnCart {
   }
 }
 
+Table OrderHistoryOnGigs {
+  gig Gig [not null]
+  gigId String [not null]
+  orderHistory OrderHistory [not null]
+  orderHistoryId String [not null]
+
+  indexes {
+    (gigId, orderHistoryId) [pk]
+  }
+}
+
 Table OrderHistory {
   id String [pk]
   user User [not null]
@@ -152,6 +164,7 @@ Table OrderHistory {
   createdAt DateTime [not null]
   receiptUrl String [not null]
   paymentStatus PaymentStatus [not null, default: 'PAID']
+  gigs OrderHistoryOnGigs [not null]
 }
 
 Enum UserRole {
@@ -225,5 +238,9 @@ Ref: SkillsOnGigs.skillName > Skill.name [delete: Cascade]
 Ref: GigsOnCart.gigId > Gig.id [delete: Cascade]
 
 Ref: GigsOnCart.userId > Cart.userId [delete: Cascade]
+
+Ref: OrderHistoryOnGigs.gigId > Gig.id [delete: Cascade]
+
+Ref: OrderHistoryOnGigs.orderHistoryId > OrderHistory.id [delete: Cascade]
 
 Ref: OrderHistory.userId > User.id [delete: Cascade]
