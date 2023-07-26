@@ -8,11 +8,13 @@ import { ImProfile } from "react-icons/im";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { endpoints } from "@/constants/endpoints";
-import { useCart } from "@/hooks/useQuery";
+import { useCart, useFreelancerProfile } from "@/hooks/useQuery";
+import { RiChatHistoryFill } from "react-icons/ri";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const { data } = useCart(session);
+  const freelancerProfile = useFreelancerProfile(session);
   const handleSigninOnClick = () => {
     signIn();
   };
@@ -35,6 +37,9 @@ export default function Navbar() {
   const isGigCartPage = pathname.includes(endpoints.PAGE.gigCart(""));
   const isOrderHistoryPage = pathname.includes(
     endpoints.PAGE.orderHistory(session?.user.sub || "")
+  );
+  const isCustomerOrderPage = pathname.includes(
+    endpoints.PAGE.customerOrder(freelancerProfile.data?.data?.id || "")
   );
 
   const closeCollapse = () => {
@@ -154,6 +159,18 @@ export default function Navbar() {
                   <BiHistory size={16} className="flex-none" />
                   <div>My order history</div>
                 </Link>
+                <a
+                  className={`${
+                    isCustomerOrderPage ? active : inactive
+                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  href={endpoints.PAGE.customerOrder(
+                    freelancerProfile.data?.data?.id || "invalid"
+                  )}
+                  onClick={closeCollapse}
+                >
+                  <RiChatHistoryFill size={16} className="flex-none" />
+                  <div>My customer order</div>
+                </a>
                 <button
                   className={`${inactive} w-full flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300`}
                   onClick={handleSignoutOnClick}

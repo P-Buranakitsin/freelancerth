@@ -27,7 +27,7 @@ export interface IResponses {
     conflict: IResponse;
 }
 
-export const responses = (responseData?: any, pagination?: IPagination) => ({
+export const responses = (responseData?: any, pagination?: IPagination, totalAmountReceived?: string) => ({
     unauthorized: {
         body: {
             message: 'unauthorized access',
@@ -74,6 +74,7 @@ export const responses = (responseData?: any, pagination?: IPagination) => ({
         body: {
             message: 'success',
             data: responseData,
+            totalAmountReceived,
             pagination
         },
         status: {
