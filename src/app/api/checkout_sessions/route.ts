@@ -1,5 +1,6 @@
 import { endpoints } from "@/constants/endpoints";
 import { responses } from "@/constants/responses";
+import { prisma } from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
 import { NextResponse, NextRequest } from "next/server";
 import Stripe from "stripe";
@@ -20,8 +21,16 @@ export async function POST(req: NextRequest) {
         );
     }
     try {
+        const count = await prisma.gigsOnCart.count({
+            where: {
+                userId: token.sub || ""
+            }
+        })
+        if (count >= 3) {
+            throw new Error("too many items in cart")
+        }
+
         const body = await req.json() as IRequestPOSTCheckoutSessions;
-        console.log(body)
         // Create Checkout Sessions from body params.
         const params: Stripe.Checkout.SessionCreateParams = {
             submit_type: 'pay',
@@ -40,7 +49,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error: any) {
         console.log(error)
-        const errorResponse = responses(error).internalError
+        const errorResponse = responses(error.message).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }
 }

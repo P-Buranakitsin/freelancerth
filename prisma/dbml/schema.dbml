@@ -82,6 +82,7 @@ Table FreelancerProfile {
   linkedInURL String [not null, default: '']
   githubURL String [not null, default: '']
   portfolioURL String [not null, default: '']
+  customerOrders CustomerOrder [not null]
 }
 
 Table Cart {
@@ -104,6 +105,7 @@ Table Gig {
   searchTags SkillsOnGigs [not null]
   carts GigsOnCart [not null]
   orderHistory OrderHistoryOnGigs [not null]
+  customerOrders CustomerOrderOnGigs [not null]
 }
 
 Table Skill {
@@ -165,6 +167,31 @@ Table OrderHistory {
   receiptUrl String [not null]
   paymentStatus PaymentStatus [not null, default: 'PAID']
   gigs OrderHistoryOnGigs [not null]
+  customerOrder CustomerOrder [not null]
+}
+
+Table CustomerOrder {
+  orderHistoryId String [not null]
+  freelancerProfileId String [not null]
+  freelancerProfile FreelancerProfile [not null]
+  gigs CustomerOrderOnGigs [not null]
+  orderHistory OrderHistory [not null]
+
+  indexes {
+    (freelancerProfileId, orderHistoryId) [pk]
+  }
+}
+
+Table CustomerOrderOnGigs {
+  gig Gig [not null]
+  gigId String [not null]
+  freelancerProfileId String [not null]
+  orderHistoryId String [not null]
+  CustomerOrder CustomerOrder [not null]
+
+  indexes {
+    (gigId, freelancerProfileId, orderHistoryId) [pk]
+  }
 }
 
 Enum UserRole {
@@ -244,3 +271,11 @@ Ref: OrderHistoryOnGigs.gigId > Gig.id [delete: Cascade]
 Ref: OrderHistoryOnGigs.orderHistoryId > OrderHistory.id [delete: Cascade]
 
 Ref: OrderHistory.userId > User.id [delete: Cascade]
+
+Ref: CustomerOrder.freelancerProfileId > FreelancerProfile.id [delete: Cascade]
+
+Ref: CustomerOrder.orderHistoryId > OrderHistory.id [delete: Cascade]
+
+Ref: CustomerOrderOnGigs.gigId > Gig.id [delete: Cascade]
+
+Ref: CustomerOrderOnGigs.(freelancerProfileId, orderHistoryId) > CustomerOrder.(freelancerProfileId, orderHistoryId) [delete: Cascade]

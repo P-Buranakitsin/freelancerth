@@ -48,8 +48,8 @@ export const responses = (responseData?: any, pagination?: IPagination) => ({
     },
     internalError: {
         body: {
-            message: 'internal server error',
-            error: responseData
+            message: responseData || '',
+            error: 'internal server error'
         },
         status: {
             status: 500

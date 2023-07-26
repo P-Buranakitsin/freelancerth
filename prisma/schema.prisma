@@ -130,19 +130,20 @@ model VerificationToken {
 }
 
 model FreelancerProfile {
-  id           String                       @id @default(cuid())
-  user         User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String                       @unique
-  type         FreelancerType
-  gigs         Gig[]
-  verified     Boolean
-  skills       SkillsOnFreelancerProfiles[]
-  bio          String                       @db.Text
-  passportOrId String                       @default("")
-  resumeOrCV   String                       @default("")
-  linkedInURL  String                       @default("")
-  githubURL    String                       @default("")
-  portfolioURL String                       @default("")
+  id             String                       @id @default(cuid())
+  user           User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String                       @unique
+  type           FreelancerType
+  gigs           Gig[]
+  verified       Boolean
+  skills         SkillsOnFreelancerProfiles[]
+  bio            String                       @db.Text
+  passportOrId   String                       @default("")
+  resumeOrCV     String                       @default("")
+  linkedInURL    String                       @default("")
+  githubURL      String                       @default("")
+  portfolioURL   String                       @default("")
+  customerOrders CustomerOrder[]
 }
 
 model Cart {
@@ -154,17 +155,18 @@ model Cart {
 }
 
 model Gig {
-  id                  String               @id @default(cuid())
-  title               String               @default("")
+  id                  String                @id @default(cuid())
+  title               String                @default("")
   type                GigType
-  description         String               @default("")
-  freelancerProfile   FreelancerProfile    @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+  description         String                @default("")
+  freelancerProfile   FreelancerProfile     @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
   freelancerProfileId String
   price               Decimal
   image               String
   searchTags          SkillsOnGigs[]
   carts               GigsOnCart[]
   orderHistory        OrderHistoryOnGigs[]
+  customerOrders      CustomerOrderOnGigs[]
 }
 
 model Skill {
@@ -218,4 +220,25 @@ model OrderHistory {
   receiptUrl    String
   paymentStatus PaymentStatus        @default(PAID)
   gigs          OrderHistoryOnGigs[]
+  customerOrder CustomerOrder[]
+}
+
+model CustomerOrder {
+  orderHistoryId      String
+  freelancerProfileId String
+  freelancerProfile   FreelancerProfile     @relation(fields: [freelancerProfileId], references: [id], onDelete: Cascade)
+  gigs                CustomerOrderOnGigs[]
+  orderHistory        OrderHistory          @relation(fields: [orderHistoryId], references: [id], onDelete: Cascade)
+
+  @@id([freelancerProfileId, orderHistoryId])
+}
+
+model CustomerOrderOnGigs {
+  gig                 Gig           @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  gigId               String
+  freelancerProfileId String
+  orderHistoryId      String
+  CustomerOrder       CustomerOrder @relation(fields: [freelancerProfileId, orderHistoryId], references: [freelancerProfileId, orderHistoryId], onDelete: Cascade)
+
+  @@id([gigId, freelancerProfileId, orderHistoryId])
 }

@@ -28,7 +28,6 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
             userId: params.userId
         };
 
-        console.log(paymentStatus)
         if (paymentStatus.length > 0) {
             whereCondition.paymentStatus = {
                 in: paymentStatus as PaymentStatus[]

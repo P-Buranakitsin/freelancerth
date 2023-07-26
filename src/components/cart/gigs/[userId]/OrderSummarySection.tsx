@@ -18,7 +18,7 @@ interface IOrderSummarySectionProps {
 export default function OrderSummarySection(props: IOrderSummarySectionProps) {
   const { data: session } = useSession();
   const { data } = useCart(session);
-  console.log(data);
+  console.log(data?.data?.gigs);
   const checkoutOnClick = () => {
     if (!data?.data?.gigs || data.data.gigs.length < 1) {
       toast.error("no item to checkout", {
@@ -39,10 +39,20 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
       lineItems: [],
       metaData: {
         userId: session?.user.sub || "",
-        freelancersId: [],
-        gigsId: [],
+        groupedGigIdByFreelancerId: undefined,
       },
     };
+
+    const groupedData = data.data.gigs.reduce((acc, curr) => {
+      const freelancerProfileId = curr.gig.freelancerProfileId;
+      if (!acc[freelancerProfileId]) {
+        acc[freelancerProfileId] = [];
+      }
+      acc[freelancerProfileId].push(curr.gig.id);
+      return acc;
+    }, {} as Record<string, string[]>);
+    
+    body.metaData.groupedGigIdByFreelancerId = JSON.stringify(groupedData)
 
     data.data.gigs.forEach((el) => {
       const gigPrice = Number((el.gig.price * 1.2).toFixed(2)) * 100;
@@ -59,12 +69,7 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
         },
       };
       body.lineItems.push(lineItem);
-      body.metaData.gigsId.push(el.gig.id);
-      body.metaData.freelancersId.push(el.gig.freelancerProfileId);
     });
-    body.metaData.freelancersId = [...new Set(body.metaData.freelancersId)];
-    body.metaData.freelancersId = JSON.stringify(body.metaData.freelancersId);
-    body.metaData.gigsId = JSON.stringify(body.metaData.gigsId);
 
     checkoutSessionMutation.mutate(body);
   };

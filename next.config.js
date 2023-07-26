@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const path = require("path");
-const ESLintPlugin = require('eslint-webpack-plugin');
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 const nextConfig = {
   sassOptions: {
@@ -20,8 +20,13 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ['uploadthing.com'],
-},
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

@@ -1,7 +1,6 @@
 import { responses } from "@/constants/responses";
 import { NextResponse, NextRequest } from "next/server";
 import Stripe from "stripe";
-import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -14,7 +13,7 @@ const webhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET!
 export async function POST(req: NextRequest) {
     // Code partly from https://github.com/vercel/next.js/blob/canary/examples/with-stripe-typescript/pages/api/webhooks/index.ts
     const body = await req.text();
-    const sig = headers().get('Stripe-Signature') as string;
+    const sig = req.headers.get('Stripe-Signature') as string;
     let event: Stripe.Event;
 
     try {
@@ -39,11 +38,26 @@ export async function POST(req: NextRequest) {
             // charge.created is UNIX timestamp
             const timestamp = charge.created;
             const date = new Date(timestamp * 1000);
-            const gigsId: string[] = JSON.parse(charge.metadata.gigsId)
-            const freelancersId: string[] = JSON.parse(charge.metadata.freelancersId)
 
+            const groupedGigIdByFreelancerId = JSON.parse(charge.metadata.groupedGigIdByFreelancerId) as Record<string, string[]>
+            const gigsId = Object.values(groupedGigIdByFreelancerId).flat();
 
             await Promise.all([
+                ...Object.entries(groupedGigIdByFreelancerId).map(([key, value]) =>
+                    prisma.customerOrder.create({
+                        data: {
+                            freelancerProfileId: key,
+                            orderHistoryId: charge.id,
+                            gigs: {
+                                create: value.map((gigId) => {
+                                    return {
+                                        gigId,
+                                    };
+                                }),
+                            },
+                        },
+                    })
+                ),
                 prisma.cart.delete({ where: { userId: charge.metadata.userId } }),
                 prisma.orderHistory.create({
                     data: {
@@ -53,15 +67,17 @@ export async function POST(req: NextRequest) {
                         receiptUrl: charge.receipt_url || "",
                         userId: charge.metadata.userId,
                         gigs: {
-                            create: gigsId.map((gigId: string) => {
+                            create: gigsId.map((gigId) => {
                                 return {
-                                    gigId
-                                }
-                            })
-                        }
-                    }
+                                    gigId,
+                                };
+                            }),
+                        },
+                    },
                 }),
             ]);
+
+
         } else if (event.type === 'checkout.session.completed') {
             const checkout = event.data.object as Stripe.Checkout.Session
             console.log(checkout.id)

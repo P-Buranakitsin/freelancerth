@@ -31,7 +31,7 @@ export const GET = async (req: NextRequest, { params }: { params: { userId: stri
         const subtotalPrice = cart.gigs.reduce((total, gig) => total + parseFloat((gig.gig.price as any)), 0);
         const totalServiceFee = 0.2 * subtotalPrice
         const totalPrice = subtotalPrice + totalServiceFee
-        const successResponse = responses({...cart, subtotalPrice, totalServiceFee, totalPrice}).success
+        const successResponse = responses({ ...cart, subtotalPrice, totalServiceFee, totalPrice }).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
         console.log(error)
@@ -52,6 +52,16 @@ export const PUT = async (req: NextRequest, { params }: { params: { userId: stri
     }
     try {
         const json = await req.json();
+
+        const count = await prisma.gigsOnCart.count({
+            where: {
+                userId: params.userId
+            }
+        })
+
+        if (count >= 3) {
+            throw new Error("too many items in cart")
+        }
 
         const gig = await prisma.gig.findUnique({
             where: {
@@ -109,6 +119,10 @@ export const PUT = async (req: NextRequest, { params }: { params: { userId: stri
                 badRequestResponse.body,
                 badRequestResponse.status
             );
+        }
+        if (error.code === "P2002") {
+            const errorResponse = responses("item is already in your cart").internalError
+            return NextResponse.json(errorResponse.body, errorResponse.status)
         }
         const errorResponse = responses(error.message).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
