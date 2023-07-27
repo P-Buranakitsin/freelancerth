@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import EmptyStateCard from "@/components/EmptyStateCard";
+import { useCustomerOrder } from "@/hooks/useQuery";
+import { PaymentStatus } from "@prisma/client";
 import {
   PaginationState,
   createColumnHelper,
@@ -8,43 +10,75 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useOrderHistory } from "@/hooks/useQuery";
 import { useSession } from "next-auth/react";
-import { PaymentStatus } from "@prisma/client";
+import Image from "next/image";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { endpoints } from "@/constants/endpoints";
 import Link from "next/link";
-import EmptyStateCard from "@/components/EmptyStateCard";
 import MoreDetailsModal from "@/components/MoreDetailsModal";
 
-interface IOrderHistorySectionProps {}
+interface ICustomerOrderSectionProps {
+  freelancerId: string;
+}
 
-export default function OrderHistorySection(props: IOrderHistorySectionProps) {
+export default function CustomerOrderSection(
+  props: ICustomerOrderSectionProps
+) {
+  const router = useRouter();
   const columnHelper =
-    createColumnHelper<IResponseDataGETOrderHistoryByUserId>();
+    createColumnHelper<IResponseDataGETCustomerOrderByFreelancerId>();
 
   const columns = [
-    columnHelper.accessor("id", {
+    columnHelper.accessor("orderHistoryId", {
       cell: (info) => (
         <div className="px-6 py-2">
           <p className="text-sm text-gray-500">{info.getValue()}</p>
         </div>
       ),
       footer: (info) => info.column.id,
-      header: () => (
-        <div className="group inline-flex items-start gap-x-2">
-          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-            Order ID
-          </span>
-        </div>
-      ),
+      header: () => {
+        return (
+          <div className="group inline-flex items-start gap-x-2">
+            <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+              Order ID
+            </span>
+          </div>
+        );
+      },
     }),
-    columnHelper.accessor("createdAt", {
-      header: () => (
-        <div className="group inline-flex items-start gap-x-2">
-          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-            Date
-          </span>
-        </div>
-      ),
+    columnHelper.accessor("orderHistory.user", {
+      cell: (info) => {
+        return (
+          <button
+            className="px-6 py-2 flex flex-row space-x-2 items-center"
+            onClick={() => {
+              router.push(endpoints.PAGE.publicUserProfile(info.getValue().id));
+            }}
+          >
+            <Image
+              alt=""
+              src={info.getValue().image}
+              className="object-contain w-6 h-6 rounded-full"
+              width={100}
+              height={100}
+            />
+            <p className="text-sm text-gray-500">{info.getValue().email}</p>
+          </button>
+        );
+      },
+      footer: (info) => info.column.id,
+      header: () => {
+        return (
+          <div className="group inline-flex items-start gap-x-2">
+            <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+              Customer
+            </span>
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor("orderHistory.createdAt", {
       cell: (info) => {
         const date = new Date(info.getValue());
 
@@ -56,6 +90,7 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
           minute: "2-digit",
           second: "2-digit",
         });
+
         return (
           <div className="px-6 py-2">
             <p className="text-sm text-gray-500">{formattedDate}</p>
@@ -63,32 +98,38 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
         );
       },
       footer: (info) => info.column.id,
+      header: () => {
+        return (
+          <div className="group inline-flex items-start gap-x-2">
+            <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+              Created
+            </span>
+          </div>
+        );
+      },
     }),
-    columnHelper.accessor("amount", {
-      header: () => (
-        <div className="group inline-flex items-start gap-x-2">
-          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-            Amount
-          </span>
-        </div>
-      ),
-      cell: (info) => (
-        <div className="px-6 py-2">
-          <p className="text-sm text-gray-500">
-            £&nbsp;{Number(info.getValue()).toFixed(2)}
-          </p>
-        </div>
-      ),
+    columnHelper.accessor("amountReceived", {
+      cell: (info) => {
+        return (
+          <div className="px-6 py-2">
+            <p className="text-sm text-gray-500">
+              £&nbsp;{Number(info.getValue()).toFixed(2)}
+            </p>
+          </div>
+        );
+      },
       footer: (info) => info.column.id,
+      header: () => {
+        return (
+          <div className="group inline-flex items-start gap-x-2">
+            <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+              Amount
+            </span>
+          </div>
+        );
+      },
     }),
-    columnHelper.accessor("paymentStatus", {
-      header: () => (
-        <div className="group inline-flex items-start gap-x-2 min-w-[120px]">
-          <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-            Payment Status
-          </span>
-        </div>
-      ),
+    columnHelper.accessor("orderHistory.paymentStatus", {
       cell: (info) => (
         <div className="px-6 py-3">
           <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
@@ -107,9 +148,17 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
         </div>
       ),
       footer: (info) => info.column.id,
+      header: () => {
+        return (
+          <div className="group inline-flex items-start gap-x-2 min-w-[120px]">
+            <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
+              Payment Status
+            </span>
+          </div>
+        );
+      },
     }),
-    columnHelper.accessor("receiptUrl", {
-      header: () => <>{""}</>,
+    columnHelper.accessor("orderHistory.receiptUrl", {
       cell: (info) => {
         return (
           <>
@@ -152,7 +201,7 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
                       data-hs-overlay="#hs-vertically-centered-scrollable-modal"
                       onClick={() => {
                         setGigs(info.row.original.gigs);
-                        setOrderId(info.row.original.id);
+                        setOrderId(info.row.original.orderHistoryId);
                       }}
                     >
                       More details
@@ -165,6 +214,9 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
         );
       },
       footer: (info) => info.column.id,
+      header: () => {
+        return <>{""}</>;
+      },
     }),
   ];
 
@@ -201,7 +253,11 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
       paymentStatus,
     };
 
-  const { data } = useOrderHistory(session, fetchDataOptions);
+  const { data } = useCustomerOrder(
+    session,
+    props.freelancerId,
+    fetchDataOptions
+  );
 
   const defaultData = React.useMemo(() => [], []);
   const pagination = React.useMemo(
@@ -217,7 +273,6 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
     }),
     [paymentStatus]
   );
-
   const table = useReactTable({
     data: data?.data || defaultData,
     columns,
@@ -259,7 +314,7 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
     const rows = table.getRowModel().rows.map((row) => {
       return (
         <>
-          <tr key={row.id} ref={trRef}>
+          <tr key={row.id} className={`h-[51px]`} ref={trRef}>
             {row.getVisibleCells().map((cell) => {
               return (
                 <>
@@ -322,7 +377,7 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
           {/* Header */}
           <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700">
             <p className="text-gray-500 text-sm">
-              *All amounts shown are included by a 20% service fee
+              *All amounts shown are deducted by a 20% service fee
             </p>
             <div>
               <div className="inline-flex gap-x-2">
@@ -480,7 +535,6 @@ export default function OrderHistorySection(props: IOrderHistorySectionProps) {
               </div>
             </div>
           )}
-
           {/* End Footer */}
         </div>
       </div>

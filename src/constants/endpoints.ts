@@ -59,7 +59,16 @@ export const endpoints = {
                 url += paymentStatus.map(paymentStatus => `paymentStatus=${encodeURIComponent(paymentStatus)}`).join('&');
             }
             return url
-        }
+        },
+        customerOrder: (freelancerId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) => {
+            const {paymentStatus} = fetchDataOptions
+            let url = `/api/customer-order/${freelancerId}?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
+            if (paymentStatus.length > 0) {
+                url += `&`
+                url += paymentStatus.map(paymentStatus => `paymentStatus=${encodeURIComponent(paymentStatus)}`).join('&');
+            }
+            return url
+        },
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),

@@ -1,6 +1,6 @@
 import { responses } from "@/constants/responses";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { PaymentStatus, Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -38,9 +38,18 @@ export const GET = async (req: NextRequest, { params }: { params: { freelancerId
         // Query params
         const page = Number(params.get("page")) || 0
         const limit = Number(params.get("limit")) || 6
+        const paymentStatus = params.getAll("paymentStatus") || undefined;
 
         const whereCondition: Prisma.CustomerOrderWhereInput = {
-            freelancerProfileId: freelancerProfile?.id || ""
+            freelancerProfileId: freelancerProfile?.id || "",
+        }
+
+        if (paymentStatus.length > 0) {
+            whereCondition.orderHistory = {
+                paymentStatus: {
+                    in: paymentStatus as PaymentStatus[]
+                }
+            }
         }
 
         const [totalItems, data] = await prisma.$transaction([
@@ -66,7 +75,14 @@ export const GET = async (req: NextRequest, { params }: { params: { freelancerId
                     },
                     gigs: {
                         select: {
-                            gig: true
+                            gig: {
+                                select: {
+                                    title: true,
+                                    price: true,
+                                    id: true,
+                                    freelancerProfileId: true,
+                                }
+                            }
                         }
                     },
                 },

@@ -16,6 +16,6 @@ declare interface IResponseDataGETOrderHistoryByUserId {
         title: string
         price: string
         id: string
-        freelancerId: string
+        freelancerProfileId: string
     }[]
 }

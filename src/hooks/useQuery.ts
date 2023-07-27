@@ -157,3 +157,23 @@ export const useOrderHistory = (session: Session | null, fetchDataOptions: Pagin
         keepPreviousData: true,
     })
 }
+
+async function getCustomerOrderByFreelancerId(freelancerId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) {
+    const res = await fetch(endpoints.API.customerOrder(freelancerId, fetchDataOptions), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const customerOrder = (await res.json()) as IResponseGETCustomerOrderByFreelancerId
+    return customerOrder
+}
+
+export const useCustomerOrder = (session: Session | null, freelancerId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) => {
+    return useQuery({
+        queryKey: ["customerOrder", freelancerId, fetchDataOptions],
+        queryFn: () => getCustomerOrderByFreelancerId(freelancerId, fetchDataOptions),
+        enabled: !!session,
+        keepPreviousData: true,
+    })
+}

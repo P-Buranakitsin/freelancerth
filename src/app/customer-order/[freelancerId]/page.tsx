@@ -1,5 +1,6 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import DialogBox from "@/components/DialogBox";
+import CustomerOrderSection from "@/components/customer-order/[freelancerId]/CustomerOrderSection";
 import { getServerSession } from "next-auth";
 
 export default async function CustomerOrder({
@@ -23,6 +24,7 @@ export default async function CustomerOrder({
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="flex flex-col">
           <h1 className="text-white font-bold text-3xl mb-6">Customer Order</h1>
+          <CustomerOrderSection freelancerId={params.freelancerId} />
         </div>
       </div>
     </main>

@@ -14,7 +14,7 @@ interface IMoreDetailsModalProps {
     title: string;
     price: string;
     id: string;
-    freelancerId: string;
+    freelancerProfileId: string;
   }[];
   orderId: string;
 }
@@ -23,7 +23,7 @@ const columnHelper = createColumnHelper<{
   title: string;
   price: string;
   id: string;
-  freelancerId: string;
+  freelancerProfileId: string;
 }>();
 
 const columns = [
@@ -75,7 +75,7 @@ const columns = [
           <Link
             className="flex"
             href={endpoints.PAGE.gigDetails(
-              info.row.original.freelancerId,
+              info.row.original.freelancerProfileId,
               info.getValue()
             )}
             onClick={() => {

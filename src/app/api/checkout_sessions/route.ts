@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
                 userId: token.sub || ""
             }
         })
-        if (count >= 3) {
+        if (count > 3) {
             throw new Error("too many items in cart")
         }
 
