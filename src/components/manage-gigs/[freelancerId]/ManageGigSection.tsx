@@ -1,7 +1,9 @@
 "use client";
 
 import EmptyStateCard from "@/components/EmptyStateCard";
+import { endpoints } from "@/constants/endpoints";
 import { useGigs } from "@/hooks/useQuery";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   PaginationState,
   createColumnHelper,
@@ -11,6 +13,8 @@ import {
 } from "@tanstack/react-table";
 import { useSession } from "next-auth/react";
 import React from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface IManageGigSectionProps {
   freelancerId: string;
@@ -18,6 +22,66 @@ interface IManageGigSectionProps {
 
 export default function ManageGigSection(props: IManageGigSectionProps) {
   const columnHelper = createColumnHelper<IResponseDataGETGigs>();
+
+  const { data: session } = useSession();
+
+  const client = useQueryClient();
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+
+  const fetchDataOptions = {
+    page: pageIndex,
+    limit: pageSize,
+    freelancerProfileId: props.freelancerId,
+    freelancerType: undefined,
+    session,
+    title: "",
+    price: undefined,
+  };
+
+  const gigMutation = useMutation<any, Error, IRequestDELETEGigByGigId>({
+    mutationFn: async (data) => {
+      const res = await fetch(endpoints.API.gigByGigId(data.gigId), {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gigId: data.gigId,
+        }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message);
+      }
+      return res.json();
+    },
+    onSuccess: async () => {
+      const { session, ...rest } = fetchDataOptions;
+      await client.invalidateQueries({
+        queryKey: ["gigs", rest],
+      });
+      toast.success("gig deleted", {
+        toastId: "descriptionSection",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setPagination({
+        pageIndex: 0,
+        pageSize: 10,
+      });
+    },
+  });
 
   const columns = [
     columnHelper.accessor("id", {
@@ -31,7 +95,7 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
         return (
           <div className="group inline-flex items-start gap-x-2">
             <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-              Order ID
+              Gig ID
             </span>
           </div>
         );
@@ -179,7 +243,11 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
                     <button
                       className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                       data-hs-overlay="#hs-vertically-centered-scrollable-modal"
-                      onClick={() => {}}
+                      onClick={() => {
+                        gigMutation.mutate({
+                          gigId: info.row.original.id,
+                        });
+                      }}
                     >
                       Delete
                     </button>
@@ -197,30 +265,9 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
     }),
   ];
 
-  const { data: session } = useSession();
-
   const trRef = React.useRef<HTMLTableRowElement>(null);
 
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: 10,
-    });
-
-  const fetchDataOptions: PaginationState = {
-    pageIndex,
-    pageSize,
-  };
-
-  const { data } = useGigs({
-    page: pageIndex,
-    limit: pageSize,
-    freelancerProfileId: props.freelancerId,
-    freelancerType: undefined,
-    session,
-    title: "",
-    price: undefined,
-  });
+  const { data } = useGigs(fetchDataOptions);
 
   const defaultData = React.useMemo(() => [], []);
   const pagination = React.useMemo(

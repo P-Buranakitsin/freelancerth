@@ -72,6 +72,9 @@ export const GET = async (req: NextRequest) => {
             }),
             prisma.gig.findMany({
                 where: whereCondition,
+                orderBy: {
+                    updatedAt: "desc"
+                },
                 include: {
                     searchTags: {
                         select: {

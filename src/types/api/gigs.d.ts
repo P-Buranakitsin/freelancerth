@@ -35,3 +35,6 @@ declare interface IResponseDataGETGigs {
     searchTags: SkillName[]
 }
 
+declare interface IRequestDELETEGigByGigId {
+    gigId: string
+}

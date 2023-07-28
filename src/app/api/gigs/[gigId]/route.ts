@@ -32,3 +32,19 @@ export const GET = async (req: NextRequest, { params }: { params: { gigId: strin
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }
 }
+
+export const DELETE = async (req: NextRequest, { params }: { params: { gigId: string } }) => {
+    try {
+        const gig = await prisma.gig.delete({
+            where: {
+                id: params.gigId
+            }
+        })
+        const successResponse = responses(gig).success
+        return NextResponse.json(successResponse.body, successResponse.status)
+    } catch (error) {
+        console.log(error)
+        const errorResponse = responses(error).internalError
+        return NextResponse.json(errorResponse.body, errorResponse.status)
+    }
+}

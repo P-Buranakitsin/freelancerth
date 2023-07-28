@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { MdAddShoppingCart } from "react-icons/md";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface IGigCardProps {
   currentItems?: IResponseDataGETGigs[];
@@ -119,7 +120,7 @@ export default function GigCard(props: IGigCardProps) {
                   );
                 })}
               </div>
-              <p className="mt-1 text-gray-800 dark:text-gray-400">
+              <p className="mt-1 text-gray-800 dark:text-gray-400 break-all">
                 {el.description}
               </p>
               <div className="flex flex-row justify-between mt-6 items-center flex-wrap">
@@ -199,7 +200,7 @@ export default function GigCard(props: IGigCardProps) {
                 );
               })}
             </div>
-            <p className="mt-1 text-gray-800 dark:text-gray-400">
+            <p className="mt-1 text-gray-800 dark:text-gray-400 break-all">
               {el.description}
             </p>
             <div className="flex flex-row justify-between mt-6 items-center flex-wrap">
