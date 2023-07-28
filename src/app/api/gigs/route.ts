@@ -17,6 +17,7 @@ export const GET = async (req: NextRequest) => {
         const freelancerType = params.get("freelancerType") || undefined;
         const skills = params.getAll("skills") || undefined;
         const price = params.get("price") || undefined;
+        const freelancerProfileId = params.get("freelancerProfileId") || undefined;
 
         const whereCondition: Prisma.GigWhereInput = {};
 
@@ -59,6 +60,10 @@ export const GET = async (req: NextRequest) => {
                     gt: 99.99
                 }
             }
+        }
+
+        if (freelancerProfileId) {
+            whereCondition.freelancerProfileId = freelancerProfileId
         }
 
         const [totalItems, data] = await prisma.$transaction([

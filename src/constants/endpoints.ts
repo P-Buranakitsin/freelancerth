@@ -9,6 +9,7 @@ export interface GigsParams {
     skills?: SkillName[];
     gigType?: GigType;
     price?: string;
+    freelancerProfileId?: string;
 }
 
 function createGigsEndpoint(basePath: string, params: GigsParams) {
@@ -17,7 +18,7 @@ function createGigsEndpoint(basePath: string, params: GigsParams) {
         return basePath
     }
 
-    const { page = 0, title, freelancerType, skills, gigType, price, limit = 6 } = params
+    const { page = 0, title, freelancerType, skills, gigType, price, limit = 6, freelancerProfileId } = params
     let url = `${basePath}?page=${page}`;
     if (title) {
         url += `&title=${encodeURIComponent(title)}`;
@@ -37,6 +38,9 @@ function createGigsEndpoint(basePath: string, params: GigsParams) {
     }
     if (price) {
         url += `&price=${encodeURIComponent(price)}`;
+    }
+    if (freelancerProfileId) {
+        url += `&freelancerProfileId=${encodeURIComponent(freelancerProfileId)}`
     }
     return url;
 };
@@ -85,7 +89,8 @@ export const endpoints = {
         publicUserProfile: (userId: string) => `/user/public/${userId}`,
         gigCart: (userId: string) => `/cart/gigs/${userId}`,
         orderHistory: (userId: string) => `/order/history/${userId}`,
-        customerOrder: (freelancerId: string) => `/customer-order/${freelancerId}`
+        customerOrder: (freelancerId: string) => `/customer-order/${freelancerId}`,
+        mangeGigs: (freelancerId: string) => `/manage-gigs/${freelancerId}`,
     }
 
 }

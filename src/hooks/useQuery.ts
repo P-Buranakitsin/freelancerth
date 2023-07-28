@@ -10,6 +10,7 @@ interface GigsHookParams {
     limit: number,
     title: string,
     freelancerType: FreelancerType | undefined
+    freelancerProfileId: string | undefined
     skills?: SkillName[] | undefined;
     type?: GigType | undefined
     price?: string | undefined

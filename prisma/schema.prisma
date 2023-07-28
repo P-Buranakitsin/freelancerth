@@ -163,6 +163,8 @@ model Gig {
   freelancerProfileId String
   price               Decimal
   image               String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime?             @updatedAt()
   searchTags          SkillsOnGigs[]
   carts               GigsOnCart[]
   orderHistory        OrderHistoryOnGigs[]

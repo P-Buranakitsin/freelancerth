@@ -33,15 +33,15 @@ export const GET = async (req: NextRequest, { params }: { params: { freelancerId
 
     try {
         const url = new URL(req.url);
-        const params = new URLSearchParams(url.search)
+        const searchParams = new URLSearchParams(url.search)
 
         // Query params
-        const page = Number(params.get("page")) || 0
-        const limit = Number(params.get("limit")) || 6
-        const paymentStatus = params.getAll("paymentStatus") || undefined;
+        const page = Number(searchParams.get("page")) || 0
+        const limit = Number(searchParams.get("limit")) || 6
+        const paymentStatus = searchParams.getAll("paymentStatus") || undefined;
 
         const whereCondition: Prisma.CustomerOrderWhereInput = {
-            freelancerProfileId: freelancerProfile?.id || "",
+            freelancerProfileId: params.freelancerId || "",
         }
 
         if (paymentStatus.length > 0) {

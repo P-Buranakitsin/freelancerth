@@ -33,6 +33,7 @@ export default function GigSection() {
     skills: skillsParams as SkillName[] | undefined,
     type: gigType,
     price,
+    freelancerProfileId: undefined,
   });
 
   const PaginatedItems = () => {

@@ -30,6 +30,8 @@ declare interface IResponseDataGETGigs {
     },
     price: number,
     image: string
+    createdAt: string
+    updatedAt: string
     searchTags: SkillName[]
 }
 
