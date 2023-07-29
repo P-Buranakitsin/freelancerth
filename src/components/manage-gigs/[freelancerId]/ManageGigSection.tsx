@@ -47,46 +47,6 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
 
   const [gig, setGig] = React.useState<IResponseDataGETGigs>();
 
-  const gigMutation = useMutation<any, Error, IRequestDELETEGigByGigId>({
-    mutationFn: async (data) => {
-      const res = await fetch(endpoints.API.gigByGigId(data.gigId), {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          gigId: data.gigId,
-        }),
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message);
-      }
-      return res.json();
-    },
-    onSuccess: async () => {
-      const { session, ...rest } = fetchDataOptions;
-      await client.invalidateQueries({
-        queryKey: ["gigs", rest],
-      });
-      toast.success("gig deleted", {
-        toastId: "descriptionSection",
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      setPagination({
-        pageIndex: 0,
-        pageSize: 10,
-      });
-    },
-  });
-
   const columns = [
     columnHelper.accessor("id", {
       cell: (info) => (
@@ -245,16 +205,6 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
                       }}
                     >
                       Edit
-                    </button>
-                    <button
-                      className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                      onClick={() => {
-                        gigMutation.mutate({
-                          gigId: info.row.original.id,
-                        });
-                      }}
-                    >
-                      Delete
                     </button>
                     <Link
                       href={endpoints.PAGE.gigDetails(
