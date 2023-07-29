@@ -49,6 +49,7 @@ export default function CreateGigSection(props: ICreateGigSectionProps) {
       },
     });
 
+
     const uploadImageMutation = useMutation<CreateGig, Error, CreateGig>({
       mutationFn: async (data) => {
         const uploadedFile = await startUpload(data.gigImage);

@@ -86,6 +86,7 @@ export const GET = async (req: NextRequest) => {
                             user: true,
                             type: true,
                             bio: true,
+                            skills: true,
                         }
                     }
                 },
@@ -98,8 +99,13 @@ export const GET = async (req: NextRequest) => {
 
         const gigsWithSearchTagsAsStrings = data.map(gig => ({
             ...gig,
-            searchTags: gig.searchTags.map(tag => tag.skillName)
+            searchTags: gig.searchTags.map(tag => tag.skillName),
+            freelancerProfile: {
+                ...gig.freelancerProfile,
+                skills: gig.freelancerProfile.skills.map(skill => skill.skillName)
+            }
         }))
+
         const paginationResponse = responses(gigsWithSearchTagsAsStrings, {
             limit,
             totalItems,

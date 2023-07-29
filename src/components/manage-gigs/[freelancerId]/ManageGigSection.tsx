@@ -15,6 +15,8 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditGigModal from "./EditGigModal";
+import Link from "next/link";
 
 interface IManageGigSectionProps {
   freelancerId: string;
@@ -42,6 +44,8 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
     title: "",
     price: undefined,
   };
+
+  const [gig, setGig] = React.useState<IResponseDataGETGigs>();
 
   const gigMutation = useMutation<any, Error, IRequestDELETEGigByGigId>({
     mutationFn: async (data) => {
@@ -236,13 +240,14 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
                     <button
                       className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                       data-hs-overlay="#hs-vertically-centered-scrollable-modal"
-                      onClick={() => {}}
+                      onClick={() => {
+                        setGig(info.row.original);
+                      }}
                     >
                       Edit
                     </button>
                     <button
                       className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                      data-hs-overlay="#hs-vertically-centered-scrollable-modal"
                       onClick={() => {
                         gigMutation.mutate({
                           gigId: info.row.original.id,
@@ -251,6 +256,15 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
                     >
                       Delete
                     </button>
+                    <Link
+                      href={endpoints.PAGE.gigDetails(
+                        props.freelancerId,
+                        info.row.original.id
+                      )}
+                      className="w-full flex items-center gap-x-3 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                    >
+                      View
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -315,19 +329,17 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
     const numberOfRows = table.getRowModel().rows.length;
     const rows = table.getRowModel().rows.map((row) => {
       return (
-        <>
-          <tr key={row.id} className={`h-[51px]`} ref={trRef}>
-            {row.getVisibleCells().map((cell) => {
-              return (
-                <>
-                  <td key={cell.id} className="h-px w-px whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                </>
-              );
-            })}
-          </tr>
-        </>
+        <tr key={row.id} className={`h-[51px]`} ref={trRef}>
+          {row.getVisibleCells().map((cell) => {
+            return (
+              <>
+                <td key={cell.id} className="h-px w-px whitespace-nowrap">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              </>
+            );
+          })}
+        </tr>
       );
     });
     if (numberOfRows < pageSize) {
@@ -344,6 +356,7 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
 
   return (
     <div className="-m-1.5 overflow-x-auto">
+      <EditGigModal gig={gig} fetchDataOptions={fetchDataOptions} />
       <div className="p-1.5 min-w-full inline-block align-middle">
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-gray-700">
           {/* Header */}

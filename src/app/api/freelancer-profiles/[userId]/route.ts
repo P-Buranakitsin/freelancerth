@@ -56,7 +56,6 @@ export const PUT = async (req: NextRequest, { params }: { params: { userId: stri
     try {
 
         const json = await req.json() as RegisterFreelancer | RegisterFreelancerAPI
-
         
         const response = RegisterFreelancerSchemaAPI.safeParse(json);
         if (!response.success) {

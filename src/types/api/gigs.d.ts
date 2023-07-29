@@ -27,8 +27,9 @@ declare interface IResponseDataGETGigs {
         }
         type: FreelancerType,
         bio: string,
+        skills: SkillName[]
     },
-    price: number,
+    price: string
     image: string
     createdAt: string
     updatedAt: string
@@ -36,5 +37,14 @@ declare interface IResponseDataGETGigs {
 }
 
 declare interface IRequestDELETEGigByGigId {
+    gigId: string
+}
+
+declare interface IRequestPutGigByGigId {
+    title?: string
+    description?: string
+    searchTags?: SkillName[]
+    price?: number
+    image?: string
     gigId: string
 }
