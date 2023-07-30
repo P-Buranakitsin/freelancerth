@@ -83,6 +83,8 @@ Table FreelancerProfile {
   githubURL String [not null, default: '']
   portfolioURL String [not null, default: '']
   customerOrders CustomerOrder [not null]
+  totalAmountReceived Decimal [not null, default: 0]
+  balance Decimal [not null, default: 0]
 }
 
 Table Cart {

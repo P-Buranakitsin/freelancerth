@@ -17,3 +17,8 @@ declare interface IResponsGETFreelancerProfileByUserId {
         skills: SkillName[]
     } | null
 }
+
+declare interface IRequestPatchFreelancerByUserId {
+    bio?: string
+    skills?: SkillName[]
+}

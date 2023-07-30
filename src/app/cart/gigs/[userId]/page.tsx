@@ -2,6 +2,7 @@ import CartItemSection from "@/components/cart/gigs/[userId]/CartItemSection";
 import OrderSummarySection from "@/components/cart/gigs/[userId]/OrderSummarySection";
 
 export default function CartGigs({ params }: { params: { userId: string } }) {
+  
   return (
     <main className="">
       <div className="max-w-[85rem] mx-auto py-16 px-4 sm:px-6 lg:px-8">

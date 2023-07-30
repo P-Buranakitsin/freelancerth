@@ -130,20 +130,22 @@ model VerificationToken {
 }
 
 model FreelancerProfile {
-  id             String                       @id @default(cuid())
-  user           User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String                       @unique
-  type           FreelancerType
-  gigs           Gig[]
-  verified       Boolean
-  skills         SkillsOnFreelancerProfiles[]
-  bio            String                       @db.Text
-  passportOrId   String                       @default("")
-  resumeOrCV     String                       @default("")
-  linkedInURL    String                       @default("")
-  githubURL      String                       @default("")
-  portfolioURL   String                       @default("")
-  customerOrders CustomerOrder[]
+  id                  String                       @id @default(cuid())
+  user                User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String                       @unique
+  type                FreelancerType
+  gigs                Gig[]
+  verified            Boolean
+  skills              SkillsOnFreelancerProfiles[]
+  bio                 String                       @db.Text
+  passportOrId        String                       @default("")
+  resumeOrCV          String                       @default("")
+  linkedInURL         String                       @default("")
+  githubURL           String                       @default("")
+  portfolioURL        String                       @default("")
+  customerOrders      CustomerOrder[]
+  totalAmountReceived Decimal                      @default(0)
+  balance             Decimal                      @default(0)
 }
 
 model Cart {

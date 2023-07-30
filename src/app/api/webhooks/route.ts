@@ -9,7 +9,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 const webhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET!
 
-
 export async function POST(req: NextRequest) {
     // Code partly from https://github.com/vercel/next.js/blob/canary/examples/with-stripe-typescript/pages/api/webhooks/index.ts
     const body = await req.text();
@@ -39,25 +38,41 @@ export async function POST(req: NextRequest) {
             const timestamp = charge.created;
             const date = new Date(timestamp * 1000);
 
-            const groupedGigIdByFreelancerId = JSON.parse(charge.metadata.groupedGigIdByFreelancerId) as Record<string, string[]>
+            const groupedGigIdByFreelancerId = JSON.parse(charge.metadata.groupedGigIdByFreelancerId) as Record<string, { gigId: string; gigPrice: number }[]>
             const gigsId = Object.values(groupedGigIdByFreelancerId).flat();
 
             await Promise.all([
-                ...Object.entries(groupedGigIdByFreelancerId).map(([key, value]) =>
-                    prisma.customerOrder.create({
-                        data: {
-                            freelancerProfileId: key,
-                            orderHistoryId: charge.id,
-                            gigs: {
-                                create: value.map((gigId) => {
-                                    return {
-                                        gigId,
-                                    };
-                                }),
+                ...Object.entries(groupedGigIdByFreelancerId).map(([key, value]) => {
+                    const totalGigPrice = value.reduce((acc, obj) => acc + obj.gigPrice, 0).toFixed(2);
+                    return Promise.all([
+                        prisma.customerOrder.create({
+                            data: {
+                                freelancerProfileId: key,
+                                orderHistoryId: charge.id,
+                                gigs: {
+                                    create: value.map((el) => {
+                                        return {
+                                            gigId: el.gigId,
+                                        };
+                                    }),
+                                },
                             },
-                        },
-                    })
-                ),
+                        }),
+                        prisma.freelancerProfile.update({
+                            where: {
+                                id: key
+                            },
+                            data: {
+                                balance: {
+                                    increment: totalGigPrice
+                                },
+                                totalAmountReceived: {
+                                    increment: totalGigPrice
+                                }
+                            }
+                        })
+                    ]);
+                }),
                 prisma.cart.delete({ where: { userId: charge.metadata.userId } }),
                 prisma.orderHistory.create({
                     data: {
@@ -67,9 +82,9 @@ export async function POST(req: NextRequest) {
                         receiptUrl: charge.receipt_url || "",
                         userId: charge.metadata.userId,
                         gigs: {
-                            create: gigsId.map((gigId) => {
+                            create: gigsId.map((el) => {
                                 return {
-                                    gigId,
+                                    gigId: el.gigId,
                                 };
                             }),
                         },

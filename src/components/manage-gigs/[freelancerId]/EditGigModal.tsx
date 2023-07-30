@@ -80,7 +80,7 @@ export default function EditGigModal(props: IEditGigModal) {
   const patchGigByGigIdMutation = useMutation<
     any,
     Error,
-    IRequestPutGigByGigId
+    IRequestPatchGigByGigId
   >({
     mutationFn: async (body) => {
       const res = await fetch(endpoints.API.gigByGigId(body.gigId), {

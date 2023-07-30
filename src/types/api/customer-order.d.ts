@@ -3,7 +3,6 @@ declare interface IResponseGETCustomerOrderByFreelancerId {
     data?: [] | IResponseDataGETCustomerOrderByFreelancerId[]
     error?: any
     pagination?: import('@/constants/responses').IPagination
-    totalAmountReceived?: string
 }
 
 declare interface IResponseDataGETCustomerOrderByFreelancerId {

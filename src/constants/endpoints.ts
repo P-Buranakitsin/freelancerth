@@ -91,6 +91,7 @@ export const endpoints = {
         orderHistory: (userId: string) => `/order/history/${userId}`,
         customerOrder: (freelancerId: string) => `/customer-order/${freelancerId}`,
         mangeGigs: (freelancerId: string) => `/manage-gigs/${freelancerId}`,
+        freelancerProfilePage: (freelancerId: string) => `/freelancer-profile/${freelancerId}`
     }
 
 }

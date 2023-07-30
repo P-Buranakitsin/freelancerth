@@ -123,7 +123,7 @@ export default function CustomerOrderSection(
         return (
           <div className="group inline-flex items-start gap-x-2">
             <span className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-200">
-              Amount
+              Received
             </span>
           </div>
         );

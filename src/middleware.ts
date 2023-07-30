@@ -9,6 +9,7 @@ export const config = {
     "/register/freelancer",
     "/cart/gigs/:path*",
     "/order/history/:path*",
-    "/customer-order/:path*"
+    "/customer-order/:path*",
+    "/freelancer-profile/:path*"
   ],
 }

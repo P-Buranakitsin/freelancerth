@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
 import { RegisterFreelancer, RegisterFreelancerAPI, RegisterFreelancerSchemaAPI } from "@/models/RegisterFreelancer";
+import { BioSchema } from "@/models/FreelancerProfile/Bio";
 
 export const GET = async (req: NextRequest, { params }: { params: { userId: string } }) => {
     const token = await getToken({ req })
@@ -56,7 +57,7 @@ export const PUT = async (req: NextRequest, { params }: { params: { userId: stri
     try {
 
         const json = await req.json() as RegisterFreelancer | RegisterFreelancerAPI
-        
+
         const response = RegisterFreelancerSchemaAPI.safeParse(json);
         if (!response.success) {
             const { errors } = response.error;
@@ -127,4 +128,62 @@ export const PUT = async (req: NextRequest, { params }: { params: { userId: stri
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }
 
+}
+
+export const PATCH = async (req: NextRequest, { params }: { params: { userId: string } }) => {
+    const token = await getToken({ req })
+    // Not Signed in or not an admin trying to get another profile
+    if (!token || (token.role !== "ADMIN" && token.sub !== params.userId)) {
+        const unauthorizedResponse = responses().unauthorized;
+        return NextResponse.json(
+            unauthorizedResponse.body,
+            unauthorizedResponse.status
+        );
+    }
+
+    try {
+        const resObj = await req.json() as IRequestPatchFreelancerByUserId
+
+        const parsedResObj = BioSchema.safeParse(resObj);
+        if (!parsedResObj.success) {
+            const { errors } = parsedResObj.error;
+
+            const errorResponse = responses(errors).badRequest
+            return NextResponse.json(errorResponse.body, errorResponse.status)
+        }
+
+        const freelancerProfile = await prisma.freelancerProfile.update({
+            where: {
+                userId: params.userId
+            },
+            data: {
+                bio: resObj.bio,
+                skills: resObj.skills ? {
+                    deleteMany: {},
+                    create: resObj.skills.map(skillName => ({
+                        skill: {
+                            connectOrCreate: {
+                                where: { name: skillName },
+                                create: { name: skillName }
+                            }
+                        }
+                    }))
+                } : undefined,
+            }
+        })
+
+        const successResponse = responses(freelancerProfile).success
+        return NextResponse.json(successResponse.body, successResponse.status)
+    } catch (error) {
+        console.log(error)
+        if (error instanceof SyntaxError) {
+            const badRequestResponse = responses().badRequest;
+            return NextResponse.json(
+                badRequestResponse.body,
+                badRequestResponse.status
+            );
+        }
+        const errorResponse = responses(error).internalError
+        return NextResponse.json(errorResponse.body, errorResponse.status)
+    }
 }

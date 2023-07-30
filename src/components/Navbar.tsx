@@ -11,6 +11,7 @@ import { endpoints } from "@/constants/endpoints";
 import { useCart, useFreelancerProfile } from "@/hooks/useQuery";
 import { RiChatHistoryFill } from "react-icons/ri";
 import { MdWork } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -45,6 +46,11 @@ export default function Navbar() {
   const isManageGigsPage = pathname.includes(
     endpoints.PAGE.mangeGigs(freelancerProfile.data?.data?.id || "")
   );
+  const isFreelancerProfilePage =
+    pathname ===
+    endpoints.PAGE.freelancerProfilePage(
+      freelancerProfile.data?.data?.id || ""
+    );
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
@@ -132,6 +138,18 @@ export default function Navbar() {
                   <ImProfile size={16} className="flex-none" />
                   <div>My profile</div>
                 </Link>
+                <a
+                  className={`${
+                    isFreelancerProfilePage ? active : inactive
+                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  href={endpoints.PAGE.freelancerProfilePage(
+                    freelancerProfile.data?.data?.id || "invalid"
+                  )}
+                  onClick={closeCollapse}
+                >
+                  <CgProfile size={16} className="flex-none" />
+                  <div>My freelancer profile</div>
+                </a>
                 <Link
                   className={`${
                     isGigCartPage ? active : inactive

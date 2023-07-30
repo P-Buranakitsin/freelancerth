@@ -18,7 +18,6 @@ interface IOrderSummarySectionProps {
 export default function OrderSummarySection(props: IOrderSummarySectionProps) {
   const { data: session } = useSession();
   const { data } = useCart(session);
-  console.log(data?.data?.gigs);
   const checkoutOnClick = () => {
     if (!data?.data?.gigs || data.data.gigs.length < 1) {
       toast.error("no item to checkout", {
@@ -48,11 +47,14 @@ export default function OrderSummarySection(props: IOrderSummarySectionProps) {
       if (!acc[freelancerProfileId]) {
         acc[freelancerProfileId] = [];
       }
-      acc[freelancerProfileId].push(curr.gig.id);
+      acc[freelancerProfileId].push({
+        gigId: curr.gig.id,
+        gigPrice: curr.gig.price * 0.8,
+      });
       return acc;
-    }, {} as Record<string, string[]>);
-    
-    body.metaData.groupedGigIdByFreelancerId = JSON.stringify(groupedData)
+    }, {} as Record<string, { gigId: string; gigPrice: number }[]>);
+
+    body.metaData.groupedGigIdByFreelancerId = JSON.stringify(groupedData);
 
     data.data.gigs.forEach((el) => {
       const gigPrice = Number((el.gig.price * 1.2).toFixed(2)) * 100;

@@ -60,7 +60,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: { gigId: str
     }
 
     try {
-        const responseObject = await req.json() as IRequestPutGigByGigId
+        const responseObject = await req.json() as IRequestPatchGigByGigId
 
         const parsedResponse = EditGigSchemaAPI.safeParse(responseObject);
         if (!parsedResponse.success) {
@@ -99,6 +99,13 @@ export const PATCH = async (req: NextRequest, { params }: { params: { gigId: str
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
         console.log(error)
+        if (error instanceof SyntaxError) {
+            const badRequestResponse = responses().badRequest;
+            return NextResponse.json(
+                badRequestResponse.body,
+                badRequestResponse.status
+            );
+        }
         const errorResponse = responses(error).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }

@@ -105,16 +105,13 @@ export const GET = async (req: NextRequest, { params }: { params: { freelancerId
             amountReceived: calculateAmountReceivedForEachOrder(order.gigs),
         }));
 
-        // Calculate the totalAmountReceived for all orders
-        const totalAmountReceived = formattedData.reduce((total, order) => total + parseFloat(order.amountReceived), 0);
-
         const pageCount = Math.ceil(totalItems / limit);
         const paginationResponse = responses(formattedData, {
             limit,
             totalItems,
             totalPages: pageCount,
             page,
-        }, totalAmountReceived.toFixed(2)).pagination
+        }).pagination
 
         return NextResponse.json(paginationResponse.body, paginationResponse.status)
     } catch (error) {

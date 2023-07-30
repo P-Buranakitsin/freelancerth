@@ -40,7 +40,7 @@ declare interface IRequestDELETEGigByGigId {
     gigId: string
 }
 
-declare interface IRequestPutGigByGigId {
+declare interface IRequestPatchGigByGigId {
     title?: string
     description?: string
     searchTags?: SkillName[]
