@@ -169,6 +169,11 @@ export const PATCH = async (req: NextRequest, { params }: { params: { userId: st
                         }
                     }))
                 } : undefined,
+                passportOrId: resObj.passportOrId,
+                resumeOrCV: resObj.resumeOrCV,
+                linkedInURL: resObj.linkedInURL,
+                githubURL: resObj.githubURL,
+                portfolioURL: resObj.portfolioURL,
             }
         })
 

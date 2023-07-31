@@ -21,4 +21,9 @@ declare interface IResponsGETFreelancerProfileByUserId {
 declare interface IRequestPatchFreelancerByUserId {
     bio?: string
     skills?: SkillName[]
+    passportOrId?: string
+    resumeOrCV?: string
+    linkedInURL?: string
+    githubURL?: string
+    portfolioURL?: string
 }

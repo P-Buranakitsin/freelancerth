@@ -3,6 +3,8 @@ import DialogBox from "@/components/DialogBox";
 import BioSection from "@/components/freelancer-profile/[freelancerId]/BioSection";
 import FreelancerImageSection from "@/components/freelancer-profile/[freelancerId]/FreelancerImageSection";
 import FreelancerSkillSection from "@/components/freelancer-profile/[freelancerId]/FreelancerSkillSection";
+import KYCSection from "@/components/freelancer-profile/[freelancerId]/KYCSection";
+import LinkSection from "@/components/freelancer-profile/[freelancerId]/LinkSection";
 import { endpoints } from "@/constants/endpoints";
 import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
@@ -73,6 +75,8 @@ export default async function FreelancerProfile({
           </div>
           <div className="lg:col-span-3 space-y-6">
             <FreelancerSkillSection session={session} />
+            <KYCSection session={session} />
+            <LinkSection session={session} />
           </div>
         </div>
       </div>

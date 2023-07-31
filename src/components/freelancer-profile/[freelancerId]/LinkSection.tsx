@@ -1,51 +1,45 @@
 "use client";
 
+import { endpoints } from "@/constants/endpoints";
 import { useFreelancerProfile } from "@/hooks/useQuery";
-import { Session } from "next-auth";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { Skill, SkillSchema } from "@/models/FreelancerProfile/Skill";
+import { Link, LinkSchema } from "@/models/FreelancerProfile/Links";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { endpoints } from "@/constants/endpoints";
+import { Session } from "next-auth";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { skillOptionsBasedOnType } from "@/constants/react-select";
 
-interface IFreelancerSkillSectionProps {
+interface ILinkSectionProps {
   session: Session;
 }
 
-interface SkillOptions {
-  [key: string]: string[];
-}
-
-export default function FreelancerSkillSection(
-  props: IFreelancerSkillSectionProps
-) {
+export default function LinkSection(props: ILinkSectionProps) {
   const { data } = useFreelancerProfile(props.session);
   const [isEditable, setIsEditable] = useState<boolean>(false);
 
-  const FreelancerSkillForm = () => {
+  const LinkForm = ({
+    initData,
+  }: {
+    initData: {
+      linkedInURL: string;
+      githubURL: string;
+      portfolioURL: string;
+    };
+  }) => {
     const {
       register,
       handleSubmit,
       formState: { errors },
-    } = useForm<Skill>({
-      resolver: zodResolver(SkillSchema),
-      defaultValues: {
-        skills: data?.data?.skills || [],
-      },
-    });
-
-    const skillOptions: SkillOptions = {};
-    Object.entries(skillOptionsBasedOnType).forEach(([key, value]) => {
-      skillOptions[key] = value.map((item) => item.value);
+    } = useForm<Link>({
+      resolver: zodResolver(LinkSchema),
+      defaultValues: initData,
     });
 
     const client = useQueryClient();
 
-    const skillMutation = useMutation<any, Error, Skill>({
+    const linkMutation = useMutation<any, Error, Link>({
       mutationFn: async (data) => {
         const res = await fetch(
           endpoints.API.freelancerProfileByUserId(props.session.user.sub || ""),
@@ -55,7 +49,9 @@ export default function FreelancerSkillSection(
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              skills: data.skills,
+              linkedInURL: data.linkedInURL,
+              githubURL: data.githubURL,
+              portfolioURL: data.portfolioURL,
             }),
           }
         );
@@ -72,7 +68,7 @@ export default function FreelancerSkillSection(
             props.session?.user.sub || "",
           ],
         });
-        toast.success("Skills Updated", {
+        toast.success("Bio Updated", {
           toastId: "descriptionSection",
           position: "top-center",
           autoClose: 5000,
@@ -105,7 +101,7 @@ export default function FreelancerSkillSection(
     const onSubmit = handleSubmit(async (data) => {
       if (isEditable) {
         console.log(data);
-        skillMutation.mutate(data);
+        linkMutation.mutate(data);
       } else {
         setIsEditable(true);
       }
@@ -115,59 +111,74 @@ export default function FreelancerSkillSection(
       setIsEditable(false);
     };
 
-    const SkillCheckBoxes = () => {
-      if (!data?.data) {
-        return <></>;
-      }
-      return skillOptions[data.data.type].map((skill, index) => {
-        return (
-          <div key={index}>
-            <label
-              className={`${
-                isEditable
-                  ? "cursor-pointer dark:bg-slate-900"
-                  : "dark:bg-gray-800"
-              } flex p-3 w-fit bg-white border border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:text-gray-400`}
-            >
-              <input
-                type="checkbox"
-                {...register("skills")}
-                className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 pointer-events-none focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
-                value={skill}
-                disabled={!isEditable}
-              />
-              <span className="text-sm text-gray-500 ml-3 dark:text-gray-400">
-                {skill}
-              </span>
-            </label>
-          </div>
-        );
-      });
-    };
-
     return (
       <form onSubmit={onSubmit} className="mt-3">
-        <div className="flex flex-col">
-          <div
-            className={`${
-              isEditable ? "dark:bg-slate-900" : ""
-            }  dark:border-gray-700 dark:text-white border-[1px] p-6 rounded-md gap-5 flex flex-wrap`}
-          >
-            <SkillCheckBoxes />
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-col">
+            <label className="block text-sm font-medium mb-2 dark:text-gray-400">
+              LinkedIn URL
+            </label>
+            <input
+              {...register("linkedInURL", {
+                disabled: !isEditable,
+                value: initData.linkedInURL,
+              })}
+              type="text"
+              className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              placeholder=""
+            />
+            {errors.linkedInURL?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.linkedInURL.message}
+              </p>
+            )}
           </div>
-          {errors.skills?.message && (
-            <p className="text-xs font-semibold text-red-600 mt-2">
-              {errors.skills.message}
-            </p>
-          )}
+          <div className="flex flex-col">
+            <label className="block text-sm font-medium mb-2 dark:text-gray-400">
+              Github URL
+            </label>
+            <input
+              {...register("githubURL", {
+                disabled: !isEditable,
+                value: initData.githubURL,
+              })}
+              type="text"
+              className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              placeholder=""
+            />
+            {errors.githubURL?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.githubURL.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="block text-sm font-medium mb-2 dark:text-gray-400">
+              Portfolio URL
+            </label>
+            <input
+              {...register("portfolioURL", {
+                disabled: !isEditable,
+                value: initData.portfolioURL,
+              })}
+              type="text"
+              className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              placeholder=""
+            />
+            {errors.portfolioURL?.message && (
+              <p className="text-xs font-semibold text-red-600 mt-2">
+                {errors.portfolioURL.message}
+              </p>
+            )}
+          </div>
         </div>
         <div className="mt-6 flex flex-row space-x-4 justify-end">
           <button
             type="submit"
-            disabled={skillMutation.isLoading}
+            disabled={linkMutation.isLoading}
             className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
           >
-            {skillMutation.isLoading && (
+            {linkMutation.isLoading && (
               <>
                 <span
                   className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
@@ -194,10 +205,16 @@ export default function FreelancerSkillSection(
 
   return (
     <div className="flex flex-col p-4 border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      <p className="text-white font-bold text-xl">Freelancer Type</p>
-      <p className="text-gray-400 mt-2">{data?.data?.type || ""}</p>
-      <p className="text-white font-bold text-xl mt-3">Skills</p>
-      {data && <FreelancerSkillForm />}
+      <p className="text-white font-bold text-xl">Links</p>
+      {data?.data && (
+        <LinkForm
+          initData={(({ linkedInURL, githubURL, portfolioURL }) => ({
+            linkedInURL,
+            githubURL,
+            portfolioURL,
+          }))(data.data)}
+        />
+      )}
     </div>
   );
 }

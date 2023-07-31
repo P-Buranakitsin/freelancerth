@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import { FileError, FileWithPath, useDropzone } from "react-dropzone";
 import { endpoints } from "@/constants/endpoints";
 import { ImUpload3 } from "react-icons/im";
-import { useFreelancerProfile } from "@/hooks/useQuery";
 
 interface IFreelancerImageSection {
   freelancerProfile: IResponsGETFreelancerProfileByUserId;
