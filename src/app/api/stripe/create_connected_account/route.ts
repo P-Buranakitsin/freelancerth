@@ -1,6 +1,7 @@
 import { endpoints } from "@/constants/endpoints";
 import { responses } from "@/constants/responses";
 import { prisma } from "@/lib/prisma";
+import { CreateConnectedAccountSchemaAPI } from "@/models/Stripe/CreateConnectedAccount";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -24,6 +25,14 @@ export const POST = async (req: NextRequest) => {
 
     try {
         const body = await req.json() as IRequestPOSTCreateConnectedAccount
+
+        const response = CreateConnectedAccountSchemaAPI.safeParse(body);
+        if (!response.success) {
+            const { errors } = response.error;
+
+            const errorResponse = responses(errors).badRequest
+            return NextResponse.json(errorResponse.body, errorResponse.status)
+        }
 
         let accountId: string
         if (!body.stripAccountId) {
@@ -58,6 +67,13 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error: any) {
         console.log(error)
+        if (error instanceof SyntaxError) {
+            const badRequestResponse = responses().badRequest;
+            return NextResponse.json(
+                badRequestResponse.body,
+                badRequestResponse.status
+            );
+        }
         const errorResponse = responses(error.message).internalError
         return NextResponse.json(errorResponse.body, errorResponse.status)
     }

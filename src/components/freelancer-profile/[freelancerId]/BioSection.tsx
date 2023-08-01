@@ -2,7 +2,7 @@
 
 import { endpoints } from "@/constants/endpoints";
 import { useFreelancerProfile } from "@/hooks/useQuery";
-import { Bio, BioSchema } from "@/models/FreelancerProfile/Bio";
+import { PutFreelancerProfile, PutFreelancerProfileSchema } from "@/models/FreelancerProfile/PutFreelancerProfileAPI";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Session } from "next-auth";
@@ -24,8 +24,8 @@ export default function BioSection(props: IBioSectionProps) {
       register,
       handleSubmit,
       formState: { errors },
-    } = useForm<Bio>({
-      resolver: zodResolver(BioSchema),
+    } = useForm<PutFreelancerProfile>({
+      resolver: zodResolver(PutFreelancerProfileSchema),
       defaultValues: {
         bio: initData,
       },
@@ -33,7 +33,7 @@ export default function BioSection(props: IBioSectionProps) {
 
     const client = useQueryClient();
 
-    const bioMutation = useMutation<any, Error, Bio>({
+    const bioMutation = useMutation<any, Error, PutFreelancerProfile>({
       mutationFn: async (data) => {
         const res = await fetch(
           endpoints.API.freelancerProfileByUserId(props.session.user.sub || ""),

@@ -2,7 +2,6 @@
 
 import { endpoints } from "@/constants/endpoints";
 import { useFreelancerProfile } from "@/hooks/useQuery";
-import { KYC, KYCSchema } from "@/models/FreelancerProfile/KYC";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Session } from "next-auth";
@@ -12,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
 import Dropzone, { FileRejection, FileWithPath } from "react-dropzone";
 import { useUploadThing } from "@/utils/uploadthing";
+import { PutFreelancerProfile, PutFreelancerProfileSchema } from "@/models/FreelancerProfile/PutFreelancerProfileAPI";
 
 interface IKYCSectionProps {
   session: Session;
@@ -33,8 +33,8 @@ export default function KYCSection(props: IKYCSectionProps) {
       control,
       setError,
       setValue,
-    } = useForm<KYC>({
-      resolver: zodResolver(KYCSchema),
+    } = useForm<PutFreelancerProfile>({
+      resolver: zodResolver(PutFreelancerProfileSchema),
       defaultValues: {
         passportOrId: initData.passportOrId,
         resumeOrCV: initData.resumeOrCV,
@@ -94,7 +94,7 @@ export default function KYCSection(props: IKYCSectionProps) {
       },
     });
 
-    const KYCMutation = useMutation<any, Error, KYC>({
+    const KYCMutation = useMutation<any, Error, PutFreelancerProfile>({
       mutationFn: async (data) => {
         const res = await fetch(
           endpoints.API.freelancerProfileByUserId(props.session.user.sub || ""),

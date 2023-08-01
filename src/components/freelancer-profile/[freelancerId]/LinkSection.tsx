@@ -2,7 +2,7 @@
 
 import { endpoints } from "@/constants/endpoints";
 import { useFreelancerProfile } from "@/hooks/useQuery";
-import { Link, LinkSchema } from "@/models/FreelancerProfile/Links";
+import { PutFreelancerProfile, PutFreelancerProfileSchema } from "@/models/FreelancerProfile/PutFreelancerProfileAPI";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Session } from "next-auth";
@@ -32,14 +32,14 @@ export default function LinkSection(props: ILinkSectionProps) {
       register,
       handleSubmit,
       formState: { errors },
-    } = useForm<Link>({
-      resolver: zodResolver(LinkSchema),
+    } = useForm<PutFreelancerProfile>({
+      resolver: zodResolver(PutFreelancerProfileSchema),
       defaultValues: initData,
     });
 
     const client = useQueryClient();
 
-    const linkMutation = useMutation<any, Error, Link>({
+    const linkMutation = useMutation<any, Error, PutFreelancerProfile>({
       mutationFn: async (data) => {
         const res = await fetch(
           endpoints.API.freelancerProfileByUserId(props.session.user.sub || ""),

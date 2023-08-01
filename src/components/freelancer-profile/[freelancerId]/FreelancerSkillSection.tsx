@@ -4,13 +4,13 @@ import { useFreelancerProfile } from "@/hooks/useQuery";
 import { Session } from "next-auth";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Skill, SkillSchema } from "@/models/FreelancerProfile/Skill";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/constants/endpoints";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { skillOptionsBasedOnType } from "@/constants/react-select";
+import { PutFreelancerProfile, PutFreelancerProfileSchema } from "@/models/FreelancerProfile/PutFreelancerProfileAPI";
 
 interface IFreelancerSkillSectionProps {
   session: Session;
@@ -31,8 +31,8 @@ export default function FreelancerSkillSection(
       register,
       handleSubmit,
       formState: { errors },
-    } = useForm<Skill>({
-      resolver: zodResolver(SkillSchema),
+    } = useForm<PutFreelancerProfile>({
+      resolver: zodResolver(PutFreelancerProfileSchema),
       defaultValues: {
         skills: data?.data?.skills || [],
       },
@@ -45,7 +45,7 @@ export default function FreelancerSkillSection(
 
     const client = useQueryClient();
 
-    const skillMutation = useMutation<any, Error, Skill>({
+    const skillMutation = useMutation<any, Error, PutFreelancerProfile>({
       mutationFn: async (data) => {
         const res = await fetch(
           endpoints.API.freelancerProfileByUserId(props.session.user.sub || ""),

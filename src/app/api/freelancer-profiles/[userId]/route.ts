@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { responses } from "@/constants/responses";
 import { RegisterFreelancer, RegisterFreelancerAPI, RegisterFreelancerSchemaAPI } from "@/models/RegisterFreelancer";
-import { BioSchema } from "@/models/FreelancerProfile/Bio";
+import { PutFreelancerProfileSchema } from "@/models/FreelancerProfile/PutFreelancerProfileAPI";
 
 export const GET = async (req: NextRequest, { params }: { params: { userId: string } }) => {
     const token = await getToken({ req })
@@ -144,7 +144,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: { userId: st
     try {
         const resObj = await req.json() as IRequestPatchFreelancerByUserId
 
-        const parsedResObj = BioSchema.safeParse(resObj);
+        const parsedResObj = PutFreelancerProfileSchema.safeParse(resObj);
         if (!parsedResObj.success) {
             const { errors } = parsedResObj.error;
 
@@ -174,10 +174,15 @@ export const PATCH = async (req: NextRequest, { params }: { params: { userId: st
                 linkedInURL: resObj.linkedInURL,
                 githubURL: resObj.githubURL,
                 portfolioURL: resObj.portfolioURL,
+            },
+            include: {
+                skills: true
             }
         })
 
-        const successResponse = responses(freelancerProfile).success
+        const formattedSkills = freelancerProfile.skills.map((skill) => skill.skillName)
+
+        const successResponse = responses({...freelancerProfile, skills: formattedSkills }).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
         console.log(error)
