@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: NextRequest) {
     const token = await getToken({ req })
-    // Not Signed in or not an admin trying to put another user
+    // Not Signed in
     if (!token) {
         const unauthorizedResponse = responses().unauthorized;
         return NextResponse.json(

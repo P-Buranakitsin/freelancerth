@@ -15,6 +15,10 @@ declare interface IResponsGETFreelancerProfileByUserId {
         githubURL: string
         portfolioURL: string
         skills: SkillName[]
+        totalAmountReceived: string
+        balance: string
+        stripeAccountId: string
+        stripeRegistered: boolean
     } | null
 }
 

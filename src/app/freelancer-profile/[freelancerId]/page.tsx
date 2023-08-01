@@ -1,6 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import DialogBox from "@/components/DialogBox";
 import BioSection from "@/components/freelancer-profile/[freelancerId]/BioSection";
+import FinanceSection from "@/components/freelancer-profile/[freelancerId]/FinanceSection";
 import FreelancerImageSection from "@/components/freelancer-profile/[freelancerId]/FreelancerImageSection";
 import FreelancerSkillSection from "@/components/freelancer-profile/[freelancerId]/FreelancerSkillSection";
 import KYCSection from "@/components/freelancer-profile/[freelancerId]/KYCSection";
@@ -72,6 +73,7 @@ export default async function FreelancerProfile({
           <div className="lg:col-span-2 space-y-6">
             <FreelancerImageSection freelancerProfile={res} />
             <BioSection session={session} />
+            <FinanceSection session={session} />
           </div>
           <div className="lg:col-span-3 space-y-6">
             <FreelancerSkillSection session={session} />

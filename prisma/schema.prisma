@@ -146,6 +146,8 @@ model FreelancerProfile {
   customerOrders      CustomerOrder[]
   totalAmountReceived Decimal                      @default(0)
   balance             Decimal                      @default(0)
+  stripeAccountId     String                       @default("")
+  stripeRegistered    Boolean                      @default(false)
 }
 
 model Cart {

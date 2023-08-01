@@ -54,7 +54,7 @@ export const endpoints = {
         gigByGigId: (gigId: string) => `/api/gigs/${gigId}`,
         cartByUserId: (userId: string) => `/api/carts/${userId}`,
         gigsOnCartByGigIdAndUserId: (gigId: string, userId: string) => `/api/gigs-on-cart/${gigId}/${userId}`,
-        checkoutSessions: () => `/api/checkout_sessions`,
+        checkoutSessions: () => `/api/stripe/checkout_sessions`,
         orderHistory: (userId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) => {
             const { paymentStatus } = fetchDataOptions
             let url = `/api/order/history/${userId}?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
@@ -73,6 +73,9 @@ export const endpoints = {
             }
             return url
         },
+        createConnectedAccount: () => `/api/stripe/create_connected_account`,
+        createLoginLink: () => `/api/stripe/create_login_link`,
+        withdraw: () => `/api/stripe/withdraw`,
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),

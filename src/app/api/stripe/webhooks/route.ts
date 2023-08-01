@@ -96,6 +96,29 @@ export async function POST(req: NextRequest) {
         } else if (event.type === 'checkout.session.completed') {
             const checkout = event.data.object as Stripe.Checkout.Session
             console.log(checkout.id)
+        } else if (event.type === 'account.updated') {
+            const accountEvent = event.data.object as Stripe.Account
+            console.log(accountEvent)
+            if (accountEvent.charges_enabled) {
+                await prisma.freelancerProfile.update({
+                    where: {
+                        id: accountEvent.metadata?.freelancerId || ""
+                    },
+                    data: {
+                        stripeRegistered: true
+                    }
+                })
+            }
+        } else if (event.type === 'transfer.created') {
+            const transfer = event.data.object as Stripe.Transfer
+            await prisma.freelancerProfile.update({
+                where: {
+                    id: transfer.metadata.freelancerId || ""
+                },
+                data: {
+                    balance: 0,
+                }
+            })
         } else {
             console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`)
         }

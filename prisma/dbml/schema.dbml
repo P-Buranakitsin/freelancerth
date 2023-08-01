@@ -85,6 +85,8 @@ Table FreelancerProfile {
   customerOrders CustomerOrder [not null]
   totalAmountReceived Decimal [not null, default: 0]
   balance Decimal [not null, default: 0]
+  stripeAccountId String [not null, default: '']
+  stripeRegistered Boolean [not null, default: false]
 }
 
 Table Cart {
