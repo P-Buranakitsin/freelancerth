@@ -31,3 +31,11 @@ declare interface IRequestPatchFreelancerByUserId {
     githubURL?: string
     portfolioURL?: string
 }
+
+declare interface IResponseGETFreelancerProfiles {
+    message: string
+    data?: {
+        totalFreelancerProfile: number
+    }
+    error?: any
+}

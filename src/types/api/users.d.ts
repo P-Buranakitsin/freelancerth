@@ -52,3 +52,11 @@ declare interface IResponseGETUserById {
     data?: IResponseDataGETUserById
     error?: any
 }
+
+declare interface IResponseGETUsers {
+    message: string
+    data?: {
+        totalUser: number
+    }
+    error?: any
+}

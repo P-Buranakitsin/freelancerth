@@ -76,6 +76,8 @@ export const endpoints = {
         createConnectedAccount: () => `/api/stripe/create_connected_account`,
         createLoginLink: () => `/api/stripe/create_login_link`,
         withdraw: () => `/api/stripe/withdraw`,
+        users: () => `/api/users`,
+        freelancerProfiles: () => `/api/freelancer-profiles`
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),
@@ -94,7 +96,8 @@ export const endpoints = {
         orderHistory: (userId: string) => `/order/history/${userId}`,
         customerOrder: (freelancerId: string) => `/customer-order/${freelancerId}`,
         mangeGigs: (freelancerId: string) => `/manage-gigs/${freelancerId}`,
-        freelancerProfilePage: (freelancerId: string) => `/freelancer-profile/${freelancerId}`
+        freelancerProfilePage: (freelancerId: string) => `/freelancer-profile/${freelancerId}`,
+        adminDashboard: () => `/admin/dashboard`,
     }
 
 }

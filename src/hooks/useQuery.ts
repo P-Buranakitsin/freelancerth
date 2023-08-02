@@ -178,3 +178,41 @@ export const useCustomerOrder = (session: Session | null, freelancerId: string, 
         keepPreviousData: true,
     })
 }
+
+async function getUsers() {
+    const res = await fetch(endpoints.API.users(), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const users = (await res.json()) as IResponseGETUsers
+    return users
+}
+
+export const useUsers = (session: Session | null) => {
+    return useQuery({
+        queryKey: ["users"],
+        queryFn: () => getUsers(),
+        enabled: !!session,
+    })
+}
+
+async function getFreelancerProfiles() {
+    const res = await fetch(endpoints.API.freelancerProfiles(), {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const freelancerProfiles = (await res.json()) as IResponseGETFreelancerProfiles
+    return freelancerProfiles
+}
+
+export const useFreelancerProfiles = (session: Session | null) => {
+    return useQuery({
+        queryKey: ["freelancerProfiles"],
+        queryFn: () => getFreelancerProfiles(),
+        enabled: !!session,
+    })
+}

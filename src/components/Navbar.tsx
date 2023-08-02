@@ -51,6 +51,7 @@ export default function Navbar() {
     endpoints.PAGE.freelancerProfilePage(
       freelancerProfile.data?.data?.id || ""
     );
+  const isAdminPage = pathname === endpoints.PAGE.adminDashboard()
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
@@ -129,9 +130,8 @@ export default function Navbar() {
               </div>
               <div className="mt-2 py-2 first:pt-0 last:pb-0">
                 <Link
-                  className={`${
-                    isProfilePage ? active : inactive
-                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  className={`${isProfilePage ? active : inactive
+                    } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
                   href={linkToProfile}
                   onClick={closeCollapse}
                 >
@@ -139,9 +139,8 @@ export default function Navbar() {
                   <div>My profile</div>
                 </Link>
                 <a
-                  className={`${
-                    isFreelancerProfilePage ? active : inactive
-                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  className={`${isFreelancerProfilePage ? active : inactive
+                    } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
                   href={endpoints.PAGE.freelancerProfilePage(
                     freelancerProfile.data?.data?.id || "invalid"
                   )}
@@ -151,9 +150,8 @@ export default function Navbar() {
                   <div>My freelancer profile</div>
                 </a>
                 <Link
-                  className={`${
-                    isGigCartPage ? active : inactive
-                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  className={`${isGigCartPage ? active : inactive
+                    } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
                   href={endpoints.PAGE.gigCart(session.user.sub || "")}
                   onClick={closeCollapse}
                 >
@@ -172,9 +170,8 @@ export default function Navbar() {
                   </div>
                 </Link>
                 <Link
-                  className={`${
-                    isOrderHistoryPage ? active : inactive
-                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  className={`${isOrderHistoryPage ? active : inactive
+                    } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
                   href={endpoints.PAGE.orderHistory(session.user.sub || "")}
                   onClick={closeCollapse}
                 >
@@ -182,9 +179,8 @@ export default function Navbar() {
                   <div>My order history</div>
                 </Link>
                 <a
-                  className={`${
-                    isCustomerOrderPage ? active : inactive
-                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  className={`${isCustomerOrderPage ? active : inactive
+                    } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
                   href={endpoints.PAGE.customerOrder(
                     freelancerProfile.data?.data?.id || "invalid"
                   )}
@@ -194,9 +190,8 @@ export default function Navbar() {
                   <div>My customer order</div>
                 </a>
                 <a
-                  className={`${
-                    isManageGigsPage ? active : inactive
-                  } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
+                  className={`${isManageGigsPage ? active : inactive
+                    } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
                   href={endpoints.PAGE.mangeGigs(
                     freelancerProfile.data?.data?.id || "invalid"
                   )}
@@ -222,19 +217,20 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700">
+    <header className={`sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700 ${isAdminPage ? 'lg:pl-64' : ''}`}>
       <nav
-        className="relative max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:px-6 lg:px-8"
+        className={`relative ${isAdminPage ? "" : "max-w-[85rem]"} w-full mx-auto px-4 sm:flex sm:items-center sm:px-6 lg:px-8 `}
         aria-label="Global"
       >
         <div className="flex items-center">
           <Link
-            className="flex-none text-base sm:text-xl font-semibold dark:text-white"
+            className={`${isAdminPage ? "lg:hidden" : ""} flex-none text-base sm:text-xl font-semibold dark:text-white`}
             href="/"
             onClick={closeCollapse}
             aria-label="Brand"
           >
             Freelancerth
+            {isAdminPage && <span className="text-gray-500 text-sm">&nbsp;Admin</span>}
           </Link>
           <div className="sm:hidden ml-4">
             <button
@@ -273,13 +269,12 @@ export default function Navbar() {
         </div>
         <div
           id="navbar-collapse-with-animation"
-          className="-sm:my-5 pl-2 hs-collapse hidden overflow-hidden transition-all duration-300 basis-full sm:block sm:max-w-fit"
+          className={`-sm:my-5 ${isAdminPage ? "-lg:pl-4" : "pl-2"} hs-collapse hidden overflow-hidden transition-all duration-300 basis-full sm:block sm:max-w-fit`}
         >
-          <div className="flex flex-col gap-y-4 gap-x-0 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
+          <div className={`flex flex-col gap-y-4 gap-x-0 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 ${isAdminPage ? "" : "sm:pl-7"}`}>
             <Link
-              className={`font-medium sm:py-6 ${
-                isLandingPage ? active : inactive
-              }`}
+              className={`font-medium sm:py-6 ${isLandingPage ? active : inactive
+                }`}
               href="/"
               aria-current="page"
               onClick={closeCollapse}
@@ -288,31 +283,36 @@ export default function Navbar() {
             </Link>
             <a
               href="/create-gig"
-              className={`font-medium sm:py-6 ${
-                isCreateGigPage ? active : inactive
-              }`}
+              className={`font-medium sm:py-6 ${isCreateGigPage ? active : inactive
+                }`}
               onClick={closeCollapse}
             >
               Create a Gig
             </a>
             <Link
-              className={`font-medium sm:py-6 ${
-                isBrowseGigPage ? active : inactive
-              }`}
+              className={`font-medium sm:py-6 ${isBrowseGigPage ? active : inactive
+                }`}
               href="/browse/gigs?page=0"
               onClick={closeCollapse}
             >
               Browse Gigs
             </Link>
             <a
-              className={`font-medium sm:py-6 ${
-                isRegisterFreelancerPage ? active : inactive
-              }`}
+              className={`font-medium sm:py-6 ${isRegisterFreelancerPage ? active : inactive
+                }`}
               href="/register/freelancer"
               onClick={closeCollapse}
             >
               Become a Freelancer
             </a>
+            <Link
+              className={`font-medium sm:py-6 ${isAdminPage ? active : inactive
+                }`}
+              href={endpoints.PAGE.adminDashboard()}
+              onClick={closeCollapse}
+            >
+              Admin Section
+            </Link>
           </div>
         </div>
         <div className="-sm:hidden sm:ml-auto">

@@ -10,6 +10,7 @@ export const config = {
     "/cart/gigs/:path*",
     "/order/history/:path*",
     "/customer-order/:path*",
-    "/freelancer-profile/:path*"
+    "/freelancer-profile/:path*",
+    "/admin/dashboard",
   ],
 }
