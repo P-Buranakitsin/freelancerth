@@ -42,10 +42,10 @@ export default function RootLayout({
     pathname !== "/auth/signin" &&
     pathname !== "/auth/verify-request" &&
     pathname !== "/auth/new-user";
+  const showSidebar = pathname === endpoints.PAGE.adminDashboard() || pathname === endpoints.PAGE.adminFreelancers()
   const showFooter = pathname !== "/auth/signin" &&
     pathname !== "/auth/verify-request" &&
-    pathname !== "/auth/new-user" && pathname !== "/admin/dashboard";
-  const showSidebar = pathname === endpoints.PAGE.adminDashboard()
+    pathname !== "/auth/new-user" && (!showSidebar);
 
   return (
     <html lang="en" className={`h-full ${inter.className}`}>
@@ -55,7 +55,7 @@ export default function RootLayout({
       >
         <Providers>
           <QueryClientProvider client={queryClient}>
-            {showNavbar && <Navbar />}
+            {showNavbar && <Navbar showSidebar={showSidebar} />}
             {showSidebar && <Sidebar pathname={pathname} />}
             {children}
             {showFooter && <Footer />}

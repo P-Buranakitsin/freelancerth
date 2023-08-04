@@ -102,7 +102,7 @@ export default function EditGigModal(props: IEditGigModal) {
       );
       const { session, ...rest } = props.fetchDataOptions;
       await client.invalidateQueries({
-        queryKey: ["gigs", rest],
+        queryKey: ["gigs", rest],  
       });
       toast.success("gig updated", {
         position: "top-center",

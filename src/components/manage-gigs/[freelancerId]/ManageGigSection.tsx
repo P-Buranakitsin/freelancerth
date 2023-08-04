@@ -3,7 +3,6 @@
 import EmptyStateCard from "@/components/EmptyStateCard";
 import { endpoints } from "@/constants/endpoints";
 import { useGigs } from "@/hooks/useQuery";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   PaginationState,
   createColumnHelper,
@@ -13,8 +12,6 @@ import {
 } from "@tanstack/react-table";
 import { useSession } from "next-auth/react";
 import React from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import EditGigModal from "./EditGigModal";
 import Link from "next/link";
 
@@ -26,8 +23,6 @@ export default function ManageGigSection(props: IManageGigSectionProps) {
   const columnHelper = createColumnHelper<IResponseDataGETGigs>();
 
   const { data: session } = useSession();
-
-  const client = useQueryClient();
 
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({

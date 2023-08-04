@@ -1,4 +1,7 @@
+"use client"
+
 import { endpoints } from "@/constants/endpoints"
+import Link from "next/link"
 import { SiFreelancer } from "react-icons/si"
 
 declare interface ISidebarProps {
@@ -7,6 +10,16 @@ declare interface ISidebarProps {
 
 
 export default function Sidebar(props: ISidebarProps) {
+
+    window.addEventListener('open.hs.overlay', ($sidebarEl) => {
+        const element = document.getElementById('application-sidebar')
+        element?.classList.add('opacity-50')
+    })
+    window.addEventListener('close.hs.overlay', ($sidebarEl) => {
+        const element = document.getElementById('application-sidebar')
+        element?.classList.remove('opacity-50')
+    })
+
     return (
         <>
             <div className="sticky top-0 inset-x-0 z-20 bg-white border-y px-4 sm:px-6 md:px-8 lg:hidden dark:bg-gray-800 dark:border-gray-700">
@@ -43,7 +56,7 @@ export default function Sidebar(props: ISidebarProps) {
                             className="text-sm font-semibold text-gray-800 truncate dark:text-gray-400"
                             aria-current="page"
                         >
-                            {props.pathname === endpoints.PAGE.adminDashboard() ? "Dashboard" : ""}
+                            {props.pathname === endpoints.PAGE.adminDashboard() ? "Dashboard" : props.pathname === endpoints.PAGE.adminFreelancers() ? "Freelancers" : ""}
                         </li>
                     </ol>
                     {/* End Breadcrumb */}
@@ -53,17 +66,17 @@ export default function Sidebar(props: ISidebarProps) {
                 {/* Sidebar */}
                 <div
                     id="application-sidebar"
-                    className="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700"
+                    className="hs-overlay  hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700"
                 >
                     <div className="px-6">
-                        <a
+                        <Link
                             className="flex-none text-xl font-semibold dark:text-white"
-                            href="#"
+                            href="/"
                             aria-label="Brand"
                         >
                             Freelancerth
                             <span className="text-gray-500 text-sm">&nbsp;Admin</span>
-                        </a>
+                        </Link>
                     </div>
                     <nav
                         className="hs-accordion-group p-6 w-full flex flex-col flex-wrap"
@@ -71,9 +84,9 @@ export default function Sidebar(props: ISidebarProps) {
                     >
                         <ul className="space-y-1.5">
                             <li>
-                                <a
-                                    className={`${props.pathname === endpoints.PAGE.adminDashboard() ? "dark:bg-gray-900" : "dark:hover:bg-gray-900"} flex items-center gap-x-3.5 py-2 px-2.5 bg-gray-100 text-sm text-slate-700 rounded-md dark:text-white`}
-                                    href="javascript:;"
+                                <Link
+                                    className={`${props.pathname === endpoints.PAGE.adminDashboard() ? "dark:bg-gray-900 text-white" : "dark:hover:bg-gray-900 dark:bg-gray-800 text-gray-400"} flex items-center gap-x-3.5 py-2 px-2.5 bg-gray-100 text-sm rounded-md`}
+                                    href={endpoints.PAGE.adminDashboard()}
                                 >
                                     <svg
                                         className="w-3.5 h-3.5"
@@ -93,16 +106,16 @@ export default function Sidebar(props: ISidebarProps) {
                                         />
                                     </svg>
                                     Dashboard
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a
-                                    className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-slate-400 dark:hover:text-slate-300"
-                                    href="javascript:;"
+                                <Link
+                                    className={`${props.pathname === endpoints.PAGE.adminFreelancers() ? "dark:bg-gray-900 text-white" : "dark:hover:bg-gray-900 dark:bg-gray-800 text-slate-400"} flex items-center gap-x-3.5 py-2 px-2.5 bg-gray-100 text-sm rounded-md`}
+                                    href={endpoints.PAGE.adminFreelancers()}
                                 >
                                     <SiFreelancer size={16} />
                                     Freelancers
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </nav>

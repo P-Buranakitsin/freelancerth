@@ -58,7 +58,7 @@ export default function CustomerOrderSection(
           >
             <Image
               alt=""
-              src={info.getValue().image}
+              src={info.getValue().image || ""}
               className="object-contain w-6 h-6 rounded-full"
               width={100}
               height={100}

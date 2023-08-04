@@ -65,7 +65,7 @@ export const endpoints = {
             return url
         },
         customerOrder: (freelancerId: string, fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] }) => {
-            const {paymentStatus} = fetchDataOptions
+            const { paymentStatus } = fetchDataOptions
             let url = `/api/customer-order/${freelancerId}?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
             if (paymentStatus.length > 0) {
                 url += `&`
@@ -77,7 +77,17 @@ export const endpoints = {
         createLoginLink: () => `/api/stripe/create_login_link`,
         withdraw: () => `/api/stripe/withdraw`,
         users: () => `/api/users`,
-        freelancerProfiles: () => `/api/freelancer-profiles`
+        freelancerProfiles: (fetchDataOptions: PaginationState & { verifiedArray?: boolean[] }) => {
+            const { verifiedArray } = fetchDataOptions
+            let url = `/api/freelancer-profiles?page=${fetchDataOptions.pageIndex}&limit=${fetchDataOptions.pageSize}`
+            if (verifiedArray?.includes(true)) {
+                url += `&verified=true`
+            }
+            if (verifiedArray?.includes(false)) {
+                url += `&verified=false`
+            }
+            return url
+        }
     },
     PAGE: {
         gigs: (params: GigsParams) => createGigsEndpoint('gigs', params),
@@ -98,6 +108,7 @@ export const endpoints = {
         mangeGigs: (freelancerId: string) => `/manage-gigs/${freelancerId}`,
         freelancerProfilePage: (freelancerId: string) => `/freelancer-profile/${freelancerId}`,
         adminDashboard: () => `/admin/dashboard`,
+        adminFreelancers: () => `/admin/freelancers`,
     }
 
 }

@@ -174,6 +174,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: { userId: st
                 linkedInURL: resObj.linkedInURL,
                 githubURL: resObj.githubURL,
                 portfolioURL: resObj.portfolioURL,
+                verified: resObj.verified,
             },
             include: {
                 skills: true

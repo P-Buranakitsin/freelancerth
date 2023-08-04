@@ -12,7 +12,11 @@ interface IStatSectionProps {
 
 export default function StatSection(props: IStatSectionProps) {
     const users = useUsers(props.session)
-    const freelancerProfiles = useFreelancerProfiles(props.session)
+    const freelancerProfiles = useFreelancerProfiles(props.session, {
+        pageIndex: 0,
+        pageSize: 10,
+        verified: undefined
+    })
     const gigs = useGigs({
         freelancerProfileId: undefined,
         freelancerType: undefined,
@@ -28,7 +32,7 @@ export default function StatSection(props: IStatSectionProps) {
         icon: BiUser,
     }, {
         title: "TOTAL FREELANCERS",
-        total: freelancerProfiles.data?.data?.totalFreelancerProfile || 0,
+        total: freelancerProfiles.data?.pagination?.totalItems || 0,
         icon: SiFreelancer,
     }, {
         title: "TOTAL GIGS",

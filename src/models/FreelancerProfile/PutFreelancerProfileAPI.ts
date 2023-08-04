@@ -10,6 +10,7 @@ export const PutFreelancerProfileSchema = z.object({
     githubURL: z.string().trim().max(200).optional(),
     portfolioURL: z.string().trim().max(200).optional(),
     skills: z.nativeEnum(SkillName).array().nonempty({ message: "At least one skill must be selected" }).optional(),
+    verified: z.boolean().optional(),
 })
 
 export type PutFreelancerProfile = z.infer<typeof PutFreelancerProfileSchema>

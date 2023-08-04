@@ -185,6 +185,7 @@ async function getUsers() {
         headers: {
             "Content-Type": "application/json",
         },
+
     })
     const users = (await res.json()) as IResponseGETUsers
     return users
@@ -198,21 +199,20 @@ export const useUsers = (session: Session | null) => {
     })
 }
 
-async function getFreelancerProfiles() {
-    const res = await fetch(endpoints.API.freelancerProfiles(), {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    const freelancerProfiles = (await res.json()) as IResponseGETFreelancerProfiles
-    return freelancerProfiles
-}
-
-export const useFreelancerProfiles = (session: Session | null) => {
+export const useFreelancerProfiles = (session: Session | null, fetchDataOptions: PaginationState & { verifiedArray?: boolean[] }) => {
     return useQuery({
-        queryKey: ["freelancerProfiles"],
-        queryFn: () => getFreelancerProfiles(),
+        queryKey: ["freelancerProfiles", fetchDataOptions],
+        queryFn: async () => {
+            const res = await fetch(endpoints.API.freelancerProfiles(fetchDataOptions), {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            const freelancerProfiles = (await res.json()) as IResponseGETFreelancerProfiles
+            return freelancerProfiles
+        },
         enabled: !!session,
+        keepPreviousData: true,
     })
 }

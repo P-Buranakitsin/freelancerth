@@ -13,7 +13,11 @@ import { RiChatHistoryFill } from "react-icons/ri";
 import { MdWork } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 
-export default function Navbar() {
+interface INavbarProps {
+  showSidebar: boolean
+}
+
+export default function Navbar(props: INavbarProps) {
   const { data: session, status } = useSession();
   const { data } = useCart(session);
   const freelancerProfile = useFreelancerProfile(session);
@@ -51,7 +55,7 @@ export default function Navbar() {
     endpoints.PAGE.freelancerProfilePage(
       freelancerProfile.data?.data?.id || ""
     );
-  const isAdminPage = pathname === endpoints.PAGE.adminDashboard()
+  const isAdminPage = pathname === endpoints.PAGE.adminDashboard() || pathname === endpoints.PAGE.adminFreelancers()
 
   const closeCollapse = () => {
     // 640 is tailwind's sm breakpoint
