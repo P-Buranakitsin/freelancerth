@@ -98,12 +98,14 @@ export default function ContactSection(props: IContactSectionProps) {
         <button
           type="button"
           className="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+          data-hs-overlay="#hs-task-created-alert"
         >
           Send Friend Request
         </button>
         <button
           type="button"
           className="mt-2 w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 transition-all text-sm dark:text-white dark:hover:bg-gray-900 dark:hover:border-gray-900 dark:focus:ring-gray-900 dark:focus:ring-offset-gray-800"
+          data-hs-overlay="#hs-task-created-alert"
         >
           Contact Me
         </button>

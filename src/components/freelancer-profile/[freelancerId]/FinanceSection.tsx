@@ -159,6 +159,20 @@ export default function FinanceSection(props: IFinanceSectionProps) {
   };
 
   const withdrawOnClick = () => {
+    if (!data?.data?.verified) {
+      toast.error('You need to be verified first to withdraw', {
+        toastId: "descriptionSection",
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
     withdrawMutation.mutate({
       accountId: data?.data?.stripeAccountId || "",
       amount: Number(data?.data?.balance || "0").toFixed(2),

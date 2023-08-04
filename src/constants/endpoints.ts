@@ -109,6 +109,10 @@ export const endpoints = {
         freelancerProfilePage: (freelancerId: string) => `/freelancer-profile/${freelancerId}`,
         adminDashboard: () => `/admin/dashboard`,
         adminFreelancers: () => `/admin/freelancers`,
+        createGig: () => `/create-gig`,
+        profile: (userId: string) => `/profile/${encodeURIComponent(
+            userId
+        )}`
     }
 
 }

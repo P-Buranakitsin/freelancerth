@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 interface IGigCardProps {
   currentItems?: IResponseDataGETGigs[];
   userData?: IResponseDataGETUserById;
+  showAll?: boolean
 }
 
 export default function GigCard(props: IGigCardProps) {
@@ -73,8 +74,8 @@ export default function GigCard(props: IGigCardProps) {
     cartMutation.mutate(data);
   };
 
-  if (userData) {
-    return userData.FreelancerProfile?.gigs.slice(0, 3).map((el, index) => {
+  if (userData && userData.FreelancerProfile?.gigs) {
+    return (props.showAll ? userData.FreelancerProfile?.gigs : userData.FreelancerProfile?.gigs.slice(0, 3)).map((el, index) => {
       return (
         <Fragment key={`gig-card-${index}`}>
           <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">

@@ -29,9 +29,6 @@ export default function Navbar(props: INavbarProps) {
     signOut();
   };
 
-  const linkToProfile = `/profile/${encodeURIComponent(
-    session?.user.sub || "unknown"
-  )}`;
   const active = "text-blue-600 dark:text-blue-500";
   const inactive = `dark:text-white dark:hover:text-gray-300`;
   const pathname = usePathname();
@@ -136,7 +133,7 @@ export default function Navbar(props: INavbarProps) {
                 <Link
                   className={`${isProfilePage ? active : inactive
                     } flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:hover:bg-gray-700`}
-                  href={linkToProfile}
+                  href={endpoints.PAGE.profile(session.user.sub || "unknown")}
                   onClick={closeCollapse}
                 >
                   <ImProfile size={16} className="flex-none" />
@@ -286,7 +283,7 @@ export default function Navbar(props: INavbarProps) {
               Home
             </Link>
             <a
-              href="/create-gig"
+              href={endpoints.PAGE.createGig()}
               className={`font-medium sm:py-6 ${isCreateGigPage ? active : inactive
                 }`}
               onClick={closeCollapse}
@@ -296,7 +293,7 @@ export default function Navbar(props: INavbarProps) {
             <Link
               className={`font-medium sm:py-6 ${isBrowseGigPage ? active : inactive
                 }`}
-              href="/browse/gigs?page=0"
+              href={endpoints.PAGE.browseGigs(0)}
               onClick={closeCollapse}
             >
               Browse Gigs
@@ -304,7 +301,7 @@ export default function Navbar(props: INavbarProps) {
             <a
               className={`font-medium sm:py-6 ${isRegisterFreelancerPage ? active : inactive
                 }`}
-              href="/register/freelancer"
+              href={endpoints.PAGE.registerFreelancer()}
               onClick={closeCollapse}
             >
               Become a Freelancer

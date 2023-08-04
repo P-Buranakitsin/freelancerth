@@ -17,11 +17,13 @@ export default function AllGigSection(props: IAllGigSectionProps) {
     setShowAll(!showAll);
   };
 
+  console.log(props.userData?.FreelancerProfile?.gigs)
+
   return (
     <>
       <h1 className="text-white font-bold text-2xl mt-12">See my Gigs</h1>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 grid-cols-1 gap-6 mt-4">
-        {props.userData && <GigCard userData={props.userData} />}
+        {props.userData && <GigCard userData={props.userData} showAll={showAll} />}
       </div>
       <button
         type="button"

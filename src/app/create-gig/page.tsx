@@ -40,7 +40,7 @@ export default async function Profile() {
       />
     );
   }
-  if (!res.data) {
+  if (!res.data || !res.data.verified) {
     return (
       <DialogBox
         title={"Check your freelancer profile"}

@@ -1,5 +1,6 @@
 "use client";
 
+import ComingSoonModal from "@/components/ComingSoonModal";
 import DialogBox from "@/components/DialogBox";
 import AllGigSection from "@/components/user/public/[userId]/AllGigSection";
 import ContactSection from "@/components/user/public/[userId]/ContactSection";
@@ -29,6 +30,7 @@ export default function PublicUserProfile({
   }
   return (
     <main className="">
+      <ComingSoonModal />
       <div className="max-w-[85rem] mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <h1 className="text-white font-bold text-3xl mb-6">Profile Details</h1>
         <div className="flex flex-col lg:grid lg:grid-rows-1 grid-cols-1 lg:grid-cols-8 grid-flow-col gap-y-8 gap-x-6">
