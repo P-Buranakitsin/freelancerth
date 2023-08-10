@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { endpoints } from "@/constants/endpoints";
 import Sidebar from "@/components/Sidebar";
+import('preline')
 
 const inter = Inter({ subsets: ["latin"] });
 // Create a client
