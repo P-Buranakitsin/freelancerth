@@ -22,6 +22,7 @@ export default function GigSection() {
   const gigType = (searchParams.get("gigType") as GigType) || undefined;
   const price = searchParams.get("price") || undefined;
 
+  
   const router = useRouter();
 
   const gigs = useGigs({
