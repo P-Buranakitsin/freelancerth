@@ -3,6 +3,7 @@
 import { endpoints } from "@/constants/endpoints"
 import Link from "next/link"
 import { SiFreelancer } from "react-icons/si"
+import { useEffect } from 'react'
 
 declare interface ISidebarProps {
     pathname: string
@@ -11,14 +12,16 @@ declare interface ISidebarProps {
 
 export default function Sidebar(props: ISidebarProps) {
 
-    window.addEventListener('open.hs.overlay', ($sidebarEl) => {
-        const element = document.getElementById('application-sidebar')
-        element?.classList.add('opacity-50')
-    })
-    window.addEventListener('close.hs.overlay', ($sidebarEl) => {
-        const element = document.getElementById('application-sidebar')
-        element?.classList.remove('opacity-50')
-    })
+    useEffect(() => {
+        window.addEventListener('open.hs.overlay', ($sidebarEl) => {
+            const element = document.getElementById('application-sidebar')
+            element?.classList.add('opacity-50')
+        })
+        window.addEventListener('close.hs.overlay', ($sidebarEl) => {
+            const element = document.getElementById('application-sidebar')
+            element?.classList.remove('opacity-50')
+        })
+    }, [])
 
     return (
         <>
