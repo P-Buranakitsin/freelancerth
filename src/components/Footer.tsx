@@ -204,7 +204,7 @@ export default function Footer() {
                   href="#"
                   aria-label="Brand"
                 >
-                  Brand
+                  Freelancerth
                 </a>
                 <p className="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   © 2023 By Pavaruth Buranakitsin.
