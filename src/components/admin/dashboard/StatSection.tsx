@@ -15,7 +15,7 @@ export default function StatSection(props: IStatSectionProps) {
     const freelancerProfiles = useFreelancerProfiles(props.session, {
         pageIndex: 0,
         pageSize: 10,
-        verified: undefined
+        verifiedArray: [true, false]
     })
     const gigs = useGigs({
         freelancerProfileId: undefined,
