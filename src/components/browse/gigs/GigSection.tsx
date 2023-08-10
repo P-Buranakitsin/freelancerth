@@ -49,7 +49,7 @@ export default function GigSection() {
         })
       );
     };
-    if (!gigs.data) {
+    if (!gigs.data || gigs.data.data.length < 1) {
       return <EmptyStateCard />;
     }
 
