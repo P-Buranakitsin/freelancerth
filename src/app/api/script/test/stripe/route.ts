@@ -34,7 +34,7 @@ export const GET = async (req: NextRequest) => {
         //     currency: 'gbp',
         //     destination: 'acct_1Na1AqPpmOYvJgpN',
         //   });
-        await stripe.accounts.del("acct_1Na7EKPwzTSNtkRH")
+        // await stripe.accounts.del("acct_1Na7EKPwzTSNtkRH")
         const successResponse = responses({}).success
         return NextResponse.json(successResponse.body, successResponse.status)
     } catch (error) {
