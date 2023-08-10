@@ -53,6 +53,7 @@ export default function GigSection() {
       return <EmptyStateCard />;
     }
 
+    
     return (
       <>
         <div className="grid sm:grid-cols-2 grid-cols-1 gap-6 mt-4">
