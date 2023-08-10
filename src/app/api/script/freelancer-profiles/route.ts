@@ -16,7 +16,7 @@ export const POST = async (req: NextRequest) => {
                 userId: token.sub,
                 type: 'DEVELOPERS',
                 verified: true,
-                
+                bio: "tttttt",
             }
         })
         const successResponse = responses(freelancerProfile).success
