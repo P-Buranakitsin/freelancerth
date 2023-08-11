@@ -2,6 +2,7 @@ import DialogBox from "@/components/DialogBox";
 import GigDetailSection from "@/components/gig/[freelancerProfileId]/[gidId]/GigDetailSection";
 import PackageSection from "@/components/gig/[freelancerProfileId]/[gidId]/PackageSection";
 import RelatedGigSection from "@/components/gig/[freelancerProfileId]/[gidId]/RelatedGigSection";
+import { DEV_ACCESS_TOKEN, PROD_ACCESS_TOKEN } from "@/constants/cookies";
 import { endpoints } from "@/constants/endpoints";
 import { cookies } from "next/headers";
 
@@ -49,7 +50,12 @@ export default async function GigDetails({
   params: { freelancerProfileId: string; gigId: string };
 }) {
   const cookieStore = cookies();
-  const token = cookieStore.get("next-auth.session-token")?.value;
+  let token
+  if (process.env.NODE_ENV === "development") {
+    token = cookieStore.get(DEV_ACCESS_TOKEN)?.value;
+  } else {
+    token = cookieStore.get(PROD_ACCESS_TOKEN)?.value;
+  }
   const myGig = await getGigByGigId(token || "", params.gigId);
   const relatedGigs = await getRelatedGigs(token || "", myGig.data);
   if (!myGig.data) {

@@ -1,6 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import DialogBox from "@/components/DialogBox";
 import RegisterFreelancerSection from "@/components/register/freelancer/RegisterFreelancerSection";
+import { DEV_ACCESS_TOKEN, PROD_ACCESS_TOKEN } from "@/constants/cookies";
 import { endpoints } from "@/constants/endpoints";
 import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
@@ -26,7 +27,12 @@ async function getFreelancerProfileByUserId(token: string, userId: string) {
 export default async function RegisterFreelancer() {
   const data = await getServerSession(authOptions);
   const cookieStore = cookies();
-  const token = cookieStore.get("next-auth.session-token")?.value;
+  let token
+  if (process.env.NODE_ENV === "development") {
+    token = cookieStore.get(DEV_ACCESS_TOKEN)?.value;
+  } else {
+    token = cookieStore.get(PROD_ACCESS_TOKEN)?.value;
+  }
   const res = await getFreelancerProfileByUserId(
     token || "",
     data?.user.sub || ""

@@ -6,6 +6,7 @@ import FreelancerImageSection from "@/components/freelancer-profile/[freelancerI
 import FreelancerSkillSection from "@/components/freelancer-profile/[freelancerId]/FreelancerSkillSection";
 import KYCSection from "@/components/freelancer-profile/[freelancerId]/KYCSection";
 import LinkSection from "@/components/freelancer-profile/[freelancerId]/LinkSection";
+import { DEV_ACCESS_TOKEN, PROD_ACCESS_TOKEN } from "@/constants/cookies";
 import { endpoints } from "@/constants/endpoints";
 import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
@@ -37,16 +38,15 @@ export default async function FreelancerProfile({
 
   let token
   if (process.env.NODE_ENV === "development") {
-    token = cookieStore.get("next-auth.session-token")?.value;
+    token = cookieStore.get(DEV_ACCESS_TOKEN)?.value;
   } else {
-    token = cookieStore.get("__Secure-next-auth.session-token")?.value;
+    token = cookieStore.get(PROD_ACCESS_TOKEN)?.value;
   }
 
   const res = await getFreelancerProfileByUserId(
     token || "",
     session?.user.sub || ""
   );
-  console.log(token)
 
   if (session?.user.role !== "FREELANCER") {
     return (

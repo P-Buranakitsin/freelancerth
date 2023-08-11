@@ -4,6 +4,7 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
 import DialogBox from "@/components/DialogBox";
 import { endpoints } from "@/constants/endpoints";
 import { cookies } from "next/headers";
+import { DEV_ACCESS_TOKEN, PROD_ACCESS_TOKEN } from "@/constants/cookies";
 
 async function getFreelancerProfileByUserId(token: string, userId: string) {
   const response = await fetch(
@@ -25,7 +26,12 @@ async function getFreelancerProfileByUserId(token: string, userId: string) {
 export default async function Profile() {
   const data = await getServerSession(authOptions);
   const cookieStore = cookies();
-  const token = cookieStore.get("next-auth.session-token")?.value;
+  let token
+  if (process.env.NODE_ENV === "development") {
+    token = cookieStore.get(DEV_ACCESS_TOKEN)?.value;
+  } else {
+    token = cookieStore.get(PROD_ACCESS_TOKEN)?.value;
+  }
   const res = await getFreelancerProfileByUserId(
     token || "",
     data?.user.sub || ""
