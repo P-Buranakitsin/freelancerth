@@ -50,18 +50,6 @@ export default async function FreelancerProfile({
       />
     );
   }
-  if (!res.data) {
-    return (
-      <DialogBox
-        title={"Check your freelancer profile"}
-        description={
-          "You need to create a freelancer profile and be verified first"
-        }
-        linkMessage={"Go back to home page"}
-        url="/"
-      />
-    );
-  }
 
   return (
     <main className="">

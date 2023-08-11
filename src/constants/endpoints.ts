@@ -99,7 +99,7 @@ export const endpoints = {
             }
             return basePath
         },
-        registerFreelancer: () => `register/freelancer`,
+        registerFreelancer: () => `/register/freelancer`,
         gigDetails: (freelancerId: string, gigId: string) => `/gig/${freelancerId}/${gigId}`,
         publicUserProfile: (userId: string) => `/user/public/${userId}`,
         gigCart: (userId: string) => `/cart/gigs/${userId}`,

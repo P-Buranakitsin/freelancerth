@@ -52,5 +52,5 @@ export default async function Profile() {
       />
     );
   }
-  return <CreateGigSection freelancerProfile={res} />;
+  return <CreateGigSection freelancerProfile={res} session={data} />;
 }

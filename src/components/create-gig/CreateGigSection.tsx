@@ -16,9 +16,11 @@ import {
   freelancerTypeOptions,
   gigTypeOptions,
 } from "@/constants/react-select";
+import { Session } from "next-auth";
 
 interface ICreateGigSectionProps {
   freelancerProfile: IResponsGETFreelancerProfileByUserId;
+  session: Session;
 }
 
 export default function CreateGigSection(props: ICreateGigSectionProps) {
