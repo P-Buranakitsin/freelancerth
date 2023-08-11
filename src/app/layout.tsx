@@ -49,7 +49,7 @@ export default function RootLayout({
     pathname !== "/auth/new-user" && (!showSidebar);
 
   return (
-    <html lang="en" className={`h-full ${inter.className}`}>
+    <html lang="en" className={`h-full ${inter.className} dark`}>
       <body
         className={` dark:bg-slate-900 flex flex-col min-h-full ${!showNavbar && "bg-gray-100 justify-center items-center py-16"
           }`}
