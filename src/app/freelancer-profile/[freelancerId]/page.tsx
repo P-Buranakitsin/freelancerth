@@ -34,12 +34,19 @@ export default async function FreelancerProfile({
 }) {
   const session = await getServerSession(authOptions);
   const cookieStore = cookies();
-  const token = cookieStore.get("next-auth.session-token")?.value;
+
+  let token
+  if (process.env.NODE_ENV === "development") {
+    token = cookieStore.get("next-auth.session-token")?.value;
+  } else {
+    token = cookieStore.get("__Secure-next-auth.session-token")?.value;
+  }
+
   const res = await getFreelancerProfileByUserId(
     token || "",
     session?.user.sub || ""
   );
-  console.log(res)
+  console.log(token)
 
   if (session?.user.role !== "FREELANCER") {
     return (

@@ -29,6 +29,7 @@ export const authOptions: NextAuthOptions =
         })
     ],
     callbacks: {
+        
         // Using the `...rest` parameter to be able to narrow down the type based on `trigger`
         // Variable session is sent from client side
         async jwt({ token, user, trigger, session }) {
