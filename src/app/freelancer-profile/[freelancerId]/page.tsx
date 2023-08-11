@@ -12,7 +12,7 @@ import { cookies } from "next/headers";
 
 async function getFreelancerProfileByUserId(token: string, userId: string) {
   const response = await fetch(
-    `${process.env.BASE_URL}/${endpoints.API.freelancerProfileByUserId(
+    `${process.env.BASE_URL}${endpoints.API.freelancerProfileByUserId(
       userId
     )}`,
     {
@@ -39,6 +39,7 @@ export default async function FreelancerProfile({
     token || "",
     session?.user.sub || ""
   );
+  console.log(res)
 
   if (session?.user.role !== "FREELANCER") {
     return (
