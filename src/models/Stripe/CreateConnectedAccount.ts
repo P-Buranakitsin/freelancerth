@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 // For back-end
 export const CreateConnectedAccountSchemaAPI = z.object({
-    stripAccountId: z.string().nonempty(),
+    stripAccountId: z.string(),
     freelancerId: z.string().nonempty()
 })
 
