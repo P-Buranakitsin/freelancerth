@@ -103,8 +103,9 @@ export default function BasicInfoSection() {
             <input
               {...register("firstName", { disabled: !isEditable })}
               type="text"
-              className=" disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="Bonnie"
+              disabled={!isEditable}
             />
             {errors.firstName?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">
@@ -119,7 +120,7 @@ export default function BasicInfoSection() {
             <input
               {...register("lastName", { disabled: !isEditable })}
               type="text"
-              className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="Green"
             />
             {errors.lastName?.message && (
@@ -136,7 +137,7 @@ export default function BasicInfoSection() {
               disabled
               value={session?.user.email || ""}
               type="text"
-              className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="you@site.com"
             />
             {errors.email?.message && (

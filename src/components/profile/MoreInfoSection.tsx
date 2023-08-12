@@ -130,7 +130,7 @@ export default function MoreInfoSection() {
             <input
               {...register("address", { disabled: !isEditable })}
               type="text"
-              className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="Argyle St."
             />
             {errors.address?.message && (
@@ -189,7 +189,7 @@ export default function MoreInfoSection() {
             <input
               {...register("city", { disabled: !isEditable })}
               type="text"
-              className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="Glasgow"
             />
             {errors.city?.message && (
@@ -205,7 +205,7 @@ export default function MoreInfoSection() {
             <input
               {...register("phoneNumber", { disabled: !isEditable })}
               type="text"
-              className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="0000-00000"
             />
             {errors.phoneNumber?.message && (
@@ -230,7 +230,7 @@ export default function MoreInfoSection() {
                   }}
                   format={"DD/MM/YYYY"}
                   disabled={!isEditable}
-                  inputClass="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                  inputClass="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                   placeholder="15/06/1997"
                 />
               )}
@@ -248,7 +248,7 @@ export default function MoreInfoSection() {
             <input
               {...register("zip", { disabled: !isEditable })}
               type="text"
-              className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
               placeholder="123456"
             />
             {errors.zip?.message && (

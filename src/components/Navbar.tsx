@@ -48,10 +48,10 @@ export default function Navbar(props: INavbarProps) {
     endpoints.PAGE.mangeGigs(freelancerProfile.data?.data?.id || "")
   );
   const isFreelancerProfilePage =
-    pathname ===
-    endpoints.PAGE.freelancerProfilePage(
-      freelancerProfile.data?.data?.id || ""
-    );
+    pathname.includes(
+      endpoints.PAGE.freelancerProfilePage(
+        freelancerProfile.data?.data?.id || ""
+      ));
   const isAdminPage = pathname === endpoints.PAGE.adminDashboard() || pathname === endpoints.PAGE.adminFreelancers()
 
   const closeCollapse = () => {
