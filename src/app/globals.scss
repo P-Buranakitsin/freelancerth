@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+input:disabled,
+textarea:disabled,
+input:disabled::placeholder,
+textarea:disabled::placeholder {
+  -webkit-text-fill-color: currentcolor; /* 1. sets text fill to current `color` for safari */
+  opacity: 1; /* 2. correct opacity on iOS */
+}

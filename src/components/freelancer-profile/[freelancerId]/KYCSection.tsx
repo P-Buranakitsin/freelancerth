@@ -298,8 +298,16 @@ export default function KYCSection(props: IKYCSectionProps) {
               value={resumeOrCV}
               id="hs-leading-button-add-on"
               name="hs-leading-button-add-on"
-              className="rounded-r-md py-3 px-4 block w-full border-gray-200 shadow-sm text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 border-[1px]"
+              className="py-3 px-4 block w-full border-gray-200 shadow-sm text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 border-[1px]"
             />
+            <button
+              className={`cursor-pointer hover:bg-blue-600 py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md border border-transparent font-semibold bg-blue-500 text-white focus:z-10 focus:outline-none focus:ring-2 transition-all text-sm`}
+              onClick={() => {
+                window.open(resumeOrCV)
+              }}
+            >
+              <p className="dark:text-white">View</p>
+            </button>
           </div>
           {errors.resumeOrCV?.message && (
             <p className="text-xs font-semibold text-red-600 mt-2">

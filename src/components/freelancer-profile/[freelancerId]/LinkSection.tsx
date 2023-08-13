@@ -124,7 +124,7 @@ export default function LinkSection(props: ILinkSectionProps) {
                 value: initData.linkedInURL,
               })}
               type="text"
-              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:disabled:text-white text-white disabled:text-white opacity-100 disabled:opacity-100"
+              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:disabled:text-white text-white disabled:text-white"
               placeholder=""
             />
             {errors.linkedInURL?.message && (
