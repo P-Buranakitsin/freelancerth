@@ -52,7 +52,8 @@ export default function ContactSection(props: IContactSectionProps) {
                   <>
                     <HiOutlineLocationMarker color="#9CA3AF" size={18} />
                     <p className="text-gray-800 dark:text-gray-400 text-sm break-all">
-                      {props.userData.profile?.city || ""},&nbsp;
+                      {props.userData.profile?.city || ""}
+                      {props.userData.profile?.city ? ", " : ""}
                       {props.userData.profile?.country || ""}
                     </p>
                   </>
