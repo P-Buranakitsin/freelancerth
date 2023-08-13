@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 input:disabled,
-textarea:disabled,
+textarea:disabled {
+  -webkit-text-fill-color: rgb(255 255 255); /* 1. sets text fill for safari */
+  opacity: 1; /* 2. correct opacity on iOS */
+}
+
 input:disabled::placeholder,
 textarea:disabled::placeholder {
-  -webkit-text-fill-color:  rgb(255 255 255); /* 1. sets text fill to current `color` for safari */
+  -webkit-text-fill-color: rgb(107 114 128); /* 1. sets text fill for safari */
   opacity: 1; /* 2. correct opacity on iOS */
 }
