@@ -190,7 +190,7 @@ export default function FinanceSection(props: IFinanceSectionProps) {
         <>
           <p className="text-gray-400 mt-2">
             You already have a Stripe account. Please click the button below to
-            login.
+            log in. (Make sure you allow pop-ups first)
           </p>
         </>
       ) : (
