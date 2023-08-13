@@ -120,12 +120,12 @@ export default function LinkSection(props: ILinkSectionProps) {
             </label>
             <input
               {...register("linkedInURL", {
+                disabled: !isEditable,
                 value: initData.linkedInURL,
               })}
               type="text"
-              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:disabled:text-white"
               placeholder=""
-              disabled={!isEditable}
             />
             {errors.linkedInURL?.message && (
               <p className="text-xs font-semibold text-red-600 mt-2">
@@ -143,7 +143,7 @@ export default function LinkSection(props: ILinkSectionProps) {
                 value: initData.githubURL,
               })}
               type="text"
-              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:disabled:text-white"
               placeholder=""
             />
             {errors.githubURL?.message && (
@@ -162,7 +162,7 @@ export default function LinkSection(props: ILinkSectionProps) {
                 value: initData.portfolioURL,
               })}
               type="text"
-              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+              className=" disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:disabled:text-white"
               placeholder=""
             />
             {errors.portfolioURL?.message && (
