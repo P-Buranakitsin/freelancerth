@@ -146,7 +146,7 @@ export default function BasicInfoSection() {
               </p>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row md:col-span-2 mt-6 justify-end space-x-2">
+          <div className="mt-6 flex flex-row space-x-4">
             <button
               type="submit"
               disabled={mutation.isLoading}
