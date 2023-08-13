@@ -12,5 +12,6 @@ export const config = {
     "/customer-order/:path*",
     "/freelancer-profile/:path*",
     "/admin/dashboard",
+    "/admin/freelancers",
   ],
 }
