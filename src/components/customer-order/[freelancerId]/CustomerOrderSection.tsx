@@ -247,11 +247,11 @@ export default function CustomerOrderSection(
   });
 
   const fetchDataOptions: PaginationState & { paymentStatus: PaymentStatus[] } =
-    {
-      pageIndex,
-      pageSize,
-      paymentStatus,
-    };
+  {
+    pageIndex,
+    pageSize,
+    paymentStatus,
+  };
 
   const { data } = useCustomerOrder(
     session,
@@ -332,7 +332,11 @@ export default function CustomerOrderSection(
       for (let i = 0; i < pageSize - numberOfRows; i++) {
         rows.push(
           <tr key={`dummy-row-page${pageIndex}-row${i}`} className={`h-[51px]`}>
-            <td key={`dummy-cell-page${pageIndex}-row${i}`}></td>
+            {columns.map((column, index) => {
+              return (
+                <td key={`dummy-cell-page${pageIndex}-row${i}-col${index}`}></td>
+              )
+            })}
           </tr>
         );
       }
@@ -454,9 +458,9 @@ export default function CustomerOrderSection(
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </th>
                   ))}
                 </tr>
