@@ -76,7 +76,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             <input
                                 {...register("id", { disabled: false })}
                                 type="text"
-                                className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                                className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                                 placeholder="Write your title here"
                                 disabled
                             />
@@ -93,7 +93,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             <input
                                 {...register("name", { disabled: false })}
                                 type="text"
-                                className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                                className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                                 placeholder="Write your title here"
                                 disabled
                             />
@@ -110,7 +110,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             <input
                                 {...register("type", { disabled: false })}
                                 type="text"
-                                className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                                className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                                 placeholder="Write your title here"
                                 disabled
                             />
@@ -139,7 +139,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             </label>
                             <textarea
                                 {...register("bio")}
-                                className={`disabled:bg-gray-800 placeholder-gray-500 border-[1px] mt-3 py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white`}
+                                className={`disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] mt-3 py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white`}
                                 rows={4}
                                 placeholder="Write your bio here."
                                 disabled
@@ -202,7 +202,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             <input
                                 {...register("linkedInURL", { disabled: false })}
                                 type="text"
-                                className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                                className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                                 placeholder="Write your title here"
                                 disabled
                             />
@@ -219,7 +219,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             <input
                                 {...register("githubURL", { disabled: false })}
                                 type="text"
-                                className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                                className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                                 disabled
                             />
                             {errors.githubURL?.message && (
@@ -235,7 +235,7 @@ export default function FreelancerDetailModal(props: IFreelancerDetailModalProps
                             <input
                                 {...register("githubURL", { disabled: false })}
                                 type="text"
-                                className="disabled:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
+                                className="disabled:dark:bg-gray-800 placeholder-gray-500 border-[1px] py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-white"
                                 disabled
                             />
                             {errors.portfolioURL?.message && (
