@@ -16,6 +16,8 @@ const config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  // Ignore all APIs
+  modulePathIgnorePatterns: ["<rootDir>/src/app/api"]
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
