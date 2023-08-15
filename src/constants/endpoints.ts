@@ -12,7 +12,7 @@ export interface GigsParams {
     freelancerProfileId?: string;
 }
 
-function createGigsEndpoint(basePath: string, params: GigsParams) {
+export function createGigsEndpoint(basePath: string, params: GigsParams) {
     // Empty object
     if (Object.keys(params).length === 0) {
         return basePath

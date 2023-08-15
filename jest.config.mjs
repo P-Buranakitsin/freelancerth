@@ -12,12 +12,12 @@ const config = {
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 
   // testEnvironment: "jest-environment-jsdom",
-  testEnvironment: 'node',
+  testEnvironment: "jsdom",
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
   // Ignore all APIs
-  modulePathIgnorePatterns: ["<rootDir>/src/app/api"]
+  modulePathIgnorePatterns: ["<rootDir>/src/app/api", "<rootDir>/src/utils/uploadthing.ts", "<rootDir>/src/middleware.ts", "<rootDir>/src/hooks"],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
