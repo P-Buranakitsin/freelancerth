@@ -11,7 +11,7 @@ describe('SigninSchema', () => {
 
     it('should throw an error with invalid data', () => {
         const data = {
-            email: 'not-an-email',
+            email: 'invalid',
         };
         expect(() => SigninSchema.parse(data)).toThrow();
     });

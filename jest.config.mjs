@@ -16,7 +16,7 @@ const config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
-  // Ignore all APIs
+  // All ignored files
   modulePathIgnorePatterns: ["<rootDir>/src/app/api", "<rootDir>/src/utils/uploadthing.ts", "<rootDir>/src/middleware.ts", "<rootDir>/src/hooks"],
 };
 

@@ -1,34 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Freelancerth - A Freelancing Platform Web App Tailored to Software Development Needs
 
-## Getting Started
+A freelancing platform web app built with Next.js along with some of the most popular tools and libraries in 2023, such as Prisma, Tailwind CSS and React Query. The demo website is available at [https:/freelancerth-staging.vercel.app/](https://freelancerth-staging.vercel.app/)
 
-First, run the development server:
+## General Info
+
+This project is undertaken to fulfil the requirements for obtaining a Master of Science in Information Technology at the University of Glasgow. The goal is to develop a web application for a freelancing platform specifically designed for software development that offers unique features not found on other platforms and improvements to existing features. Moreover, this project aims to investigate market-available modern web development stacks, such as Next.js, Prisma, and tailwind CSS, and to create a scalable, sophisticated website with a beautiful user interface using these stacks.
+
+## Features
+
+These are the current features:
+
+* Sign in via email and Google.
+* Sign out.
+* Register to become a freelancer.
+* Browse gigs.
+* Edit profile.
+* Filter gigs.
+* Add multiple gigs to the cart.
+* Create a gig.
+* Edit a gig.
+* Purchase a gig.
+* Manage freelancers through the admin panel.
+* View customer order.
+* View order history.
+* View and edit items in the cart.
+
+## Technologies
+
+This project is built with:
+
+* Next.js version: 13.4.6
+* NextAuth version: 4.22.1
+* Tailwind CSS version: 3.3.2
+* Preline UI version: 1.9.0  
+* Prisma version: 4.16.1
+* Stripe version: 12.14.0
+* Uploadthing version: 4.1.3
+* React Query version: 4.29.17
+
+For a complete list of technologies, please see `package.json`.
+
+## Setup
+
+To run this project, install it locally using npm:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+$ cd ../freelancerth
+$ npm install
+$ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Acknowledgements
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+I would like to thank:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+* [Rita Łyczywek](https://bulldogjob.com/readme/how-to-write-a-good-readme-for-your-github-project) for her great guide on how to write a good README for my project.
+* All collaborators of the libraries used in this project. See `package.json` for a complete list of libraries utilised in this project.
