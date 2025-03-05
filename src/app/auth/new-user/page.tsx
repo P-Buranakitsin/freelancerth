@@ -83,8 +83,8 @@ export default function VerifyRequest() {
     },
   });
 
-  const { startUpload } = useUploadThing({
-    endpoint: "imageOrFileUploader",
+
+  const { startUpload } = useUploadThing('imageOrFileUploader', {
     onClientUploadComplete: () => {
       toast.success("uploaded successfully", {
         position: "top-center",
@@ -101,6 +101,7 @@ export default function VerifyRequest() {
       throw new Error(e.message);
     },
   });
+
 
   const removeImage = () => {
     if (session?.user?.image) {
@@ -122,12 +123,7 @@ export default function VerifyRequest() {
   const onSubmit = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
-      let uploadedFiles:
-        | {
-            fileUrl: string;
-            fileKey: string;
-          }[]
-        | undefined = undefined;
+      let uploadedFiles = undefined;
       if (files[0].preview !== session?.user?.image) {
         uploadedFiles = await startUpload(files);
       }
@@ -135,9 +131,9 @@ export default function VerifyRequest() {
         ...data,
         ...(uploadedFiles &&
           uploadedFiles.length > 0 && {
-            fileUrl: uploadedFiles[0].fileUrl,
-            fileKey: uploadedFiles[0].fileKey,
-          }),
+          fileUrl: uploadedFiles[0].ufsUrl,
+          fileKey: uploadedFiles[0].key,
+        }),
       });
       router.replace("/");
     } catch (error: any) {
@@ -171,7 +167,7 @@ export default function VerifyRequest() {
       },
       body: JSON.stringify({
         name: updatedName,
-        ...(session?.user.email && {email: session.user.email}),
+        ...(session?.user.email && { email: session.user.email }),
         ...(data.fileUrl && { fileUrl: data.fileUrl }),
         ...(data.fileKey && { fileKey: data.fileKey }),
       }),
@@ -308,9 +304,8 @@ export default function VerifyRequest() {
                     className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                   >
                     <span
-                      className={`${
-                        isLoading ? "hidden" : "hidden"
-                      } animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full`}
+                      className={`${isLoading ? "hidden" : "hidden"
+                        } animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full`}
                       role="status"
                       aria-label="loading"
                     />
@@ -324,7 +319,7 @@ export default function VerifyRequest() {
         </div>
       </div>
       {isLoading && <LoadingSpinner />}
-      
+
     </main>
   );
 }

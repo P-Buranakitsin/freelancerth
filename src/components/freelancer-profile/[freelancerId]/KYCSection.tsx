@@ -12,6 +12,7 @@ import Image from "next/image";
 import Dropzone, { FileRejection, FileWithPath } from "react-dropzone";
 import { useUploadThing } from "@/utils/uploadthing";
 import { PutFreelancerProfile, PutFreelancerProfileSchema } from "@/models/FreelancerProfile/PutFreelancerProfileAPI";
+import { ClientUploadedFileData } from "uploadthing/types";
 
 interface IKYCSectionProps {
   session: Session;
@@ -46,15 +47,12 @@ export default function KYCSection(props: IKYCSectionProps) {
 
     const client = useQueryClient();
 
-    const { startUpload } = useUploadThing({
-      endpoint: "imageOrFileUploader",
-    });
+    const { startUpload } = useUploadThing('imageOrFileUploader');
 
     const uploadImageMutation = useMutation<
-      {
-        fileUrl: string;
-        fileKey: string;
-      }[],
+      ClientUploadedFileData<{
+        uploadedBy: string;
+      }>[],
       Error,
       {
         acceptedFiles: FileWithPath[];
@@ -204,7 +202,7 @@ export default function KYCSection(props: IKYCSectionProps) {
                     acceptedFiles,
                   });
                   KYCMutation.mutate({
-                    passportOrId: uploadedImage[0].fileUrl,
+                    passportOrId: uploadedImage[0].ufsUrl,
                   });
                 }}
                 maxFiles={1}
@@ -259,7 +257,7 @@ export default function KYCSection(props: IKYCSectionProps) {
                       }
                     );
                     KYCMutation.mutate({
-                      resumeOrCV: uploadedImage[0].fileUrl,
+                      resumeOrCV: uploadedImage[0].ufsUrl,
                     });
                   }}
                   onDropRejected={(fileRejections) => {

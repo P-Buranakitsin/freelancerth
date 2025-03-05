@@ -6,7 +6,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { Adapter } from "next-auth/adapters";
 import { NextAuthOptions } from "next-auth";
-import { utapi } from "uploadthing/server";
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi({
+    // ...options,
+});
 
 export const authOptions: NextAuthOptions =
 {
@@ -25,7 +29,7 @@ export const authOptions: NextAuthOptions =
         }),
         FacebookProvider({
             clientId: process.env.FACEBOOK_CLIENT_ID!,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET!
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
         })
     ],
     callbacks: {

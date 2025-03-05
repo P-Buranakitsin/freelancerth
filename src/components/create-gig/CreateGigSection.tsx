@@ -78,14 +78,15 @@ export default function CreateGigSection(props: ICreateGigSectionProps) {
       },
     });
 
-    const { startUpload } = useUploadThing({
-      endpoint: "imageOrFileUploader",
-    });
+    const { startUpload } = useUploadThing("imageOrFileUploader");
 
     const onSubmit = handleSubmit(async (data) => {
       try {
         const res = await uploadImageMutation.mutateAsync(data);
-        createGigMutation.mutateAsync(res);
+        const res2 = await createGigMutation.mutateAsync(res);
+        if (res2?.error) {
+          throw new Error('Gig cannot be created')
+        }
         toast.success("Gig created successfully", {
           position: "top-center",
           autoClose: 5000,
@@ -96,7 +97,6 @@ export default function CreateGigSection(props: ICreateGigSectionProps) {
           progress: undefined,
           theme: "dark",
         });
-        reset();
         window.scrollTo(0, 0);
       } catch (error: any) {
         toast.error(error.message, {

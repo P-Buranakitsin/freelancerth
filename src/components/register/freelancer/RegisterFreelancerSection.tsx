@@ -25,6 +25,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { HiXMark } from "react-icons/hi2";
+import { ClientUploadedFileData } from "uploadthing/types";
 
 export default function RegisterFreelancerSection() {
   const { data: session, update } = useSession();
@@ -130,8 +131,7 @@ export default function RegisterFreelancerSection() {
       return <></>;
     };
 
-    const { startUpload } = useUploadThing({
-      endpoint: "imageOrFileUploader",
+    const { startUpload } = useUploadThing('imageOrFileUploader', {
       onClientUploadComplete: () => {
         toast.success("uploaded successfully", {
           position: "top-center",
@@ -243,22 +243,17 @@ export default function RegisterFreelancerSection() {
         console.log(acceptedFiles);
         setIsLoading(true);
         try {
-          let uploadedFiles:
-            | {
-                fileUrl: string;
-                fileKey: string;
-              }[]
-            | undefined = undefined;
+          let uploadedFiles = undefined;
           uploadedFiles = await startUpload(acceptedFiles);
           await updateUser({
             ...(uploadedFiles &&
               uploadedFiles.length > 0 && {
-                fileUrl: uploadedFiles[0].fileUrl,
-                fileKey: uploadedFiles[0].fileKey,
-              }),
+              fileUrl: uploadedFiles[0].ufsUrl,
+              fileKey: uploadedFiles[0].key,
+            }),
           });
           if (uploadedFiles) {
-            setValue("profilePic", uploadedFiles[0].fileUrl);
+            setValue("profilePic", uploadedFiles[0].ufsUrl);
           }
         } catch (error: any) {
           toast.error(error.message, {
@@ -294,11 +289,9 @@ export default function RegisterFreelancerSection() {
     });
 
     const uploadPassportOrIdMutation = useMutation<
-      | {
-          fileUrl: string;
-          fileKey: string;
-        }[]
-      | undefined,
+      ClientUploadedFileData<{
+        uploadedBy: string;
+      }>[],
       Error,
       RegisterFreelancer
     >({
@@ -326,11 +319,9 @@ export default function RegisterFreelancerSection() {
     });
 
     const uploadResumeOrCVMutation = useMutation<
-      | {
-          fileUrl: string;
-          fileKey: string;
-        }[]
-      | undefined,
+     ClientUploadedFileData<{
+           uploadedBy: string;
+         }>[],
       Error,
       RegisterFreelancer
     >({

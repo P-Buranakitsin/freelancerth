@@ -15,8 +15,7 @@ export default function UserImageSection() {
   const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { startUpload } = useUploadThing({
-    endpoint: "imageOrFileUploader",
+  const { startUpload } = useUploadThing('imageOrFileUploader', {
     onClientUploadComplete: () => {
       toast.success("uploaded successfully", {
         position: "top-center",
@@ -43,18 +42,12 @@ export default function UserImageSection() {
       console.log(acceptedFiles);
       setIsLoading(true);
       try {
-        let uploadedFiles:
-          | {
-              fileUrl: string;
-              fileKey: string;
-            }[]
-          | undefined = undefined;
-        uploadedFiles = await startUpload(acceptedFiles);
+        let uploadedFiles = await startUpload(acceptedFiles);
         await updateUser({
           ...(uploadedFiles &&
             uploadedFiles.length > 0 && {
-              fileUrl: uploadedFiles[0].fileUrl,
-              fileKey: uploadedFiles[0].fileKey,
+              fileUrl: uploadedFiles[0].ufsUrl,
+              fileKey: uploadedFiles[0].key,
             }),
         });
       } catch (error: any) {

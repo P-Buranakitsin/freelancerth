@@ -19,24 +19,23 @@ interface IFreelancerImageSection {
 export default function FreelancerImageSection(props: IFreelancerImageSection) {
   const { data: session, update } = useSession();
 
-  const { startUpload, isUploading } = useUploadThing({
-    endpoint: "imageOrFileUploader",
-    onClientUploadComplete: () => {
-      toast.success("uploaded successfully", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    },
-    onUploadError: (e) => {
-      throw new Error(e.message);
-    },
-  });
+    const { startUpload, isUploading } = useUploadThing('imageOrFileUploader', {
+      onClientUploadComplete: () => {
+        toast.success("uploaded successfully", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      },
+      onUploadError: (e) => {
+        throw new Error(e.message);
+      },
+    });
 
   const { fileRejections, getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -46,18 +45,13 @@ export default function FreelancerImageSection(props: IFreelancerImageSection) {
     onDropAccepted: async (acceptedFiles: FileWithPath[]) => {
       console.log(acceptedFiles);
       try {
-        let uploadedFiles:
-          | {
-              fileUrl: string;
-              fileKey: string;
-            }[]
-          | undefined = undefined;
+        let uploadedFiles = undefined;
         uploadedFiles = await startUpload(acceptedFiles);
         await updateUser({
           ...(uploadedFiles &&
             uploadedFiles.length > 0 && {
-              fileUrl: uploadedFiles[0].fileUrl,
-              fileKey: uploadedFiles[0].fileKey,
+              fileUrl: uploadedFiles[0].ufsUrl,
+              fileKey: uploadedFiles[0].key,
             }),
         });
       } catch (error: any) {

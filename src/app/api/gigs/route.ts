@@ -141,6 +141,7 @@ export const POST = async (req: NextRequest) => {
             }
         });
         const json = await req.json() as CreateGig;
+        console.log('json', json)
 
         const response = CreateGigSchema.safeParse(json);
         if (!response.success) {
@@ -158,7 +159,7 @@ export const POST = async (req: NextRequest) => {
                 description: json.gigDescription,
                 freelancerProfileId: freelancerProfile.id,
                 title: json.gigTitle,
-                image: json.gigImage[0].fileUrl,
+                image: json.gigImage[0].ufsUrl,
                 searchTags: {
                     createMany: {
                         data: skillObjects as any

@@ -27,7 +27,7 @@ export default function RoleSection() {
   const options: Options<OptionProps> = [
     { value: "EMPLOYER", label: "EMPLOYER", isDisabled: false },
     { value: "FREELANCER", label: "FREELANCER", isDisabled: !data?.data ? true : false },
-    { value: "ADMIN", label: "ADMIN", isDisabled: true },
+    { value: "ADMIN", label: "ADMIN", isDisabled: false },
   ];
 
   useEffect(() => {

@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/constants/endpoints";
 import { Session } from "next-auth";
+import { ClientUploadedFileData } from "uploadthing/types";
 
 interface IEditGigModal {
   gig?: IResponseDataGETGigs;
@@ -27,17 +28,14 @@ interface IEditGigModal {
 }
 
 export default function EditGigModal(props: IEditGigModal) {
-  const { startUpload } = useUploadThing({
-    endpoint: "imageOrFileUploader",
-  });
+  const { startUpload } = useUploadThing('imageOrFileUploader');
 
   const client = useQueryClient();
 
   const uploadImageMutation = useMutation<
-    {
-      fileUrl: string;
-      fileKey: string;
-    }[],
+    ClientUploadedFileData<{
+      uploadedBy: string;
+    }>[],
     Error,
     {
       acceptedFiles: FileWithPath[];
@@ -102,7 +100,7 @@ export default function EditGigModal(props: IEditGigModal) {
       );
       const { session, ...rest } = props.fetchDataOptions;
       await client.invalidateQueries({
-        queryKey: ["gigs", rest],  
+        queryKey: ["gigs", rest],
       });
       toast.success("gig updated", {
         position: "top-center",
@@ -304,7 +302,7 @@ export default function EditGigModal(props: IEditGigModal) {
                   });
                   patchGigByGigIdMutation.mutate({
                     gigId: props.gig?.id || "",
-                    image: uploadedImage[0].fileUrl,
+                    image: uploadedImage[0].ufsUrl,
                   });
                 }}
                 onDropRejected={(fileRejections: FileRejection[]) => {
@@ -377,9 +375,8 @@ export default function EditGigModal(props: IEditGigModal) {
               type="button"
               className="hs-dropdown-toggle inline-flex flex-shrink-0 justify-center items-center h-8 w-8 rounded-md text-gray-500 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-white transition-all text-sm dark:focus:ring-gray-700 dark:focus:ring-offset-gray-800"
               // Prevent user from closing modal while uploading in progress
-              data-hs-overlay={`#hs-vertically-centered-scrollable-modal ${
-                isLoading ? "loading" : ""
-              }`}
+              data-hs-overlay={`#hs-vertically-centered-scrollable-modal ${isLoading ? "loading" : ""
+                }`}
             >
               <span className="sr-only">Close</span>
               <svg
