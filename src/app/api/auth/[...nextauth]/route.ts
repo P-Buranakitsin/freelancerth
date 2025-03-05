@@ -20,8 +20,8 @@ export const authOptions: NextAuthOptions =
             from: process.env.EMAIL_FROM,
         }),
         GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            clientId: process.env.GOOGLE_CLIENT_ID || '',
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
         }),
         FacebookProvider({
             clientId: process.env.FACEBOOK_CLIENT_ID!,
@@ -61,8 +61,7 @@ export const authOptions: NextAuthOptions =
             session.user.role = token.role
 
             return session
-        }
-
+        },
     },
     pages: {
         signIn: '/auth/signin',
@@ -70,7 +69,7 @@ export const authOptions: NextAuthOptions =
         newUser: '/auth/new-user',
         error: '/auth/error', // Error code passed in query string as ?error=
     },
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
 }
 
 
